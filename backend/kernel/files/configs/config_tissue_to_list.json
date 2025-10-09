@@ -1,0 +1,32 @@
+{
+    "inputs": {
+        "instruction": [
+            "age_group2diff2age_group"
+        ],
+        "tissue": [
+            ""
+        ],
+        "age": "",
+        "cell": "",
+        "efo": "",
+        "datatype": "",
+        "drug": "",
+        "dose": "",
+        "time": "",
+        "case": "60.0-70.0",
+        "control": "19.95-25.0",
+        "dataset_type": "expression",
+        "gender": "",
+        "species": "human",
+        "up": [],
+        "down": []
+    },
+    "mode": "meta2diff",
+    "parameters": {
+        "temperature": 0.8,
+        "top_p": 0.2,
+        "top_k": 3550,
+        "n_next_tokens": 2,
+        "random_seed": 137
+    }
+}

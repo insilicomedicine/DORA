@@ -1,0 +1,32 @@
+{
+    "inputs": {
+        "instruction": [
+            "compound2diff2compound"
+        ],
+        "tissue": [
+            ""
+        ],
+        "age": "",
+        "cell": "",
+        "efo": "",
+        "datatype": "",
+        "drug": "",
+        "dose": "",
+        "time": "",
+        "case": "",
+        "control": "",
+        "dataset_type": "expression",
+        "gender": "",
+        "species": "human",
+        "up": [],
+        "down": []
+    },
+    "mode": "diff2compound",
+    "parameters": {
+        "temperature": 0.8,
+        "top_p": 0.2,
+        "top_k": 3550,
+        "n_next_tokens": 7000,
+        "random_seed": 137
+    }
+}

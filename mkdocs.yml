@@ -1,0 +1,12 @@
+site_name: Dora Documentation
+site_description: DORA Documentation for developers and users.
+repo_url: https://github.com/insilicomedicine/DORA
+repo_name: DORA GitHub
+nav:
+  - User Manual: index.md
+  - Admin Manual: admin_manual.md
+  - Template Configuration: template_configuration.md
+theme:
+  name: material
+  palette:
+    primary: green

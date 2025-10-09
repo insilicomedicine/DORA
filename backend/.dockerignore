@@ -1,0 +1,26 @@
+*.md
+*.pyc
+.git
+.gitignore
+__pycache__
+env
+venv
+Dockerfile
+docker-compose.yml
+.gitlab-ci.yml
+.env
+.env.dist
+*.log
+
+# uv related
+.venv/
+.uv-cache/
+
+# ruff cache
+.ruff_cache/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo

@@ -1,0 +1,35 @@
+services:
+  dora_backend:
+    container_name: dora_backend
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - main
+    env_file:
+      - .env.example
+    depends_on:
+      - dora_db
+
+  dora_db:
+    container_name: dora_db
+    image: pgvector/pgvector:pg16
+    restart: always
+    networks:
+      - main
+    shm_size: 4gb
+    environment:
+      POSTGRES_USER: dora
+      POSTGRES_PASSWORD: dora
+      POSTGRES_DB: dora
+    expose:
+      - '5432'
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+networks:
+  main:

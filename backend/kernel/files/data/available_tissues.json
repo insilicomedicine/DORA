@@ -1,0 +1,71 @@
+{
+    "adipose tissue": [
+        "adipose tissue"
+    ],
+    "blood": [
+        "whole blood",
+        "blood vessel",
+        "leukocyte",
+        "lymph node",
+        "peripheral blood",
+        "plasma"
+    ],
+    "bone": [
+        "bone",
+        "bone marrow"
+    ],
+    "nervous system": [
+        "brain"
+    ],
+    "digestive system": [
+        "colon",
+        "esophagus",
+        "intestine",
+        "liver",
+        "pancreas",
+        "stomach",
+        "salivary gland",
+        "spleen"
+    ],
+    "endocrine system": [
+        "adrenal gland",
+        "hypophysis",
+        "pituitary",
+        "thyroid gland"
+    ],
+    "eye": [
+        "eye"
+    ],
+    "cardiovascular system": [
+        "heart"
+    ],
+    "Immune system": [
+        "macrophage",
+        "thymus"
+    ],
+    "urinary system": [
+        "kidney",
+        "bladder"
+    ],
+    "lung": [
+        "lung"
+    ],
+    "muscle": [
+        "muscle"
+    ],
+    "female reproductive system": [
+        "breast",
+        "ovary",
+        "internal female genital organ"
+    ],
+    "male reproductive system": [
+        "prostate",
+        "internal male genital organ"
+    ],
+    "skin": [
+        "skin"
+    ],
+    "embryo": [
+        "embryo"
+    ]
+}
