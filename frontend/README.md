@@ -173,3 +173,4 @@ This will create a `bundle-analysis.html` file showing the bundle composition an
 ---
 
 For questions or support, please open an issue in the repository or refer to the project documentation.
+
