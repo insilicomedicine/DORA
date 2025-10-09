@@ -1,0 +1,143 @@
+services:
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: dora_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf.d/dora.conf:/etc/nginx/conf.d/default.conf
+      - static_files:/var/www/static
+    depends_on:
+      - dora_backend
+      - frontend
+    networks:
+      - main
+
+  frontend:
+    image: insilicomed/dora-frontend:latest
+    container_name: dora_frontend
+    restart: always
+    networks:
+      - main
+    depends_on:
+      - dora_backend
+    expose:
+      - "8000"
+    command: [ 'nginx', '-g', 'daemon off;' ]
+
+  dora_backend:
+    image: insilicomed/dora-backend:latest
+    container_name: dora_backend
+    command: /bin/sh -c "
+      sleep 1
+      && python /dora/manage.py collectstatic --noinput
+      && python /dora/manage.py migrate --noinput
+      && uwsgi --ini /dora/deploy/uwsgi.ini --enable-threads
+      "
+    depends_on:
+      - dora_db
+      - dora_redis
+    expose:
+      - "8080"
+    networks:
+      - main
+    env_file:
+      - backend/.env
+    volumes:
+      - static_files:/dora/static
+
+  dora_worker:
+    image: insilicomed/dora-backend:latest
+    container_name: dora_backend_worker
+    restart: always
+    networks:
+      - main
+    env_file:
+      - backend/.env
+    depends_on:
+      - dora_db
+      - dora_redis
+    volumes:
+      - /var/log/dora_worker:/dora/logs
+    command: /bin/sh -c "
+      sleep 10
+      && celery -A app worker -E -l INFO -c 4 --without-heartbeat --without-gossip --without-mingle &
+      celery -A app worker -E -Q email -l INFO -c 1 --without-heartbeat --without-gossip --without-mingle
+      "
+
+  dora_backend_ws:
+    image: insilicomed/dora-backend:latest
+    container_name: dora_backend_ws
+    restart: always
+    networks:
+      - main
+    env_file:
+      - backend/.env
+    expose:
+      - "8081"
+    depends_on:
+      - dora_db
+      - dora_redis
+    command: /bin/sh -c "
+      sleep 10
+      && daphne --bind 0.0.0.0 --port 8081 app.asgi:application
+      "
+
+  dora_db:
+    image: pgvector/pgvector:pg16
+    container_name: dora_db
+    expose:
+      - "5432"
+    environment:
+      POSTGRES_USER: dora
+      POSTGRES_PASSWORD: dora
+      POSTGRES_DB: dora
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - main
+
+  dora_redis:
+    image: redis:7.2.3
+    container_name: dora_redis
+    restart: always
+    hostname: redis
+    expose:
+      - "6379"
+    networks:
+      - main
+
+  cloudserver:
+    image: zenko/cloudserver:latest-7.10.19
+    container_name: cloudserver
+    platform: linux/amd64
+    ports:
+      - "8089:8000"
+      - "9990:9990"
+      - "9991:9991"
+    volumes:
+      - s3data:/usr/src/app/localData
+      - s3metadata:/usr/src/app/localMetaData
+    environment:
+      - SCALITY_ACCESS_KEY_ID=test
+      - SCALITY_SECRET_ACCESS_KEY=test
+      - S3DATAPATH=/usr/src/app/localData
+      - S3METADATAPATH=/usr/src/app/localMetaData
+      - REMOTE_MANAGEMENT_DISABLE=1
+      - ENDPOINT=cloudserver
+    restart: unless-stopped
+    networks:
+      - main
+
+networks:
+  main:
+
+volumes:
+  pgdata:
+    driver: local
+  s3data:
+    driver: local
+  s3metadata:
+    driver: local
+  static_files:
+    driver: local

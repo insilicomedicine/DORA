@@ -1,0 +1,24 @@
+{
+  "general_notes_on_druggability_scores": "Higher scores (2) indicate better characteristics for the selected criteria.",
+  "novelty_score": {
+    "general_note": "This score is not disease-specific, avoid using it as a primary criteria until asked by user",
+    "0": "Genes extensively mentioned in the literature",
+    "1": "Genes with a moderate number of mentions in the literature",
+    "2": "Genes relatively unexplored or less studied in the literature"
+  },
+  "small_molecules_score": {
+    "0": "Gene likely does not belong to the druggable family and there are no small molecules known to target gene's product",
+    "1": "Gene either belongs to the druggable family OR there are small molecules known to target the gene's product",
+    "2": "Gene belongs to the druggable family AND there are small molecules known to target gene's product"
+  },
+  "antibodies_score": {
+    "0": "Genes encoding proteins which are not associated with cellular membrane and there is no information about targeting by antibodies",
+    "1": "Genes encoding either secreted or membrane-bound proteins or subject to potential targeting by antibodies",
+    "2": "Genes encoding secreted or membrane-bound proteins which can be targeted by antibodies"
+  },
+  "safety_score": {
+    "0": "Essential genes whose products are not targeted by small molecules in clinical trials",
+    "1": "Genes with no specific evidence regarding potential target safety assessment",
+    "2": "Non-essential genes or genes whose products are targeted by small molecules in clinical trials"
+  }
+}

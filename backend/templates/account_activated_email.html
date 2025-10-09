@@ -1,0 +1,233 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap");
+      body {
+        font-family: "Roboto-Regular", sans-serif;
+      }
+
+      .content,
+      .content * {
+        box-sizing: border-box;
+      }
+      .content {
+        margin: 0 auto;
+        background: #ffffff;
+        max-width: 368px;
+        height: 510px;
+        text-align: center;
+      }
+
+      .button-chemistry {
+        width: 100%;
+        background: #21965f;
+        border-radius: 8px;
+        padding: 0;
+        position: relative;
+        text-decoration: none;
+      }
+
+      .btn-label {
+        color: #ffffff;
+        text-align: center;
+        font-family: "Roboto-Regular", sans-serif;
+        font-size: 16px;
+        line-height: 26px;
+        letter-spacing: 0.02em;
+        font-weight: 700;
+        text-transform: uppercase;
+        text-align: center;
+        width: 100%;
+      }
+
+      .title {
+        text-align: center;
+        font-family: "Montserrat", "Roboto-Regular", sans-serif;
+        color: #212121;
+        font-size: 22px;
+        font-style: normal;
+        font-weight: 900;
+        line-height: normal;
+        margin-top: 24px;
+      }
+
+      .desc {
+        color: #212121;
+        font-family: var(
+          --headers-18-font-family,
+          "Roboto-Regular",
+          sans-serif
+        );
+        font-size: 18px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 153%;
+        letter-spacing: 0.15px;
+        margin-top: 93px;
+        margin-bottom: 48px;
+      }
+
+      .footer {
+        width: 100%;
+        color: #666666;
+        font-family: "Roboto-Regular", sans-serif;
+        font-size: 14px;
+        line-height: 125%;
+        text-align: left;
+        position: relative;
+      }
+
+      .image-footer {
+        width: 92px;
+        height: 43px;
+        margin-left: auto;
+        float: right;
+      }
+    </style>
+    <title>Account confirmation</title>
+  </head>
+  <body>
+    <table
+      width="100%"
+      height="100%"
+      border="0"
+      cellspacing="0"
+      cellpadding="0"
+      lang="en"
+      style="min-width: 368px"
+    >
+      <tbody>
+        <tr align="center">
+          <td>
+            <table
+              border="0"
+              cellspacing="0"
+              cellpadding="0"
+              style="padding-bottom: 20px; max-width: 368px; min-width: 368px"
+            >
+              <tbody>
+                <tr>
+                  <td>
+                    <div class="content">
+                      <div class="title">Science42: DORA</div>
+                      <div class="desc">
+                        Congratulations! Your account has been
+                        <br />
+                        successfully activated. You can now sign in <br />
+                        to
+                        <span style="font-weight: 700">Science42: DORA</span>
+                        and start creating your <br />
+                        academic and research documents.
+                      </div>
+
+                      <!--[if mso]>
+                        <v:roundrect
+                          xmlns:v="urn:schemas-microsoft-com:vml"
+                          xmlns:w="urn:schemas-microsoft-com:office:word"
+                          href="{{link}}"
+                          style="
+                            height: 42px;
+                            v-text-anchor: middle;
+                            width: 368px;
+                          "
+                          arcsize="10%"
+                          stroke="f"
+                          fillcolor="#21965f"
+                        >
+                          <w:anchorlock />
+                          <center
+                            style="
+                              color: #ffffff;
+                              font-size: 16px;
+                              font-weight: bold;
+                              letter-spacing: 0.32px;
+                            "
+                          >
+                            SIGN IN
+                          </center>
+                        </v:roundrect>
+                      <![endif]-->
+                      <!--[if !mso]> <!-->
+                      <a href="{{link}}" style="text-decoration: none">
+                        <table cellspacing="0" cellpadding="0">
+                          <tr>
+                            <td
+                              align="center"
+                              width="368"
+                              height="42"
+                              bgcolor="#21965f"
+                              style="
+                                -webkit-border-radius: 8px;
+                                -moz-border-radius: 8px;
+                                border-radius: 8px;
+                                color: #ffffff;
+                                display: block;
+                              "
+                            >
+                              <span
+                                style="
+                                  font-family: 'Roboto';
+                                  text-decoration: none;
+                                  color: #ffffff;
+                                  font-size: 16px;
+                                  font-weight: 700;
+                                  line-height: 42px;
+                                  mso-table-lspace: 0;
+                                  mso-table-rspace: 0;
+                                  letter-spacing: 0.32px;
+                                "
+                                >SIGN IN</span
+                              >
+                            </td>
+                          </tr>
+                        </table>
+                      </a>
+                      <!-- <![endif]-->
+
+                      <!-- <div class="footer" style="text-align: justify"> -->
+                      <table
+                        border="0"
+                        cellspacing="0"
+                        cellpadding="0"
+                        width="368"
+                        style="margin-top: 136px"
+                      >
+                        <tbody>
+                          <tr>
+                            <td
+                              width="170"
+                              style="text-align: left; color: #666666"
+                            >
+                              <span style="font-size: 14px; line-height: 125%">
+                                Thank you,
+                                <br />
+                                Science42: DORA Team
+                              </span>
+                            </td>
+                            <td style="text-align: right">
+                              <img
+                                class="image-footer"
+                                src="https://cdn.insilico.com/logos/insilico.png"
+                              />
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <!-- </div> -->
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>

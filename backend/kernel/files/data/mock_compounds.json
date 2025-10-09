@@ -1,0 +1,964 @@
+{
+    "adipose tissue": {
+        "m": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "nvp-bep800",
+                "resibufogenin",
+                "ferulic acid",
+                "n6022",
+                "nexturastat a",
+                "geniposide",
+                "gsk2334470"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "benzoic-acid",
+                "indometacin",
+                "catechin",
+                "myricetin",
+                "dibenzoylmethane",
+                "acetamide",
+                "incb 3284",
+                "isobutyric-acid"
+            ]
+        }
+    },
+    "whole blood": {
+        "m": {
+            "generated_compounds": [
+                "profenamine",
+                "agmatine",
+                "oleanolic-acid",
+                "cannabidiol",
+                "naproxol",
+                "dibenzoylmethane",
+                "bergenin",
+                "stl321288"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "gelsemine",
+                "metitepine",
+                "ascorbic-acid",
+                "methysergide",
+                "bergenin",
+                "benserazide",
+                "skf-86002",
+                "eserine"
+            ]
+        }
+    },
+    "blood vessel": {
+        "m": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "abt-199",
+                "cortisol",
+                "urosiol",
+                "cay10683",
+                "n6022",
+                "gandotinib",
+                "nexturastat a"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "myricetin",
+                "benzoic-acid",
+                "catechin",
+                "cortisol",
+                "cay10683",
+                "n6022",
+                "rhapontin",
+                "marmesin"
+            ]
+        }
+    },
+    "leukocyte": {
+        "m": {
+            "generated_compounds": [
+                "eliprodil",
+                "naltrexone",
+                "gw-7647",
+                "hesperetin",
+                "rhapontin",
+                "stl321288",
+                "dibenzoylmethane",
+                "phenoxybenzamine"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "catechin",
+                "coumarin",
+                "pentoxifylline",
+                "benzoic-acid",
+                "acetamide",
+                "d-serine",
+                "idebenone",
+                "cay10683"
+            ]
+        }
+    },
+    "lymph node": {
+        "m": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "pyridoxine",
+                "benzoic-acid",
+                "tyrphostin-1",
+                "d-serine",
+                "nexturastat a",
+                "nerol",
+                "bms-182874"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "pyridoxine",
+                "benzoic-acid",
+                "latrepirdine",
+                "d-serine",
+                "nexturastat a",
+                "bms-182874",
+                "nerol"
+            ]
+        }
+    },
+    "peripheral blood": {
+        "m": {
+            "generated_compounds": [
+                "hesperetin",
+                "naringin",
+                "oleanolic-acid",
+                "alpha-tocopherol",
+                "droxinostat",
+                "dibenzoylmethane",
+                "cay10683",
+                "acetamide"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "gsk2656157",
+                "oleanolic-acid",
+                "doxazosin",
+                "trequinsin",
+                "bms-182874",
+                "stl321288",
+                "skf-86002",
+                "gingerol"
+            ]
+        }
+    },
+    "plasma": {
+        "m": {
+            "generated_compounds": [
+                "oleic acid",
+                "tiplaxtinin",
+                "cannabidiol",
+                "benzoic-acid",
+                "dibenzoylmethane",
+                "nexturastat a",
+                "incb 3284",
+                "n6022"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "abt-199",
+                "oleic acid",
+                "dexrazoxane",
+                "nexturastat a",
+                "cay10683",
+                "daidzin",
+                "(s)-(-)-pindolol"
+            ]
+        }
+    },
+    "bone": {
+        "m": {
+            "generated_compounds": [
+                "cpi-203",
+                "tiplaxtinin",
+                "abt-199",
+                "ferulic acid",
+                "n6022",
+                "nexturastat a",
+                "bml-277",
+                "alantolactone"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "oleic acid",
+                "dexrazoxane",
+                "naringin",
+                "n6022",
+                "nexturastat a",
+                "incb 3284",
+                "eniporide"
+            ]
+        }
+    },
+    "bone marrow": {
+        "m": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "cpi-203",
+                "catechin",
+                "bromopyruvic acid",
+                "bergenin",
+                "nexturastat a",
+                "me-0328",
+                "incb 3284"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "cpi-203",
+                "bromopyruvic acid",
+                "gsk2656157",
+                "nexturastat a",
+                "me-0328",
+                "bergenin",
+                "incb 3284"
+            ]
+        }
+    },
+    "brain": {
+        "m": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "methysergide",
+                "hesperetin",
+                "dexrazoxane",
+                "notoginsenoside r1",
+                "nexturastat a",
+                "o-3m3fbs",
+                "cay10683"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "dexrazoxane",
+                "gw-7647",
+                "carnosol",
+                "o-3m3fbs",
+                "stl321288",
+                "cay10683",
+                "nexturastat a"
+            ]
+        }
+    },
+    "colon": {
+        "m": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "benzoic-acid",
+                "dexrazoxane",
+                "cpi-203",
+                "cay10683",
+                "sulfamethoxazole",
+                "n6022",
+                "daidzin"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "catechin",
+                "oleic acid",
+                "6-benzylaminopurine",
+                "cay10683",
+                "eserine",
+                "n6022",
+                "daidzin"
+            ]
+        }
+    },
+    "esophagus": {
+        "m": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "catechin",
+                "cpi-203",
+                "oleanolic-acid",
+                "cay10683",
+                "isobutyric-acid",
+                "marmesin",
+                "n6022"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "cpi-203",
+                "cortisol",
+                "catechin",
+                "alantolactone",
+                "geniposide",
+                "hydroxyprogesterone",
+                "vu 0364739"
+            ]
+        }
+    },
+    "intestine": {
+        "m": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "oleanolic-acid",
+                "catechin",
+                "cpi-203",
+                "cay10683",
+                "isobutyric-acid",
+                "n6022",
+                "sch 58261"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "oleanolic-acid",
+                "catechin",
+                "naringin",
+                "myricetin",
+                "cay10683",
+                "isobutyric-acid",
+                "bergenin",
+                "adrenosterone"
+            ]
+        }
+    },
+    "liver": {
+        "m": {
+            "generated_compounds": [
+                "ascorbic-acid",
+                "pentoxifylline",
+                "oleic acid",
+                "benzoic-acid",
+                "anethole",
+                "nerol",
+                "d-serine",
+                "adrenosterone"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "benzoic-acid",
+                "ascorbic-acid",
+                "tiplaxtinin",
+                "oleic acid",
+                "nerol",
+                "anethole",
+                "nexturastat a",
+                "gandotinib"
+            ]
+        }
+    },
+    "pancreas": {
+        "m": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "benzoic-acid",
+                "cpi-203",
+                "luteolin",
+                "cay10683",
+                "nexturastat a",
+                "n6022",
+                "alantolactone"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "luteolin",
+                "cpi-203",
+                "benzoic-acid",
+                "tiplaxtinin",
+                "cay10683",
+                "nexturastat a",
+                "n6022",
+                "gandotinib"
+            ]
+        }
+    },
+    "stomach": {
+        "m": {
+            "generated_compounds": [
+                "cpi-203",
+                "tiplaxtinin",
+                "myricetin",
+                "bromopyruvic acid",
+                "n6022",
+                "adrenosterone",
+                "nexturastat a",
+                "bestatin"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "cpi-203",
+                "tiplaxtinin",
+                "abt-199",
+                "cortisol",
+                "n6022",
+                "stl321288",
+                "bestatin",
+                "imidazolidinyl-urea"
+            ]
+        }
+    },
+    "salivary gland": {
+        "m": {
+            "generated_compounds": [
+                "cortisol",
+                "urosiol",
+                "oleic acid",
+                "tiplaxtinin",
+                "adrenosterone",
+                "n6022",
+                "nexturastat a",
+                "cay10683"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "oleic acid",
+                "benzoic-acid",
+                "nvp-bep800",
+                "tiplaxtinin",
+                "nexturastat a",
+                "adrenosterone",
+                "bestatin",
+                "n6022"
+            ]
+        }
+    },
+    "spleen": {
+        "m": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "benzoic-acid",
+                "abt-199",
+                "gsk2656157",
+                "nexturastat a",
+                "n6022",
+                "cay10683",
+                "(s)-(-)-pindolol"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "cortisol",
+                "urosiol",
+                "quisinostat",
+                "nexturastat a",
+                "n6022",
+                "a-740003",
+                "adrenosterone"
+            ]
+        }
+    },
+    "adrenal gland": {
+        "m": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "cortisol",
+                "cpi-203",
+                "benzoic-acid",
+                "nexturastat a",
+                "adrenosterone",
+                "n6022",
+                "vu 0364739"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "benzoic-acid",
+                "tiplaxtinin",
+                "gw-7647",
+                "bromopyruvic acid",
+                "isobutyric-acid",
+                "n6022",
+                "nexturastat a",
+                "bms-182874"
+            ]
+        }
+    },
+    "hypophysis": {
+        "m": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "cpi-203",
+                "5-methoxytryptamine",
+                "protocatechuic aldehyde",
+                "cay10683",
+                "alantolactone",
+                "n6022",
+                "nexturastat a"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "abt-199",
+                "urosiol",
+                "benzoic-acid",
+                "fexaramine",
+                "cay10683",
+                "nexturastat a",
+                "stl321288"
+            ]
+        }
+    },
+    "pituitary": {
+        "m": {
+            "generated_compounds": [
+                "myricetin",
+                "naltrexone",
+                "metitepine",
+                "tiplaxtinin",
+                "hemicholinium-3",
+                "nerol",
+                "n6022",
+                "notoginsenoside r1"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "trim",
+                "dexrazoxane",
+                "benzoic-acid",
+                "stl321288",
+                "bergenin",
+                "nexturastat a",
+                "n6022"
+            ]
+        }
+    },
+    "thyroid gland": {
+        "m": {
+            "generated_compounds": [
+                "luteolin",
+                "benzoic-acid",
+                "methysergide",
+                "dopamine",
+                "n6022",
+                "marmesin",
+                "hemicholinium-3",
+                "nexturastat a"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "azd8055",
+                "hydroxytyrosol",
+                "cpi-203",
+                "meclofenoxate",
+                "pj34",
+                "tram-34",
+                "dihydrocapsaicin",
+                "cay10683"
+            ]
+        }
+    },
+    "eye": {
+        "m": {
+            "generated_compounds": [
+                "ascorbic-acid",
+                "cortisol",
+                "cpi-203",
+                "hesperetin",
+                "eniporide",
+                "nexturastat a",
+                "n6022",
+                "bms-182874"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "benzoic-acid",
+                "cpi-203",
+                "ascorbic-acid",
+                "myricetin",
+                "hydroxyprogesterone",
+                "nerol",
+                "sauchinone",
+                "phenoxybenzamine"
+            ]
+        }
+    },
+    "heart": {
+        "m": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "benzoic-acid",
+                "glutamine",
+                "ivabradine",
+                "isobutyric-acid",
+                "adrenosterone",
+                "n6022",
+                "vu 0364739"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "cortisol",
+                "tiplaxtinin",
+                "benzoic-acid",
+                "nintedanib",
+                "adrenosterone",
+                "vu 0364739",
+                "n6022",
+                "nexturastat a"
+            ]
+        }
+    },
+    "macrophage": {
+        "m": {
+            "generated_compounds": [
+                "methysergide",
+                "tiplaxtinin",
+                "gw-7647",
+                "gsk2656157",
+                "stl321288",
+                "doramapimod",
+                "o-3m3fbs",
+                "naproxol"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "benzoic-acid",
+                "dexrazoxane",
+                "gsk2656157",
+                "nexturastat a",
+                "stl321288",
+                "vu 0364739",
+                "cay10683"
+            ]
+        }
+    },
+    "thymus": {
+        "m": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "catechin",
+                "naltrexone",
+                "icariin",
+                "rhapontin",
+                "nexturastat a",
+                "nerol",
+                "naproxol"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "abt-199",
+                "icariin",
+                "catechin",
+                "rhapontin",
+                "naproxol",
+                "stl321288",
+                "n6022"
+            ]
+        }
+    },
+    "kidney": {
+        "m": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "cpi-203",
+                "abt-199",
+                "ferulic acid",
+                "geniposide",
+                "cay10683",
+                "stl321288",
+                "nexturastat a"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "cpi-203",
+                "cortisol",
+                "ferulic acid",
+                "cay10683",
+                "n6022",
+                "alantolactone",
+                "nexturastat a"
+            ]
+        }
+    },
+    "bladder": {
+        "m": {
+            "generated_compounds": [
+                "cortisol",
+                "tiplaxtinin",
+                "oleanolic-acid",
+                "pyridoxine",
+                "rhapontin",
+                "cay10683",
+                "trihexyphenidyl",
+                "n6022"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "cpi-203",
+                "cortisol",
+                "benzoic-acid",
+                "n6022",
+                "rhapontin",
+                "matrine",
+                "trihexyphenidyl"
+            ]
+        }
+    },
+    "lung": {
+        "m": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "luteolin",
+                "niacin",
+                "bezafibrate",
+                "isobutyric-acid",
+                "nexturastat a",
+                "cay10683",
+                "gandotinib"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "benzoic-acid",
+                "agmatine",
+                "luteolin",
+                "nexturastat a",
+                "gandotinib",
+                "isobutyric-acid",
+                "n6022"
+            ]
+        }
+    },
+    "muscle": {
+        "m": {
+            "generated_compounds": [
+                "icariin",
+                "catechin",
+                "benzoic-acid",
+                "tiplaxtinin",
+                "cd-1530",
+                "isobutyric-acid",
+                "n6022",
+                "acetamide"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "pentoxifylline",
+                "oleanolic-acid",
+                "myricetin",
+                "serotonin",
+                "bergenin",
+                "bromhexine",
+                "hydroxyprogesterone",
+                "adrenosterone"
+            ]
+        }
+    },
+    "breast": {
+        "m": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "benzoic-acid",
+                "cpi-203",
+                "dexrazoxane",
+                "cay10683",
+                "nexturastat a",
+                "adrenosterone",
+                "n6022"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "cpi-203",
+                "benzoic-acid",
+                "catechin",
+                "cay10683",
+                "nexturastat a",
+                "adrenosterone",
+                "n6022"
+            ]
+        }
+    },
+    "ovary": {
+        "m": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "cpi-203",
+                "dexrazoxane",
+                "abt-199",
+                "cay10683",
+                "nexturastat a",
+                "n6022",
+                "asiaticoside"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "cpi-203",
+                "dexrazoxane",
+                "abt-199",
+                "cay10683",
+                "nexturastat a",
+                "n6022",
+                "asiaticoside"
+            ]
+        }
+    },
+    "internal female genital organ": {
+        "m": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "cpi-203",
+                "cortisol",
+                "hesperetin",
+                "alantolactone",
+                "nexturastat a",
+                "me-0328",
+                "gentiopicroside"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "cpi-203",
+                "cortisol",
+                "benzoic-acid",
+                "alantolactone",
+                "nexturastat a",
+                "n6022",
+                "cay10683"
+            ]
+        }
+    },
+    "prostate": {
+        "m": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "myricetin",
+                "hesperetin",
+                "cpi-203",
+                "rhapontin",
+                "cay10683",
+                "stl321288",
+                "alantolactone"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "tiplaxtinin",
+                "myricetin",
+                "hesperetin",
+                "cpi-203",
+                "rhapontin",
+                "cay10683",
+                "stl321288",
+                "alantolactone"
+            ]
+        }
+    },
+    "internal male genital organ": {
+        "m": {
+            "generated_compounds": [
+                "cortisol",
+                "metitepine",
+                "5-methoxytryptamine",
+                "oleanolic-acid",
+                "matrine",
+                "mandelic-acid",
+                "eserine",
+                "nerol"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "cortisol",
+                "metitepine",
+                "5-methoxytryptamine",
+                "oleanolic-acid",
+                "matrine",
+                "mandelic-acid",
+                "eserine",
+                "nerol"
+            ]
+        }
+    },
+    "skin": {
+        "m": {
+            "generated_compounds": [
+                "luteolin",
+                "myricetin",
+                "erythromycin",
+                "benzoic-acid",
+                "naproxol",
+                "rhapontin",
+                "bms-182874",
+                "o-3m3fbs"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "nvp-bep800",
+                "benzoic-acid",
+                "tiplaxtinin",
+                "cortisol",
+                "n6022",
+                "stl321288",
+                "z-guggulsterone",
+                "incb 3284"
+            ]
+        }
+    },
+    "embryo": {
+        "m": {
+            "generated_compounds": [
+                "benzoic-acid",
+                "tiplaxtinin",
+                "ascorbic-acid",
+                "eliprodil",
+                "bms-182874",
+                "stl321288",
+                "cay10650",
+                "nexturastat a"
+            ]
+        },
+        "f": {
+            "generated_compounds": [
+                "cpi-203",
+                "tiplaxtinin",
+                "myricetin",
+                "hesperetin",
+                "rhapontin",
+                "bromhexine",
+                "cay10650",
+                "tibolone"
+            ]
+        }
+    }
+}

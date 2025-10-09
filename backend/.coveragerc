@@ -1,0 +1,24 @@
+[run]
+source =
+    ./ai_review/
+    ./app/
+    ./base/
+    ./bibliography/
+    ./documents/
+    ./dwh/
+    ./general/
+    ./kernel/
+    ./payment/
+    ./users/
+
+omit =
+    *migrations*
+    *tests*
+    *__init__*
+    */management/commands/*
+
+
+[report]
+precision = 2
+exclude_lines =
+    if TYPE_CHECKING:

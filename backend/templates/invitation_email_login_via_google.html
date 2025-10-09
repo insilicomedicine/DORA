@@ -1,0 +1,146 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Roboto:wght@400;700&display=swap");
+
+      body {
+        font-family: "Roboto", sans-serif;
+        background: #ffffff;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+      }
+      .content {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 24px;
+        text-align: justify;
+      }
+      .title {
+        font-family: "Montserrat", sans-serif;
+        font-size: 22px;
+        font-weight: 900;
+        color: #212121;
+        margin-bottom: 16px;
+      }
+      .desc {
+        font-size: 18px;
+        font-weight: 400;
+        color: #212121;
+        line-height: 1.5;
+        margin-bottom: 16px;
+      }
+      .highlight {
+        font-weight: 700;
+      }
+      .button-wrapper {
+        text-align: center;
+        margin-top: 16px;
+      }
+      .button {
+        display: inline-block;
+        background: #21965f;
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: 700;
+        text-transform: uppercase;
+        text-decoration: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+      }
+      .footer {
+        font-size: 14px;
+        color: #666666;
+        text-align: left;
+        margin-top: 40px;
+      }
+    </style>
+    <title>Account Confirmation</title>
+  </head>
+  <body>
+    <div class="content">
+      <p class="desc">Congratulations! Your account has been successfully activated. You’re now ready to explore Science42: DORA, the AI-powered research assistant designed to transform scientific writing.</p>
+
+      <p class="desc highlight" style="text-align: center">🚀 Start writing with DORA today!</p>
+
+      <p class="desc">DORA empowers researchers, students, and professionals in business and biomedical fields to effortlessly draft structured, well-cited academic papers, grant proposals, and reports. <span class="highlight">With 20+ research tools and 10+ scientific databases, it ensures accuracy, transparency, and seamless citation integration—saving you hours every week.</span></p>
+
+      <div class="button-wrapper">
+        <!--[if mso]>
+        <v:roundrect
+          xmlns:v="urn:schemas-microsoft-com:vml"
+          xmlns:w="urn:schemas-microsoft-com:office:word"
+          href="{{link}}"
+          style="
+            height: 42px;
+            v-text-anchor: middle;
+            width: 368px;
+          "
+          arcsize="10%"
+          stroke="f"
+          fillcolor="#21965f"
+        >
+          <w:anchorlock />
+          <center
+            style="
+              color: #ffffff;
+              font-size: 16px;
+              font-weight: bold;
+              letter-spacing: 0.32px;
+            "
+          >
+            SIGN IN
+          </center>
+        </v:roundrect>
+        <![endif]-->
+          <!--[if !mso]> <!-->
+          <a href="{{link}}" style="text-decoration: none; display: inline-block;">
+            <table cellspacing="0" cellpadding="0">
+              <tr>
+                <td
+                  align="center"
+                  width="300"
+                  height="42"
+                  bgcolor="#21965f"
+                  style="
+                    -webkit-border-radius: 8px;
+                    -moz-border-radius: 8px;
+                    border-radius: 8px;
+                    color: #ffffff;
+                    display: block;
+                  "
+                >
+                  <span
+                    style="
+                      font-family: 'Roboto';
+                      text-decoration: none;
+                      color: #ffffff;
+                      font-size: 16px;
+                      font-weight: 700;
+                      line-height: 42px;
+                      mso-table-lspace: 0;
+                      mso-table-rspace: 0;
+                      letter-spacing: 0.32px;
+                    "
+                    >SIGN IN</span
+                  >
+                </td>
+              </tr>
+            </table>
+          </a>
+          <!-- <![endif]-->
+      </div>
+
+      <p class="desc" style="text-align: center">Welcome to the future of scientific writing!</p>
+
+      <div class="footer">
+        <p>Best,<br />Science42: DORA Team</p>
+      </div>
+    </div>
+  </body>
+</html>

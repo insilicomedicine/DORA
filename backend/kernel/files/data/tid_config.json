@@ -1,0 +1,153 @@
+{
+    "DEFAULT_FILTERS": {
+        "pdb_count": 0,
+        "structure": {
+            "enabled": false
+        },
+        "development_level": {
+            "enabled": false,
+            "development_levels": []
+        },
+        "safety_score": {
+            "enabled": false,
+            "value": [
+                0
+            ]
+        },
+        "antibodies_score": {
+            "enabled": false,
+            "value": [
+                0
+            ]
+        },
+        "small_molecules_score": {
+            "enabled": false,
+            "value": [
+                0
+            ]
+        },
+        "novelty_score": {
+            "enabled": false,
+            "value": [
+                0
+            ]
+        },
+        "tissue": {
+            "enabled": false,
+            "selected_tissues": [],
+            "specificity": 0.1,
+            "specificity_type": "protein"
+        },
+        "protein_class": {
+            "enabled": true,
+            "selected_protein_classes": []
+        },
+        "system_gene_lists": {
+            "enabled": false,
+            "merge_type": "intersection",
+            "selected_genes_lists": []
+        },
+        "user_gene_lists": {
+            "enabled": false,
+            "merge_type": "intersection",
+            "selected_genes_lists": []
+        }
+    },
+    "SCORINGS_LIST": [
+        "network",
+        "bayes_gwas",
+        "bayes_submodules",
+        "inference",
+        "knockin",
+        "knockout",
+        "mutation",
+        "pathway",
+        "ppi",
+        "relevance",
+        "transcriptomics",
+        "hetewalk",
+        "matrixfact",
+        "dl_burst",
+        "evidence_score",
+        "trend",
+        "target_metric",
+        "high_impact_total",
+        "mean_hirsch",
+        "mean_impact",
+        "fund_per_pub",
+        "funding",
+        "grant_size",
+        "confidence",
+        "commercial_tractability",
+        "druggability",
+        "mechanism_clarity"
+    ],
+    "TID_FIELD_RENAMINGS": {
+        "sym": "Gene",
+        "rank": "Rank",
+        "scorings_results.network": "Network Neighbors",
+        "scorings_results.bayes_gwas": "Mutated Sub-modules",
+        "scorings_results.bayes_submodules": "Disease Sub-modules",
+        "scorings_results.inference": "Causal inference",
+        "scorings_results.knockin": "Overexpression",
+        "scorings_results.knockout": "Knockouts",
+        "scorings_results.mutation": "Mutations",
+        "scorings_results.pathway": "Pathways",
+        "scorings_results.ppi": "Interactome Community",
+        "scorings_results.relevance": "Relevance",
+        "scorings_results.transcriptomics": "Expression",
+        "scorings_results.matrixfact": "Matrix factorization",
+        "scorings_results.hetewalk": "Heterogenous graph walk",
+        "scorings_results.dl_burst": "Publication spike",
+        "scorings_results.evidence_score": "Evidence",
+        "scorings_results.target_metric": "Attention Score",
+        "scorings_results.trend": "Trend",
+        "scorings_results.fund_per_pub": "Funding per Publication",
+        "scorings_results.funding": "Funding",
+        "scorings_results.grant_size": "Grant size",
+        "scorings_results.high_impact_total": "Credibility adjusted attention index",
+        "scorings_results.mean_hirsch": "Mean Hirsch",
+        "scorings_results.mean_impact": "Impact factor",
+        "max_speficity": "Tissue specificity",
+        "small_molecules_score": "Small molecule",
+        "antibodies_score": "Biologic",
+        "safety_score": "Safety",
+        "novelty_score": "Novelty",
+        "structure": "Structure",
+        "target__tdl": "Development Level",
+        "target__fam": "Target Family"
+    },
+    "SCORINGS_LIST_WITH_TYPE": {
+        "Omics scores": [
+            "network",
+            "bayes_gwas",
+            "bayes_submodules",
+            "inference",
+            "knockin",
+            "knockout",
+            "mutation",
+            "pathway",
+            "ppi",
+            "relevance",
+            "transcriptomics",
+            "hetewalk",
+            "matrixfact"
+        ],
+        "Text-based (NLP) scores": [
+            "dl_burst",
+            "evidence_score",
+            "trend",
+            "target_metric"
+        ],
+        "Key opinion leader (KOL) scores": [
+            "high_impact_total",
+            "mean_hirsch",
+            "mean_impact"
+        ],
+        "Financial scores": [
+            "fund_per_pub",
+            "funding",
+            "grant_size"
+        ]
+    }
+}

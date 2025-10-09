@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "target": "ES2015",
+    "lib": ["ES2015", "ES2017", "DOM", "DOM.Iterable"],
+    "types": ["vitest/globals"],
+    "module": "ESNext",
+    "downlevelIteration": true,
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": false,
+
+    /* Path mapping */
+    "baseUrl": "src",
+    "paths": {
+      "assets/*": ["./assets/*"],
+      "components/*": ["./components/*"],
+      "contexts/*": ["./contexts/*"],
+      "pages/*": ["./pages/*"],
+      "hooks/*": ["./hooks/*"],
+      "services/*": ["./services/*"],
+      "types/*": ["./types/*"],
+      "utils/*": ["./utils/*"],
+      "theme": ["./theme/index"],
+      "theme/*": ["./theme/*"],
+      "config/*": ["./config/*"]
+    }
+  },
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}

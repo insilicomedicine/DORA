@@ -1,0 +1,15 @@
+@mixin treeItemTitle {
+  overflow: hidden;
+  cursor: pointer;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  &:hover {
+    -webkit-line-clamp: unset;
+  }
+}
+
+.CustomTreeItem-documentTitle,
+.CustomTreeItem-sectionTitle {
+  @include treeItemTitle;
+}

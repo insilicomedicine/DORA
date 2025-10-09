@@ -1,0 +1,109 @@
+[project]
+name = "dora-backend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "arize-phoenix==7.9.4",
+    "beautifulsoup4==4.12.3",
+    "celery>=5.5.3",
+    "channels-redis==4.2.0",
+    "chromadb>=1.0.15",
+    "coverage==5.0.4",
+    "daphne==4.1.0",
+    "dj-rest-auth==7.0.1",
+    "django==4.2",
+    "django-allauth==65.1.0",
+    "django-environ==0.11.2",
+    "django-ipware>=7.0.1",
+    "django-json-widget==2.0.1",
+    "django-redis==5.4.0",
+    "django-ses==4.1.0",
+    "drf-spectacular==0.27.2",
+    "drf-spectacular-sidecar==2024.5.1",
+    "duckduckgo-search==8.0.2",
+    "flashrank==0.2.9",
+    "flower==2.0.1",
+    "glom==23.5.0",
+    "google-auth==2.36.0",
+    "google-search-results==2.4.2",
+    "httptools==0.6.4",
+    "langchain-community==0.3.23",
+    "langchain-openai==0.2.12",
+    "mcp==1.6.0",
+    "nltk==3.9.1",
+    "openinference-instrumentation-langchain==0.1.29",
+    "openinference-instrumentation-llama-index==3.0.4",
+    "openinference-instrumentation-openai==0.1.18",
+    "pgvector==0.3.2",
+    "psycopg2-binary==2.9.9",
+    "pydantic==2.10.3",
+    "pyjwt==2.10.1",
+    "pyopenssl==24.1.0",
+    "pypdf==5.4.0",
+    "python-docx==1.1.2",
+    "reportlab==4.2.0",
+    "sentry-sdk==2.5.1",
+    "service-identity==24.1.0",
+    "stripe==9.10.0",
+    "textstat==0.7.4",
+    "tiktoken==0.11.0",
+    "uvloop==0.21.0",
+    "uwsgi==2.0.25.1",
+    "watchfiles==1.0.3",
+    "wrapt-timeout-decorator==1.5.1",
+]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.2.0",
+    "ruff>=0.12.3",
+]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 110
+exclude = [
+    ".git",
+    "env",
+    "*/migrations/*",
+    "app/asgi.py",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "C90",  # mccabe complexity
+    "S",    # bandit security
+]
+ignore = [
+    "E203",  # whitespace before ':'
+    "S104",  # hardcoded_bind_all_interfaces
+    "S105",  # hardcoded_password_string
+    "S107",  # hardcoded_password_default
+    "S301",  # suspicious_pickle_usage
+    "S308",  # mark_safe
+    "S324",  # hashlib_insecure_hash_function
+    "S608",  # hardcoded_sql_expression
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 20
+
+[tool.ruff.lint.per-file-ignores]
+"*_test.py" = [
+    "S101",  # assert_used
+    "S106",  # hardcoded_password_funcarg
+    "S108",  # hardcoded_password_default
+    "S311",  # random
+]
+"test_*.py" = [
+    "S101",  # assert_used
+    "S106",  # hardcoded_password_funcarg
+    "S108",  # hardcoded_password_default
+    "S311",  # random
+]

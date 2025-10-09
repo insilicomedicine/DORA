@@ -1,0 +1,211 @@
+{
+  "general": {
+    "title": "TargetID Scores Description",
+    "score_range": "0 (lowest evidence/association) to 1 (highest evidence/association)",
+    "overall_description": "High values generally suggest that a gene is well‐embedded in networks, pathways, or regulatory systems associated with the disease, is backed by genetic or expression evidence, and/or is receiving considerable research and financial attention. Low values mean that the gene is not as strongly linked by the available data or has not been studied extensively. These descriptions help to interpret how each score might influence target identification and therapeutic potential."
+  },
+  "omics_scores": [
+    {
+      "name": "network",
+      "what_it_measures": "The degree and strength of direct connections (neighbors) in a protein–protein interaction (PPI) network with other genes that display significant differences (e.g., differential expression or methylation) in disease.",
+      "biological_interpretation": {
+        "high": "The target gene is located in a 'hot spot' where its nearby genes are heavily perturbed in the disease. This suggests a central role in the biological processes driving the condition.",
+        "low": "The target gene has few close neighbors showing disease-related changes, implying it may be peripheral or less functionally integrated."
+      }
+    },
+    {
+      "name": "bayes_gwas",
+      "what_it_measures": "The presence of the gene in network submodules enriched with genetic variation—such as single nucleotide polymorphisms (from GWAS) or cancer driver mutations.",
+      "biological_interpretation": {
+        "high": "The gene is embedded within clusters that contain many disease-associated mutations. This offers indirect genetic support that the gene could be involved in disease mechanisms.",
+        "low": "There is little propagation of mutation signals from neighboring genes to this target, reducing genetic evidence for its role."
+      }
+    },
+    {
+      "name": "bayes_submodules",
+      "what_it_measures": "Whether the target gene physically or functionally interacts with groups of genes already known to be implicated in the disease (using curated databases such as ClinVar or Open Targets).",
+      "biological_interpretation": {
+        "high": "The gene is well-connected to a set of disease-validated targets, strengthening the case for its involvement in similar pathways or regulatory mechanisms.",
+        "low": "The gene appears isolated from disease-specific clusters, lessening its prioritized role in disease biology."
+      }
+    },
+    {
+      "name": "inference",
+      "what_it_measures": "How strongly the gene is connected to disease-driving regulatory elements, particularly through transcription factors that modulate gene expression changes observed in the disease.",
+      "biological_interpretation": {
+        "high": "The gene is likely under the direct influence of disease-relevant transcription factors. This suggests that its modulation (or misregulation) could have downstream impacts on critical biological circuits.",
+        "low": "The gene demonstrates fewer links to key regulators, implying less direct participation in the dysregulated transcriptional networks."
+      }
+    },
+    {
+      "name": "knockin",
+      "what_it_measures": "The similarity between the gene’s overexpression (knock-in) profile in controlled cell line experiments and the disease gene expression signature.",
+      "biological_interpretation": {
+        "high": "Artificially boosting this gene in cell lines yields expression changes that closely mimic the disease condition; it could be a driver of the pathogenic process.",
+        "low": "The effects of overexpressing the gene do not correspond to disease signatures, suggesting it might not have a major impact on the disease state when upregulated."
+      }
+    },
+    {
+      "name": "knockout",
+      "what_it_measures": "How the gene’s knockout (or silencing) profile compares with the disease-associated expression signature.",
+      "biological_interpretation": {
+        "high": "Silencing this gene produces an expression profile that resembles the disease state, implying loss of its function might contribute to disease progression.",
+        "low": "Knocking out the gene does not replicate disease-like changes, meaning its absence may be less relevant in driving the disease process."
+      }
+    },
+    {
+      "name": "mutation",
+      "what_it_measures": "The burden or frequency of disease-linked mutations identified in the gene. Data sources include ClinVar, the GWAS catalog, and cancer mutation databases.",
+      "biological_interpretation": {
+        "high": "There is strong genetic evidence associating the gene with the disease. Variants and mutational events may directly impair gene function in a disease-specific manner.",
+        "low": "Few or no mutations have been consistently observed, lowering its genetic association."
+      }
+    },
+    {
+      "name": "pathway",
+      "what_it_measures": "The involvement of the gene in key disease-related signaling pathways, and its ability to influence multiple pathway cross-talks.",
+      "biological_interpretation": {
+        "high": "The gene acts like a 'hub' in critical pathways, meaning its activity can modulate several biological processes simultaneously. This could offer multiple points for therapeutic intervention.",
+        "low": "The gene is involved in only a limited set of pathways, suggesting a more narrow biological role."
+      }
+    },
+    {
+      "name": "ppi",
+      "what_it_measures": "The clustering and density of disease-related signals (such as differential expression and mutations) within the broader PPI network around the gene.",
+      "biological_interpretation": {
+        "high": "The gene is part of a densely interconnected community with robust disease signals, supporting its potential as a central mediator of pathological processes.",
+        "low": "The gene stands apart from enriched clusters, possibly reducing its impact on overall disease networks."
+      }
+    },
+    {
+      "name": "relevance",
+      "what_it_measures": "A composite score integrating external evidence (from databases like OMIM, Open Targets, etc.) that reflects clinical findings, drug target status, and advanced trial stages.",
+      "biological_interpretation": {
+        "high": "The gene is already recognized as an important target, perhaps even validated by ongoing clinical work or known drug efficacy.",
+        "low": "There is minimal external support linking the gene to the disease, which might lower its priority as a target."
+      }
+    },
+    {
+      "name": "transcriptomics",
+      "what_it_measures": "The magnitude and statistical robustness of differential gene expression in disease versus healthy samples. This includes the impact of fold-change and statistical significance.",
+      "biological_interpretation": {
+        "high": "The gene shows consistently strong differential expression in affected tissues; it could be a key indicator or effector in the disease state.",
+        "low": "The gene’s expression changes are minimal or inconsistent, suggesting a lesser role."
+      }
+    },
+    {
+      "name": "hetewalk",
+      "what_it_measures": "The proximity of the gene to a disease node within an integrated network that incorporates genes, pathways, and disease entities, calculated via random walk and embedding methods.",
+      "biological_interpretation": {
+        "high": "The gene is 'close' to the disease in a complex, multi-dimensional biological landscape, indicating a strong overall association with disease pathways.",
+        "low": "The gene appears more removed from the disease context, suggesting weaker overall connectivity."
+      }
+    },
+    {
+      "name": "matrixfact",
+      "what_it_measures": "Latent associations between the gene and the disease derived from decomposing the gene–disease interaction matrix into latent features (akin to recommendation system methods).",
+      "biological_interpretation": {
+        "high": "Hidden patterns support a strong link between the gene and the disease, even if direct associations are not apparent from conventional analyses.",
+        "low": "Little latent information is uncovered to support a connection."
+      }
+    }
+  ],
+  "text_based_scores": [
+    {
+      "name": "dl_burst",
+      "what_it_measures": "The likelihood that the gene will experience a surge in future research interest. This prediction is based on current textual trends drawn from literature, grants, patents, and clinical trial data.",
+      "biological_interpretation": {
+        "high": "The gene is forecasted to become a 'hot' target, indicating that emerging research may soon intensively explore its role in disease.",
+        "low": "There is no significant predicted increase in attention, suggesting it may remain a lower priority."
+      }
+    },
+    {
+      "name": "evidence_score",
+      "what_it_measures": "A combined metric that integrates both the measured attention (volume of publications, grants) and the trend (direction of research progress) over time.",
+      "biological_interpretation": {
+        "high": "The gene has not only been well-studied historically but is also gaining momentum—it has strong backing from multiple fronts.",
+        "low": "The overall evidence from research efforts is sparse or declining."
+      }
+    },
+    {
+      "name": "target_metric",
+      "what_it_measures": "The total magnitude of attention received by the gene as evidenced by mentions in scientific publications, grants, patents, and clinical trials.",
+      "biological_interpretation": {
+        "high": "The gene is prominently featured in the scientific literature, suggesting its recognized importance within the field.",
+        "low": "The gene is rarely mentioned, which might indicate it is underappreciated or less relevant."
+      }
+    },
+    {
+      "name": "trend",
+      "what_it_measures": "Changes in research attention for the gene over a recent five-year period, with values indicating whether focus is increasing, stable, or decreasing.",
+      "biological_interpretation": {
+        "high": "A recent surge in studies suggests the gene is becoming increasingly significant, making it an emerging target.",
+        "low": "A decline or lack of recent interest might signal that the gene is falling out of favor or that its research value is stable but not growing."
+      }
+    }
+  ],
+  "financial_scores": [
+    {
+      "name": "fund_per_pub",
+      "what_it_measures": "The average financial support (grant money) allocated per published study related to the gene.",
+      "biological_interpretation": {
+        "high": "Studies on this gene are receiving substantial funding per publication, which may reflect the community’s confidence in its importance.",
+        "low": "The gene’s studies receive relatively little funding on average, hinting it might not be seen as high-impact at the moment."
+      }
+    },
+    {
+      "name": "funding",
+      "what_it_measures": "The total historical grant money invested in research on the gene within the disease context.",
+      "biological_interpretation": {
+        "high": "There is robust financial backing, supporting the conclusion that the gene is of high interest and potential clinical relevance.",
+        "low": "Limited grant funding suggests that the gene may have received little priority in past funding rounds."
+      }
+    },
+    {
+      "name": "grant_size",
+      "what_it_measures": "The average size of individual grants given for research on the gene.",
+      "biological_interpretation": {
+        "high": "Larger grant sizes usually reflect high expectations, the complexity of the research, and strong confidence in the gene’s potential.",
+        "low": "Smaller average grants might indicate pilot studies or a cautious approach by funding agencies toward this target."
+      }
+    }
+  ],
+  "kol_scores": [
+    {
+      "name": "high_impact_total",
+      "what_it_measures": "A refined version of the attention metric that emphasizes publications and communications from highly reputable sources (e.g., high-impact journals and researchers with notable track records).",
+      "biological_interpretation": {
+        "high": "The gene is not only widely discussed but does so in top-quality forums, lending greater credibility to its purported role in disease biology.",
+        "low": "The gene might be mentioned, but not in venues or by authors that are recognized as authoritative in the field."
+      }
+    },
+    {
+      "name": "mean_hirsch",
+      "what_it_measures": "The average Hirsch index (a proxy for academic influence) of the researchers publishing work about the gene-disease association.",
+      "biological_interpretation": {
+        "high": "Research on this gene is conducted by established, influential scientists, which can increase confidence in the findings.",
+        "low": "The association may be predominantly explored by less-established groups, potentially warranting cautious interpretation."
+      }
+    },
+    {
+      "name": "mean_impact",
+      "what_it_measures": "The average impact factor of the journals where studies on this gene are published, weighted by publication volume.",
+      "biological_interpretation": {
+        "high": "The gene’s research is consistently disseminated in prestigious journals, suggesting high scientific merit and community interest.",
+        "low": "Studies might be published in journals with lower visibility or impact, which could reflect a lesser emphasis on this gene within leading research outlets."
+      }
+    }
+  ],
+  "notes": {
+    "usage_for_target_identification": [
+      "A gene with high scores across 'network', 'bayes_gwas', 'bayes_submodules', and 'ppi' is likely a central player in key networks and may influence multiple disease-related processes.",
+      "If 'inference' and 'transcriptomics' are high, the gene shows not only strong differential behavior (over- or under-expression) but also is likely governed by important regulatory circuits.",
+      "Strong 'mutation' and 'pathway' scores indicate that the gene is heavily involved in disease-related genetic changes and pathway perturbations.",
+      "High 'knockin' and 'knockout' scores add functional evidence—demonstrating that manipulating the gene (either increasing or silencing it) reproduces disease-like changes in experimental settings.",
+      "Elevated 'relevance', 'hetewalk', and 'matrixfact' scores further underscore the gene’s hidden and integrative associations with the disease in broader datasets.",
+      "Increasing 'dl_burst', 'evidence_score', 'target_metric', and 'trend' scores signal that emerging research is quickly converging on this target, while funding-based scores ('fund_per_pub', 'funding', 'grant_size') align with the community’s financial investment and faith in its potential.",
+      "High values for 'high_impact_total', 'mean_hirsch', and 'mean_impact' imply that the gene’s research is both reputable and high impact."
+    ],
+    "summary": "By considering this detailed scoring framework, biologists can prioritize genes that demonstrate converging bodies of evidence—ranging from molecular interactions and genetic mutations to functional expression, network positioning, and even financial and publication trends. This comprehensive evaluation aids in selecting targets that are not only central to the disease’s biology but are also validated by extensive, high-quality research, thereby guiding optimal therapeutic exploration."
+  }
+}
