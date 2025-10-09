@@ -1,0 +1,1370 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="DORA Documentation for developers and users.">
+      
+      
+      
+      
+        <link rel="prev" href="..">
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.16">
+    
+    
+      
+        <title>Template Configuration - Dora Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="green" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#dora-template-configuration" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Dora Documentation" class="md-header__button md-logo" aria-label="Dora Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Dora Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Template Configuration
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/insilicomedicine/DORA" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    DORA GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Dora Documentation" class="md-nav__button md-logo" aria-label="Dora Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Dora Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/insilicomedicine/DORA" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    DORA GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    User Manual
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../admin_manual.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Admin Manual
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Template Configuration
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Template Configuration
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-highlights" class="md-nav__link">
+    <span class="md-ellipsis">
+      💡 Configuration Highlights
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#glossary" class="md-nav__link">
+    <span class="md-ellipsis">
+      📚 Glossary
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mandatory-top-level-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔑 Mandatory Top-Level Keys
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#user-input-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      📝 User Input Object
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#section-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧩 Section Object
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sections-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧱 Sections Overview
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧱 Sections Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-title" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Title
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-abstract" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Abstract
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Introduction
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-main-text" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Main Text
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Conclusion
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shared-memory-and-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧠 Shared Memory and Dependencies
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧠 Shared Memory and Dependencies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-shared-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Shared Memory
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-depends-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Depends On
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-comparison-shared-memory-vs-depends-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Comparison: Shared Memory vs Depends On
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tool-selection-and-prompt-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔧 Tool Selection and Prompt Design
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔧 Tool Selection and Prompt Design">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prompt-placeholders" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prompt Placeholders
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#admin-tool-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Admin Tool Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation Rules
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-load-a-custom-template-to-admin-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      📥 How to Load a Custom Template to Admin Page
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validation-rules_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation Rules
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assign-tools-and-instructions-todo" class="md-nav__link">
+    <span class="md-ellipsis">
+      Assign Tools and Instructions [todo]
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-highlights" class="md-nav__link">
+    <span class="md-ellipsis">
+      💡 Configuration Highlights
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#glossary" class="md-nav__link">
+    <span class="md-ellipsis">
+      📚 Glossary
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mandatory-top-level-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔑 Mandatory Top-Level Keys
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#user-input-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      📝 User Input Object
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#section-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧩 Section Object
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sections-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧱 Sections Overview
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧱 Sections Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-title" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Title
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-abstract" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Abstract
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Introduction
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-main-text" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Main Text
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Conclusion
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shared-memory-and-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧠 Shared Memory and Dependencies
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧠 Shared Memory and Dependencies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-shared-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Shared Memory
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-depends-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Depends On
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-comparison-shared-memory-vs-depends-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Comparison: Shared Memory vs Depends On
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tool-selection-and-prompt-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔧 Tool Selection and Prompt Design
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔧 Tool Selection and Prompt Design">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prompt-placeholders" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prompt Placeholders
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#admin-tool-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Admin Tool Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation Rules
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-load-a-custom-template-to-admin-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      📥 How to Load a Custom Template to Admin Page
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validation-rules_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validation Rules
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assign-tools-and-instructions-todo" class="md-nav__link">
+    <span class="md-ellipsis">
+      Assign Tools and Instructions [todo]
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="dora-template-configuration">DORA Template Configuration</h1>
+<p>The DORA template configuration file (<code>.json</code>) defines the structure, behavior, and content generation logic of a document template. It is essential for guiding the DORA kernel through document creation, including user inputs, section structure, interdependencies, and tool integrations.</p>
+<h2 id="configuration-highlights">💡 Configuration Highlights</h2>
+<ul>
+<li><strong>Modularity</strong> – Each section is independently controlled with specific prompts and logic.</li>
+<li><strong>Tool Integration</strong> – Tools such as literature search and omics analysis enhance scientific quality.</li>
+<li><strong>Consistency</strong> – Shared memory enforces narrative coherence across sections.</li>
+<li><strong>Instruction Precision</strong> – Prompts ensure academic tone, structure, and non-redundant output.</li>
+</ul>
+<h2 id="glossary">📚 Glossary</h2>
+<table>
+<thead>
+<tr>
+<th><strong>Term</strong></th>
+<th><strong>Definition</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>slug</code></td>
+<td>A unique, machine-readable identifier for each section or input</td>
+</tr>
+<tr>
+<td><code>prompt</code></td>
+<td>Instructional text given to the AI model to guide content generation</td>
+</tr>
+<tr>
+<td><code>shared_memory</code></td>
+<td>Mechanism that allows one section to recall content from others implicitly</td>
+</tr>
+<tr>
+<td><code>depends_on</code></td>
+<td>Explicit dependency on other section outputs via placeholder references</td>
+</tr>
+<tr>
+<td><code>tool</code></td>
+<td>External AI agent (e.g., PubMed search) used for data augmentation</td>
+</tr>
+<tr>
+<td><code>plan_prompt</code></td>
+<td>Prompt to create an outline/structure before full text generation</td>
+</tr>
+<tr>
+<td><code>placeholder</code></td>
+<td>A marker within prompts replaced with user input, tool data, or other content at runtime</td>
+</tr>
+</tbody>
+</table>
+<h2 id="mandatory-top-level-keys">🔑 Mandatory Top-Level Keys</h2>
+<table>
+<thead>
+<tr>
+<th><strong>Field</strong></th>
+<th><strong>Description</strong></th>
+<th><strong>Data Type</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>template_type</code></td>
+<td>High-level category for grouping templates in the UI. Must match predefined values such as Original research, Business report, Literature review, etc.</td>
+<td>string</td>
+</tr>
+<tr>
+<td><code>template_description</code></td>
+<td>Brief explanation of the purpose and content of the template.</td>
+<td>string</td>
+</tr>
+<tr>
+<td><code>sections</code></td>
+<td>Defines the structure of the document using unique slugs as keys. Each value configures a section’s prompt, tools, and rules.</td>
+<td>object (dictionary)</td>
+</tr>
+<tr>
+<td><code>user_inputs</code></td>
+<td>Input fields the user must complete before document generation. Referenced in section prompts via [placeholder].</td>
+<td>array of objects</td>
+</tr>
+<tr>
+<td><code>shared_memory</code></td>
+<td>Describes memory flow between sections to ensure consistent context.</td>
+<td>object (dictionary)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="user-input-object">📝 User Input Object</h2>
+<p>These define the fields users complete prior to generation. They appear in the DORA interface under <strong>Document Settings</strong>.</p>
+<table>
+<thead>
+<tr>
+<th><strong>Key</strong></th>
+<th><strong>Type</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>slug</code></td>
+<td>string</td>
+<td>Machine-readable ID for the field (e.g., topic)</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td>string</td>
+<td>Input type. Currently supports "free_text_input"</td>
+</tr>
+<tr>
+<td><code>text_limit</code></td>
+<td>integer</td>
+<td>Maximum allowed characters</td>
+</tr>
+<tr>
+<td><code>display_name</code></td>
+<td>string</td>
+<td>User-facing label for the input field</td>
+</tr>
+<tr>
+<td><code>display_size</code></td>
+<td>string</td>
+<td>Field size in UI (e.g., "large", "small")</td>
+</tr>
+<tr>
+<td><code>default_value</code></td>
+<td>string</td>
+<td>Pre-filled value for user guidance</td>
+</tr>
+</tbody>
+</table>
+<p><em>Screenshot to be added</em></p>
+<h2 id="section-object">🧩 Section Object</h2>
+<p>Each section of the document is represented as an object in the <code>sections</code> dictionary.</p>
+<table>
+<thead>
+<tr>
+<th><strong>Key</strong></th>
+<th><strong>Type</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>slug</code></td>
+<td>string</td>
+<td>Unique ID (e.g., main_text)</td>
+</tr>
+<tr>
+<td><code>title</code></td>
+<td>string</td>
+<td>Title shown to the user</td>
+</tr>
+<tr>
+<td><code>prompt</code></td>
+<td>string</td>
+<td>Main instruction for text generation (uses placeholders)</td>
+</tr>
+<tr>
+<td><code>expected_output_instructions</code></td>
+<td>string</td>
+<td>Format and tone guidance for the output</td>
+</tr>
+<tr>
+<td><code>is_title</code></td>
+<td>boolean</td>
+<td>If true, marks this as the document title</td>
+</tr>
+<tr>
+<td><code>tools</code></td>
+<td>array</td>
+<td>List of tool slugs available for this section</td>
+</tr>
+<tr>
+<td><code>depends_on</code></td>
+<td>array</td>
+<td>List of section slugs this section depends on</td>
+</tr>
+<tr>
+<td><code>plan_prompt</code></td>
+<td>string</td>
+<td>Prompt to create an outline/plan (if needed)</td>
+</tr>
+<tr>
+<td><code>requires_plan</code></td>
+<td>boolean</td>
+<td>If true, section generation starts with a plan</td>
+</tr>
+<tr>
+<td><code>dynamic_template_subsection</code></td>
+<td>boolean</td>
+<td>Whether the section supports dynamic subsections</td>
+</tr>
+<tr>
+<td><code>display_on_plan_overview</code></td>
+<td>boolean</td>
+<td>Controls whether the section is shown in the research plan UI</td>
+</tr>
+<tr>
+<td><code>display_name_on_plan_overview</code></td>
+<td>string or null</td>
+<td>Optional custom display name in plan view</td>
+</tr>
+<tr>
+<td><code>custom_parts</code></td>
+<td>(empty)</td>
+<td>Reserved for injected interface values</td>
+</tr>
+<tr>
+<td><code>sub_sections</code></td>
+<td>array (unused)</td>
+<td>Reserved for future use</td>
+</tr>
+</tbody>
+</table>
+<h2 id="sections-overview">🧱 Sections Overview</h2>
+<p>Below are examples of common section configurations. You can explore the configuration example on the admin page.</p>
+<h3 id="1-title"><strong>1. Title</strong></h3>
+<table>
+<thead>
+<tr>
+<th><strong>Property</strong></th>
+<th><strong>Value</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>slug</code></td>
+<td><code>title</code></td>
+</tr>
+<tr>
+<td><code>prompt</code></td>
+<td>Generates a single-line title</td>
+</tr>
+<tr>
+<td><code>expected_output_instructions</code></td>
+<td>"One single-line title."</td>
+</tr>
+<tr>
+<td><code>is_title</code></td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>tools</code></td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-abstract"><strong>2. Abstract</strong></h3>
+<table>
+<thead>
+<tr>
+<th><strong>Property</strong></th>
+<th><strong>Value</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>slug</code></td>
+<td><code>abstract</code></td>
+</tr>
+<tr>
+<td><code>prompt</code></td>
+<td>Summarizes key points and significance</td>
+</tr>
+<tr>
+<td><code>expected_output_instructions</code></td>
+<td>150–250 word paragraph, no references</td>
+</tr>
+<tr>
+<td><code>tools</code></td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-introduction"><strong>3. Introduction</strong></h3>
+<table>
+<thead>
+<tr>
+<th><strong>Property</strong></th>
+<th><strong>Value</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tools</code></td>
+<td><code>pubmed_abstract_similarity_search_tool</code>, <code>web_search_tool</code></td>
+</tr>
+<tr>
+<td><code>prompt</code></td>
+<td>Explains the topic, narrowing focus and setting context</td>
+</tr>
+<tr>
+<td><code>expected_output_instructions</code></td>
+<td>300–400 words; no repetitive phrasing</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-main-text"><strong>4. Main Text</strong></h3>
+<table>
+<thead>
+<tr>
+<th><strong>Property</strong></th>
+<th><strong>Value</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>requires_plan</code></td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>dynamic_template_subsection</code></td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>tools</code></td>
+<td>All scientific tools enabled</td>
+</tr>
+<tr>
+<td><code>plan_prompt</code></td>
+<td>Outputs a 2-3 section structured outline</td>
+</tr>
+<tr>
+<td><code>prompt</code></td>
+<td>Executes the plan with depth and clarity</td>
+</tr>
+<tr>
+<td><code>expected_output_instructions</code></td>
+<td>~7000 words; one cohesive narrative, no duplication</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-conclusion"><strong>5. Conclusion</strong></h3>
+<table>
+<thead>
+<tr>
+<th><strong>Property</strong></th>
+<th><strong>Value</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tools</code></td>
+<td>Literature tools</td>
+</tr>
+<tr>
+<td><code>prompt</code></td>
+<td>Summarizes insights and future directions</td>
+</tr>
+<tr>
+<td><code>expected_output_instructions</code></td>
+<td>150–200 words; single paragraph, no repeated ideas</td>
+</tr>
+</tbody>
+</table>
+<h2 id="shared-memory-and-dependencies">🧠 Shared Memory and Dependencies</h2>
+<h3 id="1-shared-memory">1. Shared Memory</h3>
+<p>Defined in the <code>shared_memory</code> object:</p>
+<pre><code>{
+    &quot;title&quot;: [
+        &quot;main_text&quot;
+    ],
+    &quot;abstract&quot;: [
+        &quot;main_text&quot;
+    ],
+    &quot;main_text&quot;: [],
+    &quot;conclusion&quot;: [
+        &quot;main_text&quot;
+    ],
+    &quot;introduction&quot;: [
+        &quot;conclusion&quot;
+    ]
+}
+</code></pre>
+<ul>
+<li>Enables automatic context transfer between sections.</li>
+<li>Improves narrative flow and avoids content duplication.</li>
+<li><strong>Memory is unidirectional</strong>.</li>
+</ul>
+<h3 id="2-depends-on">2. Depends On</h3>
+<p>Used for deterministic content reuse from another section. Example:</p>
+<p><code>"depends_on": ["Network analysis"]</code></p>
+<p>Prompt must include a placeholder like:</p>
+<p><code>[Network analysis.results]</code></p>
+<p>This will inject the entire generated output from that section.</p>
+<h3 id="3-comparison-shared-memory-vs-depends-on">3. Comparison: Shared Memory vs Depends On</h3>
+<table>
+<thead>
+<tr>
+<th><strong>Aspect</strong></th>
+<th><strong>Shared Memory</strong></th>
+<th><strong>Depends On</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Purpose</td>
+<td>Recall context</td>
+<td>Insert section output verbatim</td>
+</tr>
+<tr>
+<td>Location in Config</td>
+<td>Top-level key</td>
+<td>Inside section object</td>
+</tr>
+<tr>
+<td>Placeholder Required</td>
+<td>❌ No</td>
+<td>✅ Yes ([SectionSlug.results])</td>
+</tr>
+<tr>
+<td>Best For</td>
+<td>Summaries, intros, conclusions</td>
+<td>Analytical reuse, citations, methods</td>
+</tr>
+<tr>
+<td>Output Control</td>
+<td>Implicit</td>
+<td>Explicit</td>
+</tr>
+<tr>
+<td>Prevents Duplication</td>
+<td>✅ Yes</td>
+<td>❌ Only if placeholders are used correctly</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tool-selection-and-prompt-design">🔧 Tool Selection and Prompt Design</h2>
+<p>DORA dynamically integrates scientific tools into the generation process.</p>
+<h3 id="prompt-placeholders"><strong>Prompt Placeholders</strong></h3>
+<p>Each prompt that supports tools should include:</p>
+<ul>
+<li><code>{activated_tools|&lt;group&gt;|names}</code> – Inserted list of active tool names</li>
+<li><code>{activated_tools|&lt;group&gt;|instructions}</code> – Combined instructions from active tools</li>
+</ul>
+<h3 id="example"><strong>Example</strong></h3>
+<p><strong>Prompt before substitution:</strong></p>
+<pre><code>Use {activated_tools|scientific_search_tools|names} when needed.
+
+{activated_tools|scientific_search_tools|instructions}
+</code></pre>
+<p><strong>After substitution (tools enabled):</strong></p>
+<pre><code>Use pubmed_abstract_similarity_search_tool and web_search_tool when needed.
+
+Instructions for pubmed_abstract_similarity_search_tool: ...
+
+Instructions for web_search_tool: ...
+</code></pre>
+<h3 id="admin-tool-configuration"><strong>Admin Tool Configuration</strong></h3>
+<p>Tool metadata is stored in:</p>
+<p><code>/admin/kernel/toolpromptinstructiongroup/</code></p>
+<p>Example:</p>
+<pre><code>{
+    &quot;name&quot;: &quot;scientific_search_tools&quot;,
+    &quot;tools&quot;: [
+        {
+            &quot;name&quot;: &quot;pubmed_abstract_similarity_search_tool&quot;,
+            &quot;instruction&quot;: &quot;...&quot;
+        },
+        {
+            &quot;name&quot;: &quot;web_search_tool&quot;,
+            &quot;instruction&quot;: &quot;...&quot;
+        }
+    ]
+}
+</code></pre>
+<h3 id="validation-rules"><strong>Validation Rules</strong></h3>
+<ul>
+<li><code>{...|names}</code> and <code>{...|instructions}</code> must appear together</li>
+<li>Tools listed must exist and include valid instructions</li>
+<li>At least one tool from the group must be selected if placeholders are used</li>
+</ul>
+<h2 id="how-to-load-a-custom-template-to-admin-page">📥 How to Load a Custom Template to Admin Page</h2>
+<p><em>[List of screenshots from OS version]</em></p>
+<h2 id="validation-rules_1">Validation Rules</h2>
+<ol>
+<li><strong>Slugs</strong> must be unique across user inputs and sections.</li>
+<li><strong>Only one</strong> section can be displayed on the plan overview.</li>
+<li><strong>Only one</strong> section can be marked as a title.</li>
+<li><strong>All dependencies</strong> (<code>depends_on</code>) must reference existing slugs.</li>
+<li><strong>Shared memory</strong> and dependency maps are merged and checked for conflicts.</li>
+<li><strong>Tool placeholders</strong> must be paired and backed by actual tools in the section.</li>
+<li><strong>Prompt placeholders</strong> must:</li>
+<li>Match valid user inputs or section dependencies.</li>
+<li>Avoid referencing keys not declared in <code>depends_on</code>.</li>
+</ol>
+<h2 id="assign-tools-and-instructions-todo">Assign Tools and Instructions [todo]</h2>
+<ul>
+<li>Navigate to <strong>Tool Prompt Instruction Group</strong></li>
+<li>Define instruction templates for AI tool integration</li>
+<li>These will be inserted dynamically into prompts during generation</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.50899def.min.js"></script>
+      
+    
+  </body>
+</html>
