@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 from base.mixins import GetSerializerClassMixin
 from base.pagination import CustomCursorPagination
-from base.storage.s3 import S3Storage
+from base.storage.blob import BlobStorage
 from bibliography.defs import CustomBibliographyFileS3Template, CustomBibliographyFileStatus
 from bibliography.models import Bibliography, CustomBibliographyFile
 from bibliography.serializers import (
@@ -82,6 +82,6 @@ class CustomBibliographyFileViewSet(
         return qs
 
     def perform_destroy(self, instance: CustomBibliographyFile) -> None:
-        S3Storage().remove(CustomBibliographyFileS3Template.format(pk=instance.pk))
+        BlobStorage().remove(CustomBibliographyFileS3Template.format(pk=instance.pk))
         instance.custombibliographychunkembeddings_set.all().delete()
         return super().perform_destroy(instance)
