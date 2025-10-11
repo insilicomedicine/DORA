@@ -5,8 +5,8 @@ from typing import List, Optional
 import sentry_sdk
 
 from documents.models import DiagramType, Document, MermaidDiagram, Section
+from kernel.diagrams.blob import MermaidBlob
 from kernel.diagrams.mermaid import generate_mermaid_diagrams
-from kernel.diagrams.s3 import MermaidS3
 from kernel.diagrams.utils import get_mermaid_image
 from kernel.services.telemetry import telemetry
 from users.models import AITokenUsageType
@@ -51,7 +51,7 @@ def generate_mermaid(document: Document, diagram_type: DiagramType) -> Optional[
 
     try:
         diagram_as_png = get_mermaid_image(mermaid_code)
-        MermaidS3().put_png(diagram.id, diagram_as_png)
+        MermaidBlob().put_png(diagram.id, diagram_as_png)
     except Exception as exp:
         logger.error(f"Error generating mermaid diagram PNG for document ID {document.id}: {exp}")
         sentry_sdk.capture_exception(exp)

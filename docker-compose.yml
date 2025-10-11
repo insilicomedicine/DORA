@@ -14,7 +14,10 @@ services:
       - main
 
   frontend:
-    image: insilicomed/dora-frontend:latest
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: dora-frontend-local
     container_name: dora_frontend
     restart: always
     networks:
@@ -23,10 +26,13 @@ services:
       - dora_backend
     expose:
       - "8000"
-    command: [ 'nginx', '-g', 'daemon off;' ]
+    command: ["nginx", "-g", "daemon off;"]
 
   dora_backend:
-    image: insilicomed/dora-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: dora-backend-local
     container_name: dora_backend
     command: /bin/sh -c "
       sleep 1
@@ -47,7 +53,7 @@ services:
       - static_files:/dora/static
 
   dora_worker:
-    image: insilicomed/dora-backend:latest
+    image: dora-backend-local
     container_name: dora_backend_worker
     restart: always
     networks:
@@ -66,7 +72,7 @@ services:
       "
 
   dora_backend_ws:
-    image: insilicomed/dora-backend:latest
+    image: dora-backend-local
     container_name: dora_backend_ws
     restart: always
     networks:
@@ -107,37 +113,13 @@ services:
     networks:
       - main
 
-  cloudserver:
-    image: zenko/cloudserver:latest-7.10.19
-    container_name: cloudserver
-    platform: linux/amd64
-    ports:
-      - "8089:8000"
-      - "9990:9990"
-      - "9991:9991"
-    volumes:
-      - s3data:/usr/src/app/localData
-      - s3metadata:/usr/src/app/localMetaData
-    environment:
-      - SCALITY_ACCESS_KEY_ID=test
-      - SCALITY_SECRET_ACCESS_KEY=test
-      - S3DATAPATH=/usr/src/app/localData
-      - S3METADATAPATH=/usr/src/app/localMetaData
-      - REMOTE_MANAGEMENT_DISABLE=1
-      - ENDPOINT=cloudserver
-    restart: unless-stopped
-    networks:
-      - main
+  # cloudserver (S3 emulator) removed after migration to Azure Blob Storage
 
 networks:
   main:
 
 volumes:
   pgdata:
-    driver: local
-  s3data:
-    driver: local
-  s3metadata:
     driver: local
   static_files:
     driver: local

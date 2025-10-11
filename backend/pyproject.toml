@@ -53,6 +53,7 @@ dependencies = [
     "uwsgi==2.0.25.1",
     "watchfiles==1.0.3",
     "wrapt-timeout-decorator==1.5.1",
+    "azure-storage-blob>=12.19.0"
 ]
 
 [dependency-groups]
