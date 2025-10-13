@@ -4,6 +4,17 @@ export enum TabType {
   WEBSEARCH = 'websearch'
 }
 
+const isOnlyOneAvailableSource = (systemInfo: SystemInfo): boolean => {
+  const { search_sources = [] } = systemInfo || {};
+  return (
+    search_sources.filter(
+      (source) =>
+        source.available &&
+        Object.values(TabType).includes(source.name as TabType)
+    ).length === 1
+  );
+};
+
 const getSystemConfig = (
   systemInfo: SystemInfo,
   keys: string[] = [TabType.PUBMED, TabType.PMC]
@@ -47,4 +58,8 @@ interface SearchSource {
 export interface SystemInfo {
   search_sources?: SearchSource[];
 }
-export { getSystemConfig, getInitialTabFromSystemInfo };
+export {
+  getSystemConfig,
+  getInitialTabFromSystemInfo,
+  isOnlyOneAvailableSource
+};

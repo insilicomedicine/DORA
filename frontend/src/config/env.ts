@@ -10,7 +10,7 @@ interface AppConfig {
   GOOGLE_CLIENT_ID: string;
   SENTRY_DSN: string;
   GA_MEASUREMENT_ID: string;
-  JIRA_SERVICE_DESK_KEY: string;
+  JIRA_WIDGET_KEY: string;
 }
 
 // Simplified function to get environment variables safely
@@ -37,7 +37,7 @@ export const appConfig: AppConfig = {
   GOOGLE_CLIENT_ID: getEnvVar('VITE_GOOGLE_CLIENT_ID', ''),
   SENTRY_DSN: getEnvVar('VITE_SENTRY_DSN', ''),
   GA_MEASUREMENT_ID: getEnvVar('VITE_GA_MEASUREMENT_ID', ''),
-  JIRA_SERVICE_DESK_KEY: getEnvVar('VITE_JIRA_SERVICE_DESK_KEY', '')
+  JIRA_WIDGET_KEY: getEnvVar('VITE_JIRA_WIDGET_KEY', '')
 };
 
 // Export individual values for convenience
@@ -50,5 +50,5 @@ export const {
   GOOGLE_CLIENT_ID,
   SENTRY_DSN,
   GA_MEASUREMENT_ID,
-  JIRA_SERVICE_DESK_KEY
+  JIRA_WIDGET_KEY
 } = appConfig;

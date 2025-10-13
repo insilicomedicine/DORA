@@ -3,6 +3,7 @@ import { Box, CircularProgress, Tab, Tabs } from '@mui/material';
 import { keyframes } from '@mui/system';
 import DoneRoundedIcon from '@mui/icons-material/DoneRounded';
 import {
+  isOnlyOneAvailableSource,
   getSystemConfig,
   getInitialTabFromSystemInfo,
   TabType
@@ -28,7 +29,7 @@ interface TabProviderProps {
 // TabProvider component to manage tab state
 export const TabProvider = memo(
   ({ children, initialTab, render }: TabProviderProps) => {
-    const { systemInfo } = useSystemStore();
+    const systemInfo = useSystemStore((state) => state.systemInfo);
 
     // Calculate the initial tab based on system info if not explicitly provided
     const calculatedInitialTab =
@@ -39,8 +40,9 @@ export const TabProvider = memo(
       tabValue,
       isEnabledTabContent: tabValue !== TabType.PUBMED,
       isPMCTabActive: tabValue === TabType.PMC,
-      isAutoSearch: defaultTabItems.find((tabItem) => tabItem.type === tabValue)
-        ?.isAutoSearch,
+      isAutoSearch:
+        defaultTabItems.find((tabItem) => tabItem.type === tabValue)
+          ?.isAutoSearch && !isOnlyOneAvailableSource(systemInfo),
       setTabValue
     };
 
@@ -64,7 +66,7 @@ const ReferenceSourcesTabs = ({
   onTabChange,
   isSearching
 }: ReferenceSourcesTabsProps) => {
-  const { systemInfo } = useSystemStore();
+  const systemInfo = useSystemStore((state) => state.systemInfo);
 
   // Use dynamic initial tab if tabValue is not provided
   const effectiveTabValue = tabValue ?? getInitialTabFromSystemInfo(systemInfo);
@@ -120,8 +122,7 @@ const ReferenceSourcesTabs = ({
   };
 
   // If there is only one tab, hide the tabs
-  const isOnlyOneTab =
-    processedTabItems.filter((tabItem) => !tabItem.hidden).length <= 1;
+  const isOnlyOneTab = isOnlyOneAvailableSource(systemInfo);
 
   return (
     <Box sx={{ borderBottom: '1px solid #eee' }}>
