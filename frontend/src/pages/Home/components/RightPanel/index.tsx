@@ -16,11 +16,14 @@ const RightPanel = () => {
   const { isRightPanelCollapsed } = useRightPanelStore();
   const {
     rightPanel: { activedComponentId = 'bibliography' } = {},
+    referenceLinkTarget,
     setRightPanel,
-    setNewBibliographyList
+    setNewBibliographyList,
+    setReferenceLinkTarget
   } = useEditorStore();
+
   const { documentData, isDocumentLoading = true } = useDocumentStore();
-  const { systemInfo } = useSystemStore();
+  const systemInfo = useSystemStore((state) => state.systemInfo);
 
   const handleChange = (_, newValue: string) => {
     setRightPanel({
@@ -70,9 +73,6 @@ const RightPanel = () => {
       citiationSettingsToolResources.includes(resource)
     );
 
-  const activedComponentIsTextEvidence =
-    activedComponentId === RightPanelComponentIds.textEvidence;
-
   return (
     <StyledBox isCollapsed={isRightPanelCollapsed}>
       <Stack
@@ -86,8 +86,8 @@ const RightPanel = () => {
         }}
       >
         <TextEvidenceSection
-          isActive={activedComponentIsTextEvidence}
-          handleChange={handleChange}
+          referenceLinkTarget={referenceLinkTarget}
+          setReferenceLinkTarget={setReferenceLinkTarget}
         />
         <TabsSection
           activedComponentId={activedComponentId}

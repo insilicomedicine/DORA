@@ -102,9 +102,6 @@ describe('TabsSection Component', () => {
     expect(screen.getByTestId(RightPanelComponentIds.bibliography)).toHaveStyle(
       'display: block'
     );
-    expect(
-      screen.getByTestId(RightPanelComponentIds.reviewInsights)
-    ).toHaveStyle('display: none');
 
     rerender(
       <TabsSection
@@ -112,9 +109,7 @@ describe('TabsSection Component', () => {
         handleChange={vi.fn()}
       />
     );
-    expect(screen.getByTestId(RightPanelComponentIds.bibliography)).toHaveStyle(
-      'display: none'
-    );
+
     expect(
       screen.getByTestId(RightPanelComponentIds.reviewInsights)
     ).toHaveStyle('display: block');

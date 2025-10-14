@@ -441,12 +441,11 @@ const Editor = () => {
     };
   }, [documentData?.status, documentData?.id]);
 
+  // Detect changes in the editor content, when removing/undoing the citation or reference links, reload bibliography
   useEffect(() => {
     if (documentData?.status !== 'completed' || isPolishing) return;
-    const editorContentContainer = document.getElementById(
-      'editorContentContainer'
-    );
-    if (!editorContentContainer) return;
+    const editorContent = document.getElementById('editorContent');
+    if (!editorContent) return;
 
     // Detect changes in the editor content
     const callback = (mutationsList: MutationRecord[]) => {
@@ -460,9 +459,11 @@ const Editor = () => {
       });
 
       //Detect when a new citation is removed reload bibliography
-      const hasCitation = allNodes.some((node: any) =>
-        node.classList?.contains('citation-placeholder')
-      );
+      const citationPlaceholderKey = 'citation-placeholder';
+      const hasCitation =
+        allNodes.some((node: any) =>
+          node.classList?.contains(citationPlaceholderKey)
+        ) || document.getElementById(citationPlaceholderKey);
 
       const hasRefLinks = allNodes.some(
         (node: any) =>
@@ -480,7 +481,7 @@ const Editor = () => {
     // Create a MutationObserver instance linked to the callback function
     const observer = new MutationObserver(callback);
     const config = { childList: true, subtree: true };
-    observer.observe(editorContentContainer, config);
+    observer.observe(editorContent, config);
 
     return () => {
       // Cleanup function to disconnect the observer when component unmounts

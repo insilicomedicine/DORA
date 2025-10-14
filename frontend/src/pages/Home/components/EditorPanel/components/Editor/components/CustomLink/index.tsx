@@ -9,8 +9,12 @@ import { ExtendedLink } from './linkWithCustomAttributes';
  * with custom attributes and behavior for the editor
  */
 const CustomLink = () => {
-  const { setReferenceLinkTarget, setRightPanel } = useEditorStore();
-  const { toggleCollapseRightPanel } = useRightPanelStore();
+  const setReferenceLinkTarget = useEditorStore(
+    (state) => state.setReferenceLinkTarget
+  );
+  const toggleCollapseRightPanel = useRightPanelStore(
+    (state) => state.toggleCollapseRightPanel
+  );
 
   return ExtendedLink.extend({
     renderHTML({ HTMLAttributes }) {
@@ -37,9 +41,6 @@ const CustomLink = () => {
             id: uniqueId,
             pmid,
             chunkid
-          });
-          setRightPanel({
-            activedComponentId: 'textevidence'
           });
           toggleCollapseRightPanel(false);
         });
