@@ -38,10 +38,47 @@ The easiest way to start the DORA services is through Docker Compose. Please mak
    ```
 
 4. Configure the required settings in `backend/.env`:
-   - The variable `OPENAI_API_KEY` is fundamental for all features.
-   - The variable `EMBEDDING_OPENAI_API_CONFIGS` is needed for features like Custom bibliography, Web search.
-   - If you use OpenAI API, please add your API key for the variable `OPENAI_API_KEY` and the `api_key` within `EMBEDDING_OPENAI_API_CONFIGS`.
-   - If you use azure or your private deployment of LLM, please specify the information in `OPENAI_API_TYPE` and configure the values for `OPENAI_API_BASE_URL`, `OPENAI_API_VERSION`, `OPENAI_API_DEPLOYMENT_NAME`, etc. accordingly.
+
+   DORA uses a BYOK (Bring Your Own Key) approach, meaning you need to provide your own API keys for AI services. Edit the `backend/.env` file with your API credentials:
+
+   - `OPENAI_API_KEY` - Your OpenAI API key (essential for document generation and all LLM-related features)
+
+   - `EMBEDDING_OPENAI_API_CONFIGS` - Needed for Custom bibliography and Web search functionality
+
+   Choose your AI provider:
+   
+   - Option A: Using OpenAI directly
+      ```bash
+      OPENAI_API_TYPE=openai
+      OPENAI_API_KEY=<your_openai_api_key>
+
+      EMBEDDING_OPENAI_API_CONFIGS=[{"model": "text-embedding-3-small", "api_key": "<your_openai_api_key>"}]
+      ```
+
+   - Option B: Using Azure OpenAI
+      ```bash
+      OPENAI_API_TYPE=azure
+      OPENAI_API_BASE_URL=https://<your_base_url>.openai.azure.com/
+      OPENAI_API_VERSION=2024-10-21
+      OPENAI_API_DEPLOYMENT_NAME=<your_deployment>
+      OPENAI_API_KEY=<your_azure_openai_key>
+
+      EMBEDDING_OPENAI_API_CONFIGS=[{"model": "text-embedding-3-small", "base_url": "https://<your_base_url>.openai.azure.com", "version": "2023-05-15", "deployment_name": "<your_deployment>", "api_key": "<your_api_key>"}]
+      ```
+
+   - Option C: Using another openai-compatible LLM deployment (self-hosted or third-party)
+      ```bash
+      OPENAI_API_TYPE=openai
+      OPENAI_API_BASE_URL=https://<your-private-llm-endpoint>
+      OPENAI_API_KEY=<your_private_api_key>
+      # Additional settings may be required depending on your deployment
+      # OPENAI_API_VERSION=<your_api_version> (if needed)
+      # OPENAI_API_DEPLOYMENT_NAME=<your_model_name> (if needed)
+
+      EMBEDDING_OPENAI_API_CONFIGS=[{"model": "text-embedding-3-small", "base_url": "https://<your-private-llm-endpoint>", "version": "<your_api_version>", "deployment_name": "<your_deployment>", "api_key": "<your_api_key>"}]
+      ```
+
+   > 💡 **New to AI APIs?** You can get an OpenAI API key at [platform.openai.com](https://platform.openai.com/api-keys). The free tier is sufficient for testing DORA's capabilities.
 
 5. You can use the example [docker-compose.yml](./docker-compose.yml), and modify it based on your own requirements. Start the services using Docker Compose:
    ```bash
@@ -96,8 +133,6 @@ The frontend uses a two-stage build process with a base image containing depende
 2. **Build the frontend application image**:
    ```bash
    docker build --build-arg BASE_IMAGE=dora-frontend-base:local \
-                --build-arg VITE_ENVIRONMENT=development \
-                --build-arg GENERATE_SOURCEMAP=true \
                 -t dora-frontend:local frontend/
    ```
 
@@ -141,7 +176,7 @@ You can customize the frontend build with these arguments:
 - `VITE_SENTRY_DSN`: Sentry DSN for error tracking (optional)
 - `SENTRY_AUTH_TOKEN`: Sentry auth token for uploading source maps (optional)
 - `VITE_GA_MEASUREMENT_ID`: Google Analytics measurement ID (optional)
-- `VITE_JIRA_SERVICE_DESK_KEY`: Jira service desk key (optional)
+- `VITE_JIRA_WIDGET_KEY`: Jira service desk key (optional)
 
 After building the images locally, make sure to update the `image:` references in your `docker-compose.yml` file to point to your local images instead of the pre-built ones.
 
