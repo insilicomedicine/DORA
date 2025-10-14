@@ -1,0 +1,60 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "eastus"
+    },
+    "vmName": {
+      "value": "dora-vm"
+    },
+    "vmSize": {
+      "value": "Standard_D8s_v5"
+    },
+    "dnsLabelPrefix": {
+      "value": "dora"
+    },
+    "adminUsername": {
+      "value": "azureuser"
+    },
+    "adminSshPublicKey": {
+      "value": "<ssh-ed25519 AAAA...>"
+    },
+    "acrLoginServer": {
+      "value": "<myregistry.azurecr.io>"
+    },
+    "acrTokenUsername": {
+      "value": ""
+    },
+    "acrTokenPassword": {
+      "value": "<replace-with-token-password>"
+    },
+    "secretKey": {
+      "value": "<replace-with-random-secret-key>"
+    },
+    "openAiApiKey": {
+      "value": ""
+    },
+    "openAiApiType": {
+      "value": "azure"
+    },
+    "openAiApiBaseUrl": {
+      "value": ""
+    },
+    "openAiApiVersion": {
+      "value": ""
+    },
+    "openAiDeploymentName": {
+      "value": ""
+    },
+    "dataDiskSizeGB": {
+      "value": 128
+    },
+    "storageContainerName": {
+      "value": "media"
+    },
+    "embeddingOpenAiApiConfigs": {
+      "value": "[{\"model\":\"text-embedding-3-small\",\"api_key\":\"<keyvalue>\",\"base_url\":\"<baseurl>\",\"version\":\"<version>\",\"deployment_name\":\"<deployment_name>\"}]"
+    }
+  }
+}

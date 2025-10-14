@@ -1,0 +1,286 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - gnupg
+  - jq
+  - lsb-release
+  - software-properties-common
+  - docker.io
+
+# Ensure directories needed by later write_files entries exist (write_files does not create nested dirs like /opt/dora/bin by default)
+bootcmd:
+  - [bash, -c, "mkdir -p /opt/dora/bin"]
+
+write_files:
+  - path: /opt/dora/docker-compose.yml
+    owner: root:root
+    permissions: "0644"
+    content: |
+      # docker compose specification (v2). 'version' key omitted (deprecated warning otherwise)
+      services:
+        nginx:
+          image: nginx:1.25-alpine
+          container_name: dora_nginx
+          restart: always
+          depends_on:
+            - dora_backend
+            - frontend
+          ports:
+            - "80:80"
+          volumes:
+            - /opt/dora/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+            - /mnt/dora-data/static:/var/www/static
+          networks:
+            - main
+
+        frontend:
+          image: __ACR_LOGIN_SERVER__/dora-frontend:latest
+          container_name: dora_frontend
+          restart: always
+          depends_on:
+            - dora_backend
+          expose:
+            - "8000"
+          networks:
+            - main
+
+        dora_backend:
+          image: __ACR_LOGIN_SERVER__/dora-backend:latest
+          container_name: dora_backend
+          restart: always
+          command: /bin/sh -c "sleep 5 && python /dora/manage.py collectstatic --noinput && python /dora/manage.py migrate --noinput && uwsgi --ini /dora/deploy/uwsgi.ini --enable-threads"
+          depends_on:
+            - dora_db
+            - dora_redis
+          expose:
+            - "8080"
+          env_file:
+            - /opt/dora/.env
+          volumes:
+            - /mnt/dora-data/static:/dora/static
+          networks:
+            - main
+
+        dora_worker:
+          image: __ACR_LOGIN_SERVER__/dora-backend:latest
+          container_name: dora_backend_worker
+          restart: always
+          env_file:
+            - /opt/dora/.env
+          depends_on:
+            - dora_db
+            - dora_redis
+          volumes:
+            - /mnt/dora-data/logs:/dora/logs
+          command: /bin/sh -c "sleep 10 && celery -A app worker -E -l INFO -c 4 --without-heartbeat --without-gossip --without-mingle & celery -A app worker -E -Q email -l INFO -c 1 --without-heartbeat --without-gossip --without-mingle"
+          networks:
+            - main
+
+        dora_backend_ws:
+          image: __ACR_LOGIN_SERVER__/dora-backend:latest
+          container_name: dora_backend_ws
+          restart: always
+          env_file:
+            - /opt/dora/.env
+          expose:
+            - "8081"
+          depends_on:
+            - dora_db
+            - dora_redis
+          command: /bin/sh -c "sleep 10 && daphne --bind 0.0.0.0 --port 8081 app.asgi:application"
+          networks:
+            - main
+
+        dora_db:
+          image: pgvector/pgvector:pg16
+          container_name: dora_db
+          restart: always
+          expose:
+            - "5432"
+          environment:
+            POSTGRES_USER: dora
+            POSTGRES_PASSWORD: dora
+            POSTGRES_DB: dora
+          volumes:
+            - /mnt/dora-data/postgres:/var/lib/postgresql/data
+          networks:
+            - main
+
+        dora_redis:
+          image: redis:7.2.3
+          container_name: dora_redis
+          restart: always
+          expose:
+            - "6379"
+          volumes:
+            - /mnt/dora-data/redis:/data
+          networks:
+            - main
+
+      networks:
+        main:
+          name: dora_network
+
+  - path: /opt/dora/nginx.conf
+    owner: root:root
+    permissions: "0644"
+    content: |
+      server {
+          listen 80;
+          server_name _;
+          charset utf-8;
+          server_tokens off;
+          client_max_body_size 0;
+
+          location ~* /static/(admin|img|drf_spectacular_sidecar|dist|users) {
+              root /var/www;
+          }
+
+          location / {
+              proxy_pass http://dora_frontend:8000;
+              proxy_http_version 1.1;
+              proxy_set_header Upgrade $http_upgrade;
+              proxy_set_header Connection "upgrade";
+          }
+
+          location ~* /(api|users|admin|openapi) {
+              include uwsgi_params;
+              uwsgi_pass dora_backend:8080;
+              uwsgi_read_timeout 3600;
+              uwsgi_send_timeout 3600;
+              uwsgi_param X-Real-IP $remote_addr;
+              uwsgi_param X-Forwarded-For $proxy_add_x_forwarded_for;
+              uwsgi_param X-Forwarded-Proto $http_x_forwarded_proto;
+          }
+
+          location /ws/ {
+              proxy_pass http://dora_backend_ws:8081;
+              proxy_http_version 1.1;
+              proxy_set_header Upgrade $http_upgrade;
+              proxy_set_header Connection "upgrade";
+          }
+
+          error_page 500 502 503 504 /50x.html;
+          location = /50x.html {
+              root /usr/share/nginx/html;
+              internal;
+          }
+      }
+
+  - path: /opt/dora/.env
+    owner: root:root
+    permissions: "0640"
+    content: |
+      DEBUG=False
+      SECRET_KEY=__SECRET_KEY__
+      DB_NAME=dora
+      DB_USER=dora
+      DB_PASSWORD=dora
+      DB_HOST=dora_db
+      DB_PORT=5432
+      DATABASE_URL=__DATABASE_URL__
+      REDIS_CONN_STR=redis://dora_redis:6379
+      REDIS_CACHE_DB=0
+      REDIS_BROKER_DB=1
+      REDIS_CHANNELS_DB=2
+      REDIS_CHUNKS_DB=3
+      REDIS_WEBCHUNKS_DB=4
+      OPENAI_API_MODEL=gpt-5
+      OPENAI_API_KEY=__OPENAI_API_KEY__
+      OPENAI_API_TIMEOUT=180
+      OPENAI_API_TYPE=__OPENAI_API_TYPE__
+      OPENAI_API_BASE_URL=__OPENAI_API_BASE_URL__
+      OPENAI_API_VERSION=__OPENAI_API_VERSION__
+      OPENAI_API_DEPLOYMENT_NAME=__OPENAI_API_DEPLOYMENT_NAME__
+      BACKUP_OPENAI_API_MODEL=gpt-4.1
+      BACKUP_OPENAI_API_KEY=
+      BACKUP_OPENAI_API_TYPE=openai
+      BACKUP_OPENAI_API_BASE_URL=
+      BACKUP_OPENAI_API_VERSION=
+      BACKUP_OPENAI_API_DEPLOYMENT_NAME=
+      MINI_OPENAI_API_MODEL=gpt-4o-mini
+      MINI_OPENAI_API_KEY=
+      MINI_OPENAI_API_TYPE=openai
+      MINI_OPENAI_API_BASE_URL=
+      MINI_OPENAI_API_VERSION=
+      MINI_OPENAI_API_DEPLOYMENT_NAME=
+      BACKUP_MINI_OPENAI_API_MODEL=gpt-4o-mini
+      BACKUP_MINI_OPENAI_API_KEY=
+      BACKUP_MINI_OPENAI_API_TYPE=openai
+      BACKUP_MINI_OPENAI_API_BASE_URL=
+      BACKUP_MINI_OPENAI_API_VERSION=
+      BACKUP_MINI_OPENAI_API_DEPLOYMENT_NAME=
+      EMBEDDING_OPENAI_API_CONFIGS=__EMBEDDING_OPENAI_API_CONFIGS__
+      GENERATION_RETRY_TIMES=1
+      TOOL_EXECUTION_COUNT_LIMIT=False
+      TOOL_MAX_EXECUTION_COUNT=20
+      AGENT_EXECUTOR_MAX_ITERATIONS=30
+      DORA_PUBLIC_URL=__PUBLIC_BASE_URL__
+      DORA_STATIC_URL=__PUBLIC_BASE_URL__
+      GENERATION_TASK_TIMEOUT=3600
+      CSRF_TRUSTED_ORIGINS=__PUBLIC_BASE_URL__
+      ALLOWED_HOSTS=*
+      MERMAID_SERVER_URL=https://mermaid.ink
+      SESSION_COOKIE_SECURE=False
+      USE_PHOENIX=False
+      SENTRY_DSN=
+      IS_BIBLIOGRAPHY_ENABLED=True
+      IS_WEBSEARCH_ENABLED=True
+      AZURE_STORAGE_CONNECTION_STRING=__AZURE_STORAGE_CONNECTION_STRING__
+      AZURE_STORAGE_CONTAINER=__AZURE_STORAGE_CONTAINER__
+      AZURE_STORAGE_LOCATION=
+      AZURE_STORAGE_ACCOUNT_NAME=__AZURE_STORAGE_ACCOUNT_NAME__
+      AZURE_STORAGE_ACCOUNT_KEY=
+      AZURE_STORAGE_AUTO_CREATE_CONTAINER=False
+      AZURE_STORAGE_DOMAIN_SUFFIX=blob.core.windows.net
+
+  - path: /opt/dora/bin/bootstrap.sh
+    owner: root:root
+    permissions: "0755"
+    content: |
+      #!/usr/bin/env bash
+      # Idempotent DORA bootstrap (v3) with docker compose auto-install + initial data load
+      set -euo pipefail
+      LOG_FILE="/var/log/dora-bootstrap.log"; mkdir -p /var/log; touch "$LOG_FILE"; chmod 644 "$LOG_FILE"; exec >>"$LOG_FILE" 2>&1
+      ACR_LOGIN_SERVER="__ACR_LOGIN_SERVER__"; ACR_TOKEN_USERNAME="__ACR_TOKEN_USERNAME__"; ACR_TOKEN_PASSWORD="__ACR_TOKEN_PASSWORD__"; ADMIN_USER="__ADMIN_USERNAME__"
+      DISK_DEVICE="/dev/disk/azure/scsi1/lun0"; DATA_MOUNT="/mnt/dora-data"; DOCKER_DIR="/opt/dora"; COMPOSE_FILE="/opt/dora/docker-compose.yml"
+      DEFAULT_USER_EMAIL="dora@test.com"; INITIAL_DATA_TIMEOUT=${INITIAL_DATA_MAX_WAIT_SECONDS:-600}
+      log(){ echo "$(date --iso-8601=seconds) $*"; }
+      if command -v docker >/dev/null 2>&1 && docker ps --format '{{.Names}}' | grep -q '^dora_nginx$'; then log "Stack already running"; exit 0; fi
+      ensure_docker(){ if ! command -v docker >/dev/null 2>&1; then log "Installing docker"; curl -fsSL https://get.docker.com | bash; fi; systemctl enable docker >/dev/null 2>&1 || true; systemctl start docker || true; }
+      ensure_compose(){ if docker compose version >/dev/null 2>&1; then return; fi; log "Installing compose"; if ! apt-get update -y || ! apt-get install -y docker-compose-plugin; then mkdir -p /usr/lib/docker/cli-plugins; curl -SL https://github.com/docker/compose/releases/download/v2.29.2/docker-compose-linux-x86_64 -o /usr/lib/docker/cli-plugins/docker-compose; chmod +x /usr/lib/docker/cli-plugins/docker-compose; fi; docker compose version || { log "Compose install failed"; exit 1; }; }
+      ensure_disk(){ if [ ! -b "$DISK_DEVICE" ]; then log "No data disk"; return 0; fi; if ! blkid "$DISK_DEVICE" >/dev/null 2>&1; then log "Formatting data disk"; mkfs.ext4 -F "$DISK_DEVICE"; fi; mkdir -p "$DATA_MOUNT"; if ! mountpoint -q "$DATA_MOUNT"; then mount "$DISK_DEVICE" "$DATA_MOUNT" || log "Mount failed"; fi; uuid=$(blkid -s UUID -o value "$DISK_DEVICE" || true); if [ -n "${uuid:-}" ] && ! grep -q "$uuid" /etc/fstab; then echo "UUID=$uuid $DATA_MOUNT ext4 defaults,nofail 0 2" >> /etc/fstab; fi; mkdir -p "$DATA_MOUNT/postgres" "$DATA_MOUNT/redis" "$DATA_MOUNT/logs" "$DATA_MOUNT/static"; chown 999:999 "$DATA_MOUNT/postgres" || true; chown 999:999 "$DATA_MOUNT/redis" || true; chmod 775 "$DATA_MOUNT/logs" "$DATA_MOUNT/static" || true; }
+      prepare_env(){ mkdir -p "$DOCKER_DIR" "$DOCKER_DIR/bin"; chmod 755 "$DOCKER_DIR" "$DOCKER_DIR/bin"; usermod -aG docker "$ADMIN_USER" || true; [ -f "$DOCKER_DIR/.env" ] && chown root:docker "$DOCKER_DIR/.env" && chmod 640 "$DOCKER_DIR/.env" || true; }
+      login_acr(){ log "ACR login"; docker login "$ACR_LOGIN_SERVER" -u "$ACR_TOKEN_USERNAME" -p "$ACR_TOKEN_PASSWORD" 1>/dev/null || { log "ACR login failed"; exit 1; }; }
+      start_stack(){ [ -f "$COMPOSE_FILE" ] || { log "Compose file missing"; exit 1; }; log "Pull images"; docker compose -f "$COMPOSE_FILE" pull || true; log "Up stack"; docker compose -f "$COMPOSE_FILE" up -d; docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}'; }
+      load_initial_data(){
+        if [ "${SKIP_INITIAL_DATA:-0}" = "1" ]; then log "[initdata] Skipping (SKIP_INITIAL_DATA=1)"; return 0; fi
+        log "[initdata] Waiting for backend (timeout ${INITIAL_DATA_TIMEOUT}s)"; local start=$(date +%s)
+        while true; do
+          if docker ps --format '{{.Names}}' | grep -q '^dora_backend$' && docker exec dora_backend sh -c "python -c 'import socket; s=socket.socket(); s.settimeout(1); r=s.connect_ex((\"127.0.0.1\",8080)); s.close(); exit(r)'" 2>/dev/null; then break; fi
+          now=$(date +%s); if [ $((now-start)) -ge $INITIAL_DATA_TIMEOUT ]; then log "[initdata] Timeout waiting backend"; return 0; fi; sleep 5
+        done
+        log "[initdata] Backend port ready. Waiting additional 10s for app initialization";
+        sleep 10
+        log "[initdata] Checking default user ${DEFAULT_USER_EMAIL}";
+        if docker compose -f "$COMPOSE_FILE" exec -T dora_backend python manage.py shell -c "from django.contrib.auth import get_user_model as g; import sys; sys.exit(0 if g().objects.filter(email='${DEFAULT_USER_EMAIL}').exists() else 1)"; then
+          log "[initdata] User exists. Skip load"; return 0; fi
+        log "[initdata] Loading initial_data.json";
+        if docker compose -f "$COMPOSE_FILE" exec -T dora_backend python manage.py loaddata initial_data.json; then log "[initdata] Load done"; else log "[initdata] Load failed"; return 1; fi
+        if docker compose -f "$COMPOSE_FILE" exec -T dora_backend python manage.py shell -c "from django.contrib.auth import get_user_model as g; import sys; sys.exit(0 if g().objects.filter(email='${DEFAULT_USER_EMAIL}').exists() else 1)"; then
+          log "[initdata] Verification success"; else log "[initdata] Verification failed"; fi
+      }
+      log "=== BOOTSTRAP BEGIN ==="; ensure_docker; ensure_compose; ensure_disk; prepare_env; login_acr; start_stack; load_initial_data; log "=== BOOTSTRAP END ===";
+
+runcmd:
+  - [bash, -c, "systemctl daemon-reload || true"]
+  - [bash, /opt/dora/bin/bootstrap.sh]
+  - [
+      bash,
+      -c,
+      'if [ ! -f /var/log/dora-bootstrap.log ]; then echo "[cloud-init] bootstrap log missing; check /var/log/cloud-init.log" >&2; fi',
+    ]
