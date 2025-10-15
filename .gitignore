@@ -201,3 +201,4 @@ yarn-error.log*
 
 # Bundle analysis
 bundle-analysis.html
+infra/azure/vm-prebuilt/parameters.json
