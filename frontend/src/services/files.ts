@@ -31,7 +31,6 @@ const postBibliographyFileName = async (
   try {
     const res = await axios.post('/bibliographies/custom_file/', { name });
     const uploadUrl = res.data.upload_url;
-    const uploadHeaders = res.data.upload_headers || {};
     const fileId = res.data.pk;
 
     let fileContents: ArrayBuffer | string | null | undefined;
@@ -47,8 +46,7 @@ const postBibliographyFileName = async (
 
     await axios.put(uploadUrl, fileContents, {
       headers: {
-        'Content-Type': currentFile.type || 'application/octet-stream',
-        ...uploadHeaders
+        'Content-Type': currentFile.type || 'application/octet-stream'
       }
     });
 

@@ -9,6 +9,7 @@ RESOURCE_GROUP_NAME="${RESOURCE_GROUP_NAME:-dora-rg}"
 LOCATION="${LOCATION:-eastus}"
 ACR_NAME="${ACR_NAME:-doraacr$RANDOM}"
 SKU="${SKU:-Standard}"
+TAG="${TAG:-latest}"
 
 # Color output (safe fallbacks if not a TTY)
 if [ -t 1 ]; then
@@ -39,6 +40,7 @@ Options:
 	-l, --location LOCATION     Azure region (env: LOCATION)
 	-n, --acr-name NAME         ACR name (env: ACR_NAME)
 	-s, --sku SKU               ACR SKU (env: SKU)
+	-t, --tag TAG               Image tag to use for pushed images (env: TAG, default: latest)
 	-h, --help                  Show help
 
 Environment variables are supported and take precedence over defaults.
@@ -63,6 +65,10 @@ while [[ $# -gt 0 ]]; do
 		;;
 	-s | --sku)
 		SKU="$2"
+		shift 2
+		;;
+	-t | --tag)
+		TAG="$2"
 		shift 2
 		;;
 	-h | --help)
@@ -157,7 +163,7 @@ main() {
 
 	for LOCAL_IMAGE in "${!IMAGES[@]}"; do
 		REMOTE_IMAGE="${IMAGES[$LOCAL_IMAGE]}"
-		TAGGED_IMAGE="$LOGIN_SERVER/${REMOTE_IMAGE}:latest"
+		TAGGED_IMAGE="$LOGIN_SERVER/${REMOTE_IMAGE}:$TAG"
 		print_info "  Tagging: $LOCAL_IMAGE -> $TAGGED_IMAGE"
 		docker tag "$LOCAL_IMAGE" "$TAGGED_IMAGE"
 	done
@@ -165,7 +171,7 @@ main() {
 
 	for LOCAL_IMAGE in "${!IMAGES[@]}"; do
 		REMOTE_IMAGE="${IMAGES[$LOCAL_IMAGE]}"
-		TAGGED_IMAGE="$LOGIN_SERVER/${REMOTE_IMAGE}:latest"
+		TAGGED_IMAGE="$LOGIN_SERVER/${REMOTE_IMAGE}:$TAG"
 		print_info "  Pushing: $TAGGED_IMAGE"
 		docker push "$TAGGED_IMAGE"
 		print_success "  ✓ Pushed: $REMOTE_IMAGE"
@@ -186,12 +192,12 @@ main() {
 
 	print_warning "\nNext steps:"
 	print_info "1. Update docker-compose.yml image references to use:"
-	print_info "   - $LOGIN_SERVER/dora-frontend:latest"
-	print_info "   - $LOGIN_SERVER/dora-backend:latest"
+	print_info "   - $LOGIN_SERVER/dora-frontend:$TAG"
+	print_info "   - $LOGIN_SERVER/dora-backend:$TAG"
 
 	print_info "\n2. To pull images as an authorized user:"
 	print_info "   az acr login --name $ACR_NAME"
-	print_info "   docker pull $LOGIN_SERVER/dora-frontend:latest"
+	print_info "   docker pull $LOGIN_SERVER/dora-frontend:$TAG"
 }
 
 trap 'print_error "\n❌ Script failed"; exit 1' ERR

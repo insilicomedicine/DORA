@@ -6,13 +6,13 @@
       "value": "eastus"
     },
     "vmName": {
-      "value": "dora-vm"
+      "value": "dora-s3proxy-vm"
     },
     "vmSize": {
       "value": "Standard_D8s_v5"
     },
     "dnsLabelPrefix": {
-      "value": "dora"
+      "value": "dora-s3proxy"
     },
     "adminUsername": {
       "value": "azureuser"

@@ -38,7 +38,7 @@ write_files:
             - main
 
         frontend:
-          image: __ACR_LOGIN_SERVER__/dora-frontend:latest
+          image: __ACR_LOGIN_SERVER__/dora-frontend:s3proxy
           container_name: dora_frontend
           restart: always
           depends_on:
@@ -49,7 +49,7 @@ write_files:
             - main
 
         dora_backend:
-          image: __ACR_LOGIN_SERVER__/dora-backend:latest
+          image: __ACR_LOGIN_SERVER__/dora-backend:s3proxy
           container_name: dora_backend
           restart: always
           command: /bin/sh -c "sleep 5 && python /dora/manage.py collectstatic --noinput && python /dora/manage.py migrate --noinput && uwsgi --ini /dora/deploy/uwsgi.ini --enable-threads"
@@ -66,7 +66,7 @@ write_files:
             - main
 
         dora_worker:
-          image: __ACR_LOGIN_SERVER__/dora-backend:latest
+          image: __ACR_LOGIN_SERVER__/dora-backend:s3proxy
           container_name: dora_backend_worker
           restart: always
           env_file:
@@ -81,7 +81,7 @@ write_files:
             - main
 
         dora_backend_ws:
-          image: __ACR_LOGIN_SERVER__/dora-backend:latest
+          image: __ACR_LOGIN_SERVER__/dora-backend:s3proxy
           container_name: dora_backend_ws
           restart: always
           env_file:
@@ -118,6 +118,24 @@ write_files:
             - "6379"
           volumes:
             - /mnt/dora-data/redis:/data
+          networks:
+            - main
+
+        s3proxy:
+          image: andrewgaul/s3proxy:latest
+          container_name: s3proxy
+          restart: unless-stopped
+          expose:
+            - "80"
+          environment:
+            JCLOUDS_PROVIDER: "azureblob"
+            JCLOUDS_AZUREBLOB_AUTH: "azureKey"
+            JCLOUDS_ENDPOINT: "__AZURE_STORAGE_ACCOUNT_URL__"
+            JCLOUDS_IDENTITY: "__AZURE_STORAGE_ACCOUNT_NAME__"
+            JCLOUDS_CREDENTIAL: "__AZURE_STORAGE_ACCOUNT_KEY__"
+            S3PROXY_AUTHORIZATION: "aws-v2-or-v4"
+            S3PROXY_IDENTITY: "__S3PROXY_IDENTITY__"
+            S3PROXY_CREDENTIAL: "__S3PROXY_CREDENTIAL__"
           networks:
             - main
 
@@ -162,6 +180,17 @@ write_files:
               proxy_http_version 1.1;
               proxy_set_header Upgrade $http_upgrade;
               proxy_set_header Connection "upgrade";
+          }
+
+          location /s3/ {
+              rewrite ^/s3/(.*) /$1 break;
+              proxy_pass http://s3proxy:80;
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              proxy_set_header Content-Type "";
+              proxy_set_header Content-MD5 "";
           }
 
           error_page 500 502 503 504 /50x.html;
@@ -230,13 +259,40 @@ write_files:
       SENTRY_DSN=
       IS_BIBLIOGRAPHY_ENABLED=True
       IS_WEBSEARCH_ENABLED=True
-      AZURE_STORAGE_CONNECTION_STRING=__AZURE_STORAGE_CONNECTION_STRING__
-      AZURE_STORAGE_CONTAINER=__AZURE_STORAGE_CONTAINER__
-      AZURE_STORAGE_LOCATION=
-      AZURE_STORAGE_ACCOUNT_NAME=__AZURE_STORAGE_ACCOUNT_NAME__
-      AZURE_STORAGE_ACCOUNT_KEY=
-      AZURE_STORAGE_AUTO_CREATE_CONTAINER=False
-      AZURE_STORAGE_DOMAIN_SUFFIX=blob.core.windows.net
+      AWS_ACCESS_KEY_ID=__S3PROXY_IDENTITY__
+      AWS_SECRET_ACCESS_KEY=__S3PROXY_CREDENTIAL__
+      S3_ENDPOINT_URL=http://s3proxy:80
+      AWS_STORAGE_BUCKET=__AZURE_STORAGE_CONTAINER__
+      AWS_STORAGE_REGION=us-east-1
+      AWS_SES_REGION_NAME=
+      AWS_SES_REGION_ENDPOINT=
+      FROM_EMAIL=
+      EDITION=standalone
+      TEST_RUN=False
+      ENVIRONMENT=production
+      MAXIMUM_CONCURRENT_DOCUMENTS_PER_USER=5
+      STRIPE_API_PUBLISHABLE_KEY=
+      STRIPE_API_SECRET_KEY=
+      STRIPE_WEBHOOK_SECRET=
+      STRIPE_PRICING_TABLE_ID=
+      STRIPE_CUSTOMER_PORTAL_RETURN_URL=
+      HUGGINFACE_API=
+      HUGGINFACE_AUTHORIZATION_TOKEN=
+      PHARMACOGNITIVE_API_URL=
+      PHARMACOGNITIVE_API_KEY=
+      PHARMACOGNITIVE_API_V2_TOKEN=
+      PHARMACOGNITIVE_CACHING_ENABLED=False
+      PHARMACOGNITIVE_CACHING_TIME=
+      PHARMACOGNITIVE_CONTEXT_SEARCH_MODE_ENABLED=False
+      PHARMACOGNITIVE_SYNONYMS_SEARCH_MODE_ENABLED=False
+      PHARMACOGNITIVE_FIX_BERT_MARKUP=
+      PHARMACOGNITIVE_MAX_AVAILABLE_PUBLICATIONS=
+      PHARMACOGNITIVE_TEXT_SCORES_VERSION=
+      PC_API_SECONDARY_KEY=
+      PC_API_DDC_ENDPOINT_URL=
+      PC_API_SECONDARY_CACHING_ENABLED=
+      PC_API_SECONDARY_CACHING_TIME=
+      SOCIALACCOUNT_PROVIDERS={}
 
   - path: /opt/dora/bin/bootstrap.sh
     owner: root:root

@@ -12,7 +12,7 @@ from documents.document_export.defs import (
     PUBMED_URL_PATTERN,
     UNKNOWN_AUTHOR_NAME,
 )
-from kernel.diagrams.blob import MermaidBlob
+from kernel.diagrams.s3 import MermaidS3
 
 if TYPE_CHECKING:
     from documents.models import Document
@@ -127,7 +127,7 @@ def get_mermaid_image_stream_and_size(
     if not document.mermaid_diagram:
         return None, None
 
-    image_data = MermaidBlob().get_png(document.mermaid_diagram.pk)
+    image_data = MermaidS3().get_png(document.mermaid_diagram.pk)
     if not image_data:
         return None, None
 

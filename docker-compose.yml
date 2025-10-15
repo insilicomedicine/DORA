@@ -113,13 +113,56 @@ services:
     networks:
       - main
 
-  # cloudserver (S3 emulator) removed after migration to Azure Blob Storage
+  s3proxy:
+    image: andrewgaul/s3proxy:latest
+    expose:
+      - "80"
+    environment:
+      JCLOUDS_PROVIDER: "azureblob"
+      JCLOUDS_AZUREBLOB_AUTH: "azureKey"
+      JCLOUDS_ENDPOINT: "${AZURE_STORAGE_ACCOUNT_URL}"
+      JCLOUDS_IDENTITY: "${AZURE_STORAGE_ACCOUNT_NAME}"
+      JCLOUDS_CREDENTIAL: "${AZURE_STORAGE_ACCOUNT_KEY}"
+      S3PROXY_AUTHORIZATION: "aws-v2-or-v4"
+      S3PROXY_IDENTITY: "${S3PROXY_IDENTITY}"
+      S3PROXY_CREDENTIAL: "${S3PROXY_CREDENTIAL}"
+      # LOG_LEVEL: "trace"
+      # JCLOUDS_LOG_LEVEL: "trace"
+    restart: unless-stopped
+    networks:
+      - main
+
+  cloudserver:
+    image: zenko/cloudserver:latest-7.10.19
+    container_name: cloudserver
+    platform: linux/amd64
+    ports:
+      - "8089:8000"
+      - "9990:9990"
+      - "9991:9991"
+    volumes:
+      - s3data:/usr/src/app/localData
+      - s3metadata:/usr/src/app/localMetaData
+    environment:
+      - SCALITY_ACCESS_KEY_ID=${SCALITY_ACCESS_KEY_ID}
+      - SCALITY_SECRET_ACCESS_KEY=${SCALITY_SECRET_ACCESS_KEY}
+      - S3DATAPATH=/usr/src/app/localData
+      - S3METADATAPATH=/usr/src/app/localMetaData
+      - REMOTE_MANAGEMENT_DISABLE=1
+      - ENDPOINT=cloudserver
+    restart: unless-stopped
+    networks:
+      - main
 
 networks:
   main:
 
 volumes:
   pgdata:
+    driver: local
+  s3data:
+    driver: local
+  s3metadata:
     driver: local
   static_files:
     driver: local

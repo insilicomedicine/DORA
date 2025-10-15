@@ -10,7 +10,7 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 RESOURCE_GROUP=""
 TEMPLATE_NAME=""
-TEMPLATE_VERSION="1.0.0"
+TEMPLATE_VERSION="2.0.0"
 LOCATION=""
 SUBSCRIPTION_ID=""
 TEMPLATE_FILE="infra/azure/vm-prebuilt/deploy.bicep"

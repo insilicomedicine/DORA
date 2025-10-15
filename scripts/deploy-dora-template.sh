@@ -7,7 +7,7 @@ PARAM_FILE="$REPO_ROOT/infra/azure/vm-prebuilt/parameters.json"
 SUBSCRIPTION_ID="b3696a0f-d219-4418-8b63-58f61e2dc39f"
 TARGET_RG="RG-IT-DORA-NPD"
 TEMPLATE_SPEC_NAME="doraVMPrebuilt"
-TEMPLATE_SPEC_VERSION="1.0.0"
+TEMPLATE_SPEC_VERSION="2.0.0"
 
 # Prevent MSYS from rewriting resource IDs that start with /
 PARAM_ARG="@${PARAM_FILE}"

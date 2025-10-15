@@ -60,6 +60,13 @@ param dataDiskSizeGB int = 128
 @description('Blob container name used by the application for storing uploads and exports.')
 param storageContainerName string = 'media'
 
+@description('S3Proxy access key ID (username for S3 API authentication).')
+param s3proxyIdentity string = 'dora-s3-access'
+
+@secure()
+@description('S3Proxy secret access key (password for S3 API authentication).')
+param s3proxyCredential string
+
 var vnetName = '${vmName}-vnet'
 var subnetName = '${vmName}-subnet'
 var nsgName = '${vmName}-nsg'
@@ -74,6 +81,7 @@ var tags = {
 
 var effectiveStorageContainerName = empty(storageContainerName) ? 'media' : toLower(storageContainerName)
 var databaseUrl = 'postgresql://dora:dora@dora_db:5432/dora'
+var azureStorageAccountUrl = 'https://${storageAccountName}.blob.${environment().suffixes.storage}'
 // Extracted registry name no longer required (token auth uses full login server directly)
 
 var cloudInitTemplate = loadTextContent('cloud-init.yaml')
@@ -257,10 +265,13 @@ var storageConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${stor
 
 var cloudInitWithAcr = replace(cloudInitTemplate, '__ACR_LOGIN_SERVER__', acrLoginServer)
 var cloudInitWithSecret = replace(cloudInitWithAcr, '__SECRET_KEY__', secretKey)
-var cloudInitWithStorage = replace(cloudInitWithSecret, '__AZURE_STORAGE_CONNECTION_STRING__', storageConnectionString)
-var cloudInitWithStorageName = replace(cloudInitWithStorage, '__AZURE_STORAGE_ACCOUNT_NAME__', storageAccountName)
-var cloudInitWithContainer = replace(cloudInitWithStorageName, '__AZURE_STORAGE_CONTAINER__', effectiveStorageContainerName)
-var cloudInitWithOpenAiKey = replace(cloudInitWithContainer, '__OPENAI_API_KEY__', openAiApiKey)
+var cloudInitWithStorageUrl = replace(cloudInitWithSecret, '__AZURE_STORAGE_ACCOUNT_URL__', azureStorageAccountUrl)
+var cloudInitWithStorageName = replace(cloudInitWithStorageUrl, '__AZURE_STORAGE_ACCOUNT_NAME__', storageAccountName)
+var cloudInitWithStorageKey = replace(cloudInitWithStorageName, '__AZURE_STORAGE_ACCOUNT_KEY__', storageAccountKey)
+var cloudInitWithContainer = replace(cloudInitWithStorageKey, '__AZURE_STORAGE_CONTAINER__', effectiveStorageContainerName)
+var cloudInitWithS3Identity = replace(cloudInitWithContainer, '__S3PROXY_IDENTITY__', s3proxyIdentity)
+var cloudInitWithS3Credential = replace(cloudInitWithS3Identity, '__S3PROXY_CREDENTIAL__', s3proxyCredential)
+var cloudInitWithOpenAiKey = replace(cloudInitWithS3Credential, '__OPENAI_API_KEY__', openAiApiKey)
 var cloudInitWithOpenAiType = replace(cloudInitWithOpenAiKey, '__OPENAI_API_TYPE__', openAiApiType)
 var cloudInitWithOpenAiBase = replace(cloudInitWithOpenAiType, '__OPENAI_API_BASE_URL__', openAiApiBaseUrl)
 var cloudInitWithOpenAiVersion = replace(cloudInitWithOpenAiBase, '__OPENAI_API_VERSION__', openAiApiVersion)
