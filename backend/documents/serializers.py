@@ -458,7 +458,10 @@ class FeedbackSerializer(serializers.Serializer):
         if attrs.get("like") is None and not attrs.get("detail"):
             raise serializers.ValidationError("Either 'like' or 'detail' is required.")
 
-        if not Document.objects.filter(id=attrs["document_id"]).exists():
+        user = self.context["request"].user
+        document = Document.objects.filter(id=attrs["document_id"]).first()
+
+        if not document or document.created_by != user:
             raise serializers.ValidationError("Document not found.")
 
         if attrs.get("section_id") and not Section.objects.filter(id=attrs["section_id"]).exists():
