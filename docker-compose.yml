@@ -2,6 +2,7 @@ services:
   nginx:
     image: nginx:1.25-alpine
     container_name: dora_nginx
+    restart: always
     ports:
       - "80:80"
     volumes:
@@ -28,6 +29,7 @@ services:
   dora_backend:
     image: insilicomed/dora-backend:latest
     container_name: dora_backend
+    restart: always
     command: /bin/sh -c "
       sleep 1
       && python /dora/manage.py collectstatic --noinput
@@ -86,6 +88,7 @@ services:
   dora_db:
     image: pgvector/pgvector:pg16
     container_name: dora_db
+    restart: always
     expose:
       - "5432"
     environment:
@@ -104,12 +107,15 @@ services:
     hostname: redis
     expose:
       - "6379"
+    volumes:
+      - redisdata:/data
     networks:
       - main
 
   cloudserver:
     image: zenko/cloudserver:latest-7.10.19
     container_name: cloudserver
+    restart: always
     platform: linux/amd64
     ports:
       - "8089:8000"
@@ -117,15 +123,14 @@ services:
       - "9991:9991"
     volumes:
       - s3data:/usr/src/app/localData
-      - s3metadata:/usr/src/app/localMetaData
+      - s3metadata:/usr/src/app/localMetadata
     environment:
       - SCALITY_ACCESS_KEY_ID=test
       - SCALITY_SECRET_ACCESS_KEY=test
       - S3DATAPATH=/usr/src/app/localData
-      - S3METADATAPATH=/usr/src/app/localMetaData
+      - S3METADATAPATH=/usr/src/app/localMetadata
       - REMOTE_MANAGEMENT_DISABLE=1
       - ENDPOINT=cloudserver
-    restart: unless-stopped
     networks:
       - main
 
@@ -140,4 +145,6 @@ volumes:
   s3metadata:
     driver: local
   static_files:
+    driver: local
+  redisdata:
     driver: local

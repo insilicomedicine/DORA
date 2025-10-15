@@ -1,5 +1,6 @@
 from typing import Any, Dict, Tuple
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -117,6 +118,10 @@ class Bibliography(BaseModel):
             bibliography, _ = cls.get_or_create(web_bibliography)
             return (str(bibliography.id), str(new_chunk_id if not created else chunk_id))
 
+        # Check if PHARMACOGNITIVE_API_URL is configured to decide
+        # if we need to collect metadata by this request
+        should_update_metadata = bool(settings.PHARMACOGNITIVE_API_URL)
+
         pubmed_ids_map = {}
         pmc_ids_map = {}
         doi_ids_map = {}
@@ -128,15 +133,17 @@ class Bibliography(BaseModel):
                 chunk_id, data, hashed_link
             )
 
-            source_type, source_id, _ = extract_source_identifier_from_url(data["source"])
-            if source_type == PublicationTypes.PUBMED.name:
-                pubmed_ids_map[source_id] = hashed_link
-            elif source_type == PublicationTypes.PMC.name:
-                pmc_ids_map[source_id] = hashed_link
-            elif source_type == PublicationTypes.DOI.name:
-                doi_ids_map[source_id] = hashed_link
+            if should_update_metadata:
+                source_type, source_id, _ = extract_source_identifier_from_url(data["source"])
+                if source_type == PublicationTypes.PUBMED.name:
+                    pubmed_ids_map[source_id] = hashed_link
+                elif source_type == PublicationTypes.PMC.name:
+                    pmc_ids_map[source_id] = hashed_link
+                elif source_type == PublicationTypes.DOI.name:
+                    doi_ids_map[source_id] = hashed_link
 
-        WebBibliography.update_web_bib_metadata(pubmed_ids_map, pmc_ids_map, doi_ids_map)
+        if should_update_metadata:
+            WebBibliography.update_web_bib_metadata(pubmed_ids_map, pmc_ids_map, doi_ids_map)
         return old_new_bib_chunk_id_mapping
 
 
@@ -206,6 +213,10 @@ class WebBibliography(BaseModel):
     ) -> None:
         if not any([pubmed_ids_map, pmc_ids_map, doi_ids_map]):
             return
+
+        if not settings.PHARMACOGNITIVE_API_URL:
+            return
+
         pubmed_ids = list(pubmed_ids_map.keys())
         pmc_ids = list(pmc_ids_map.keys())
         doi_ids = list(doi_ids_map.keys())

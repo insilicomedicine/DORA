@@ -299,6 +299,9 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_ATTEMPTS": {"login": {5: "1m", 6: "5m", 7: "10m", 8: "30m", 9: "60m"}},
 }
 
+if not DEBUG:
+    REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = ("rest_framework.renderers.JSONRenderer",)
+
 SPECTACULAR_SETTINGS = {
     "TITLE": "DORA API",
     "VERSION": "1.0.0",

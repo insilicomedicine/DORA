@@ -41,9 +41,6 @@ const TabsSection = ({
 
   const { status: reviewInsightsStatus } = useReviewInsightsStore();
 
-  const isTextEvidenceActived =
-    activedComponentId === RightPanelComponentIds.textEvidence;
-
   const bibliographyIsActived =
     activedComponentId === RightPanelComponentIds.bibliography;
 
@@ -55,8 +52,7 @@ const TabsSection = ({
       id="rightPanelAccordions"
       data-testid="rightPanelAccordions"
       flex={1}
-      sx={{ pl: 1.5, overflow: 'auto', mt: 1 }}
-      display={isTextEvidenceActived ? 'none' : 'flex'}
+      sx={{ pl: 1.5, overflow: 'hidden', mt: 1 }}
       flexDirection="column"
     >
       <Box display="flex" alignItems="center" justifyContent="space-between">
@@ -77,10 +73,6 @@ const TabsSection = ({
           onChange={handleChange}
         >
           {TABS.map(({ title, id }) => {
-            if (isTextEvidenceActived) {
-              return null;
-            }
-
             const reviewTabIsDisabled =
               documentIsInProgress &&
               id === RightPanelComponentIds.reviewInsights;
@@ -133,13 +125,16 @@ const TabsSection = ({
         />
       </Box>
 
-      <Box sx={{ overflow: 'auto', height: '100%' }}>
+      <Box sx={{ overflow: 'auto', height: 'calc(100% - 50px)' }}>
         {TABS.map(({ Component, id }) => (
           <Box
-            key={id}
             sx={{
-              display: id === activedComponentId ? 'block' : 'none',
-              height: '100%'
+              height: '100%',
+              ...(id !== activedComponentId && {
+                width: 0,
+                height: 0,
+                overflow: 'hidden'
+              })
             }}
             data-testid={id}
           >

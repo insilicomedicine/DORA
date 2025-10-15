@@ -75,10 +75,12 @@ const TextEvidences = ({
 
   if (showWithLink) {
     return (
-      <TextEvidenceItem
-        itemData={textEvidenceData[0]}
-        showWithLink={showWithLink}
-      />
+      <div style={{ maxHeight: 'calc(100% - 40px)', overflowY: 'auto' }}>
+        <TextEvidenceItem
+          itemData={textEvidenceData[0]}
+          showWithLink={showWithLink}
+        />
+      </div>
     );
   }
 

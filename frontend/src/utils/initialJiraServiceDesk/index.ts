@@ -1,4 +1,4 @@
-import { JIRA_SERVICE_DESK_KEY } from '../../config/env';
+import { JIRA_WIDGET_KEY } from '../../config/env';
 
 const JSD_BASE_URL = 'https://jsd-widget.atlassian.com';
 const JSD_SRC = `${JSD_BASE_URL}/assets/embed.js`;
@@ -41,9 +41,7 @@ export const jiraServiceDesk = (callback: () => void): void => {
   jsdScript.type = 'text/javascript';
   jsdScript.async = true;
   jsdScript.dataset.jsdEmbedded = '';
-  if (JIRA_SERVICE_DESK_KEY) {
-    jsdScript.dataset.key = JIRA_SERVICE_DESK_KEY;
-  }
+  jsdScript.dataset.key = JIRA_WIDGET_KEY;
   jsdScript.dataset.baseUrl = JSD_BASE_URL;
   jsdScript.src = JSD_SRC;
   jsdScript.addEventListener('load', onLoad, { once: true });
@@ -63,6 +61,7 @@ const initializeDOMContentLoaded = (): void => {
 };
 
 export const initialJiraServiceDesk = (afterInit?: () => void): void => {
+  if (!JIRA_WIDGET_KEY) return;
   jiraServiceDesk(() => {
     initializeDOMContentLoaded();
     if (afterInit) {

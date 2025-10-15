@@ -112,7 +112,7 @@ const SideMenu = () => {
     }
 
     const { bibliographies = [] } = response;
-    setReferenceLinkTarget({});
+    setReferenceLinkTarget({ pmid: undefined });
 
     setDocumentDetailData({
       documentData: convertToEditorDocument(response, bibliographies).doc,

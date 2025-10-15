@@ -1,11 +1,9 @@
 import logging
-from collections import OrderedDict
 from io import BytesIO
 
 from django.db.models import QuerySet
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
-from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -78,7 +76,6 @@ class DocumentViewSet(
         "retrieve": DocumentDetailSerializer,
         "create": DocumentCreateSerializer,
         "partial_update": DocumentUpdateSerializer,
-        "summary": DocumentListSerializer,
         "export": DocumentExportSerializer,
         "find_references": FindReferencesSerializer,
         "find_citations": FindCitationsSerializer,
@@ -110,41 +107,6 @@ class DocumentViewSet(
             return self.get_paginated_response(serializer.data)
 
         return Response(serializer.data)
-
-    @extend_schema(
-        parameters=[
-            OpenApiParameter(name="id", description="id", type=str),
-            OpenApiParameter(
-                name="status",
-                description="choices: initialized/in_progress/completed/failed",
-                type=str,
-            ),
-            OpenApiParameter(name="template_id", description="Template ID", type=str),
-        ]
-    )
-    @action(methods=["get"], detail=False)
-    def summary(self, request):
-        ids = request.query_params.getlist("id")
-        status = request.query_params.get("status")
-        template_id = request.query_params.get("template_id")
-
-        unique_ids_ordered = list(OrderedDict.fromkeys(ids))
-
-        queryset = self.get_queryset()
-        if unique_ids_ordered:
-            queryset = queryset.filter(id__in=unique_ids_ordered)
-        if status:
-            queryset = queryset.filter(status=status)
-        if template_id:
-            queryset = queryset.filter(template_id=template_id)
-
-        serializer = self.get_serializer(queryset, many=True)
-        if not ids:
-            return Response(serializer.data)
-
-        data_dict = {item["id"]: item for item in serializer.data}
-        ordered_data = [data_dict[id] for id in unique_ids_ordered if id in data_dict]
-        return Response(ordered_data)
 
     @action(methods=["post"], detail=True)
     def generate(self, request, pk=None):
@@ -222,6 +184,8 @@ class DocumentViewSet(
         format = serializer.validated_data["format"]
 
         document = get_object_or_404(Document, pk=document_id)
+        self.check_object_permissions(request, document)
+
         # TODO: add DocumentStatus.POLISHED
         if document.status not in [DocumentStatus.COMPLETED]:
             return Response(
@@ -333,6 +297,7 @@ class DocumentViewSet(
         custom_prompt = serializer.validated_data.get("custom_prompt")
 
         document = get_object_or_404(Document, pk=document_id)
+        self.check_object_permissions(request, document)
 
         result = execute_ai_action(
             request.user,
