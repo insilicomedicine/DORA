@@ -5,7 +5,7 @@ from typing import Dict, Tuple, Union
 
 from pypdf import PdfReader
 
-from base.storage.s3 import S3Storage
+from base.storage.factory import get_storage
 from bibliography.defs import CustomBibliographyFileS3Template
 
 METADATA_TYPE = Dict[str, Union[datetime, str, None]]
@@ -93,11 +93,11 @@ def get_file_content(
     custom_bibliography_file_pk: str, custom_bibliography_file_name: str
 ) -> Tuple[METADATA_TYPE, str]:
     file_path = CustomBibliographyFileS3Template.format(pk=custom_bibliography_file_pk)
-    s3_storage = S3Storage()
-    if not s3_storage.key_exists(file_path):
+    storage = get_storage()
+    if not storage.key_exists(file_path):
         raise ValueError(f"file with pk {custom_bibliography_file_pk} doesn't downloaded")
 
-    file = io.BytesIO(s3_storage.get_file_contents(file_path))
+    file = io.BytesIO(storage.get_file_contents(file_path))
     pdf_reader = PdfReader(file)
     metadata = get_file_metadata(pdf_reader)
     text = get_file_text(pdf_reader)

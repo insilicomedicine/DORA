@@ -3,8 +3,8 @@ from typing import Any, Dict
 
 from rest_framework import serializers
 
-from base.storage.defs import AllowedBucketPresignedMethods
-from base.storage.s3 import S3Storage
+from base.storage.defs import AllowedStoragePresignedMethods
+from base.storage.factory import get_storage
 from bibliography.defs import (
     CustomBibliographyFileS3Template,
     CustomBibliographyFileStatus,
@@ -160,8 +160,8 @@ class CustomBibliographyFileDetailSerializer(serializers.ModelSerializer):
     def get_download_url(bibliography_file: CustomBibliographyFile) -> str:
         file_key = CustomBibliographyFileS3Template.format(pk=bibliography_file.pk)
 
-        download_url = S3Storage().generate_presigned_bucket_url(
-            client_method=AllowedBucketPresignedMethods.GET_OBJECT,
+        download_url = get_storage().generate_presigned_url(
+            client_method=AllowedStoragePresignedMethods.GET,
             file_key=file_key,
         )
 
@@ -178,12 +178,17 @@ class CustomBibliographyFileCreateSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_upload_url(bibliography_file: CustomBibliographyFile) -> str:
         file_key = CustomBibliographyFileS3Template.format(pk=bibliography_file.pk)
-        upload_url = S3Storage().generate_presigned_bucket_url(
-            client_method=AllowedBucketPresignedMethods.PUT_OBJECT,
+        upload_url = get_storage().generate_presigned_url(
+            client_method=AllowedStoragePresignedMethods.PUT,
             file_key=file_key,
         )
 
         return upload_url
+
+    @staticmethod
+    def get_upload_headers(bibliography_file: CustomBibliographyFile) -> dict:
+        """Return required headers for Azure Blob Storage PUT operation"""
+        return {"x-ms-blob-type": "BlockBlob"}
 
     def create(self, validated_data: Dict[str, Any]) -> CustomBibliographyFile:
         validated_data["user_id"] = self.context["request"].user.pk
