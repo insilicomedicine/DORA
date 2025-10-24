@@ -6,6 +6,9 @@ from kernel.chat_models.models import AzureChatOpenAIWithBackup, ChatOpenAIWithB
 
 
 def init_llm(temperature: float = 0.2) -> BaseChatOpenAI:
+    # Use fixed temperature if configured (e.g., for GPT-5 which requires temperature=1.0)
+    temperature = settings.OPENAI_API_FIXED_TEMPERATURE or temperature
+
     if settings.OPENAI_API_TYPE == OpenAiApiType.azure:
         return AzureChatOpenAIWithBackup(
             temperature=temperature,
@@ -42,8 +45,11 @@ def init_llm(temperature: float = 0.2) -> BaseChatOpenAI:
 
 
 def init_llm_mini(temperature: float = 0.2) -> BaseChatOpenAI:
-    if settings.MINI_OPENAI_API_KEY is None:
+    if not settings.MINI_OPENAI_API_KEY:
         return init_llm(temperature)
+
+    # Use fixed temperature if configured (e.g., for GPT-5 which requires temperature=1.0)
+    temperature = settings.MINI_OPENAI_API_FIXED_TEMPERATURE or temperature
 
     if settings.OPENAI_API_TYPE == OpenAiApiType.azure:
         return AzureChatOpenAIWithBackup(
