@@ -321,6 +321,7 @@ const Editor = () => {
             }
             return false;
           }
+          newContentRef.current = true;
         },
         handleDOMEvents: {
           mouseover: (_view, event) => {

@@ -1,4 +1,4 @@
-import { memo, useId } from 'react';
+import { memo, useEffect, useId, useRef, useState } from 'react';
 import Citations from '../Citations';
 import { chunksAuthorFormatter } from 'utils/chunksAuthorFormatter';
 import { Box, Button, Stack, Tooltip, Typography } from '@mui/material';
@@ -33,6 +33,35 @@ const TextEvidencesChunkItem = (props: TextEvidencesChunkItemProps) => {
 
   const { isExpired } = usePlanStatus();
   const clampToggleId = useId();
+  const clampContentRef = useRef<HTMLDivElement | null>(null);
+  const [isOverflowed, setIsOverflowed] = useState(false);
+
+  useEffect(() => {
+    if (!isSearchResult) return;
+    const el = clampContentRef.current;
+    if (!el) return;
+
+    const computeOverflow = () => {
+      const computed = window.getComputedStyle(el);
+      const lineHeightStr = computed.lineHeight;
+      const lineHeight = parseFloat(lineHeightStr || '0');
+      const twoLinesHeight =
+        isNaN(lineHeight) || lineHeight === 0 ? 0 : lineHeight * 2;
+      const isOverflow = el.scrollHeight > twoLinesHeight + 1;
+      setIsOverflowed(isOverflow);
+    };
+
+    computeOverflow();
+
+    const resizeObserver = new ResizeObserver(() => {
+      computeOverflow();
+    });
+    resizeObserver.observe(el);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [isSearchResult]);
 
   const renderLimitedTooltip = () => (
     <Tooltip title="Text unavailable due to expired plan" followCursor>
@@ -90,7 +119,9 @@ const TextEvidencesChunkItem = (props: TextEvidencesChunkItemProps) => {
               },
               // show toggle only on hover
               '& .toggleLabel': { display: 'none' },
-              '&:hover .toggleLabel': { display: 'inline-flex' },
+              '&[data-overflow="true"]:hover .toggleLabel': {
+                display: 'inline-flex'
+              },
               // unclamp when checkbox is checked
               '& input[type="checkbox"]:checked ~ .clampContent': {
                 overflow: 'visible',
@@ -101,6 +132,7 @@ const TextEvidencesChunkItem = (props: TextEvidencesChunkItemProps) => {
                 display: 'none'
               }
             }}
+            data-overflow={isOverflowed ? 'true' : 'false'}
           >
             <Box
               component="input"
@@ -108,7 +140,9 @@ const TextEvidencesChunkItem = (props: TextEvidencesChunkItemProps) => {
               id={`toggle-${clampToggleId}`}
               sx={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }}
             />
-            <Box className="clampContent">{renderChunkContent(chunkTexts)}</Box>
+            <Box className="clampContent" ref={clampContentRef}>
+              {renderChunkContent(chunkTexts)}
+            </Box>
             <Button
               component="label"
               htmlFor={`toggle-${clampToggleId}`}
