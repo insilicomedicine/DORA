@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Union
 
 from azure.core.exceptions import AzureError, ResourceExistsError, ResourceNotFoundError
-from azure.storage.blob import BlobServiceClient, ExponentialRetry
+from azure.storage.blob import BlobSasPermissions, BlobServiceClient, ExponentialRetry, generate_blob_sas
 from django.conf import settings
 
 from base.storage.defs import AllowedBlobPresignedMethods
@@ -28,8 +28,7 @@ class BlobStorage:
         # Authentication choice: connection string OR explicit account credentials
         if hasattr(settings, "AZURE_STORAGE_CONNECTION_STRING") and settings.AZURE_STORAGE_CONNECTION_STRING:
             conn_str = settings.AZURE_STORAGE_CONNECTION_STRING
-            self.account_name = self._extract_account_name_from_connection_string(conn_str)
-            self.account_key = self._extract_account_key_from_connection_string(conn_str)
+            self.account_name, self.account_key = self._extract_from_connection_string(conn_str)
             self.blob_service_client = BlobServiceClient.from_connection_string(
                 conn_str,
                 connection_timeout=self.BLOB_CONNECT_TIMEOUT,
@@ -55,19 +54,35 @@ class BlobStorage:
         self.container_client = self.blob_service_client.get_container_client(self.container_name)
         self._ensure_container_exists()
 
-    def _extract_account_name_from_connection_string(self, conn_str: str) -> str:
-        """Extract account name from Azure connection string."""
-        for part in conn_str.split(";"):
-            if part.startswith("AccountName="):
-                return part.split("=", 1)[1]
-        raise ValueError("AccountName not found in connection string")
+    def _extract_from_connection_string(self, conn_str: str) -> tuple[str, str]:
+        """Extract account name and key from Azure connection string.
 
-    def _extract_account_key_from_connection_string(self, conn_str: str) -> str:
-        """Extract account key from Azure connection string."""
+        Args:
+            conn_str: Azure storage connection string
+
+        Returns:
+            Tuple of (account_name, account_key)
+
+        Raises:
+            ValueError: If AccountName or AccountKey is not found in the connection string
+        """
+        # Parse connection string into a dictionary
+        parts_dict = {}
         for part in conn_str.split(";"):
-            if part.startswith("AccountKey="):
-                return part.split("=", 1)[1]
-        raise ValueError("AccountKey not found in connection string")
+            if "=" in part:
+                k, v = part.split("=", 1)
+                parts_dict[k] = v
+
+        # Extract account name and key
+        account_name = parts_dict.get("AccountName")
+        account_key = parts_dict.get("AccountKey")
+
+        if not account_name:
+            raise ValueError("AccountName not found in connection string")
+        if not account_key:
+            raise ValueError("AccountKey not found in connection string")
+
+        return account_name, account_key
 
     def _ensure_container_exists(self):
         # Similar to S3's bucket creation logic - only create if needed
@@ -159,8 +174,6 @@ class BlobStorage:
             )
 
         try:
-            from azure.storage.blob import BlobSasPermissions, generate_blob_sas
-
             blob_client = self.container_client.get_blob_client(file_key)
 
             # Set permissions based on method
