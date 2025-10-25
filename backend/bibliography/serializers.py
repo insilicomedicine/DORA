@@ -170,10 +170,11 @@ class CustomBibliographyFileDetailSerializer(serializers.ModelSerializer):
 
 class CustomBibliographyFileCreateSerializer(serializers.ModelSerializer):
     upload_url = serializers.SerializerMethodField()
+    upload_headers = serializers.SerializerMethodField()
 
     class Meta:
         model = CustomBibliographyFile
-        fields = ["pk", "name", "upload_url"]
+        fields = ["pk", "name", "upload_url", "upload_headers"]
 
     @staticmethod
     def get_upload_url(bibliography_file: CustomBibliographyFile) -> str:
