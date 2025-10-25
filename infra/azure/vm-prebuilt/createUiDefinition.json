@@ -1,0 +1,329 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/0.1.2-preview/CreateUIDefinition.MultiVm.json#",
+  "handler": "Microsoft.Azure.CreateUIDef",
+  "version": "0.1.2-preview",
+  "parameters": {
+    "basics": [
+      {
+        "name": "vmName",
+        "type": "Microsoft.Common.TextBox",
+        "label": "Virtual Machine Name",
+        "defaultValue": "dora-vm",
+        "toolTip": "Name of the virtual machine to provision.",
+        "constraints": {
+          "required": true,
+          "regex": "^[a-z0-9A-Z-]{3,64}$",
+          "validationMessage": "VM name must be 3-64 characters long and contain only alphanumeric characters and hyphens."
+        }
+      },
+      {
+        "name": "adminUsername",
+        "type": "Microsoft.Common.TextBox",
+        "label": "Admin Username",
+        "defaultValue": "azureuser",
+        "toolTip": "Admin username for the Linux VM.",
+        "constraints": {
+          "required": true,
+          "regex": "^[a-z][a-z0-9_-]{2,63}$",
+          "validationMessage": "Username must start with a letter, be 3-64 characters long, and contain only lowercase letters, numbers, hyphens, and underscores."
+        }
+      },
+      {
+        "name": "adminSshPublicKey",
+        "type": "Microsoft.Compute.CredentialsCombo",
+        "label": {
+          "authenticationType": "Authentication type",
+          "password": "Password",
+          "confirmPassword": "Confirm password",
+          "sshPublicKey": "SSH public key"
+        },
+        "toolTip": {
+          "authenticationType": "Authentication type for the VM",
+          "password": "Password for the VM admin user",
+          "sshPublicKey": "SSH public key for the VM admin user"
+        },
+        "constraints": {
+          "required": true,
+          "customPasswordRegex": "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{12,}$",
+          "customValidationMessage": "Password must be at least 12 characters long and contain uppercase, lowercase, numbers, and special characters."
+        },
+        "options": {
+          "hideConfirmation": false,
+          "hidePassword": true
+        },
+        "osPlatform": "Linux"
+      }
+    ],
+    "steps": [
+      {
+        "name": "vmConfig",
+        "label": "VM Configuration",
+        "elements": [
+          {
+            "name": "vmSize",
+            "type": "Microsoft.Compute.SizeSelector",
+            "label": "Virtual Machine Size",
+            "toolTip": "Size of the virtual machine. DORA requires at least 4 CPU cores and 8 GB RAM.",
+            "recommendedSizes": [
+              "Standard_D8s_v5",
+              "Standard_D4s_v5",
+              "Standard_E8s_v5"
+            ],
+            "constraints": {
+              "allowedSizes": [
+                "Standard_D4s_v5",
+                "Standard_D8s_v5",
+                "Standard_D16s_v5",
+                "Standard_E4s_v5",
+                "Standard_E8s_v5",
+                "Standard_E16s_v5"
+              ]
+            },
+            "osPlatform": "Linux",
+            "count": 1
+          },
+          {
+            "name": "dataDiskSizeGB",
+            "type": "Microsoft.Common.DropDown",
+            "label": "Data Disk Size",
+            "defaultValue": "128 GB (P10)",
+            "toolTip": "Premium SSD tier for the data disk (PostgreSQL, Redis, logs, static files). Each tier has specific IOPS and throughput.",
+            "constraints": {
+              "required": true,
+              "allowedValues": [
+                {
+                  "label": "64 GB (P6)",
+                  "value": "64"
+                },
+                {
+                  "label": "128 GB (P10)",
+                  "value": "128"
+                },
+                {
+                  "label": "256 GB (P15)",
+                  "value": "256"
+                },
+                {
+                  "label": "512 GB (P20)",
+                  "value": "512"
+                },
+                {
+                  "label": "1024 GB (P30)",
+                  "value": "1024"
+                },
+                {
+                  "label": "2048 GB (P40)",
+                  "value": "2048"
+                }
+              ]
+            }
+          },
+          {
+            "name": "dnsLabelPrefix",
+            "type": "Microsoft.Common.TextBox",
+            "label": "DNS Label Prefix",
+            "defaultValue": "[basics('vmName')]",
+            "toolTip": "DNS label prefix for the VM public IP. Defaults to VM name. The FQDN will be <prefix>.<region>.cloudapp.azure.com and used as the application's public URL.",
+            "constraints": {
+              "required": true,
+              "regex": "^[a-z][a-z0-9-]{1,61}[a-z0-9]$",
+              "validationMessage": "DNS label must start with a letter, be 3-63 characters long, and contain only lowercase letters, numbers, and hyphens."
+            }
+          }
+        ]
+      },
+      {
+        "name": "acrConfig",
+        "label": "Container Registry",
+        "elements": [
+          {
+            "name": "imageSource",
+            "type": "Microsoft.Common.DropDown",
+            "label": "Container Image Source",
+            "defaultValue": "Docker Hub (insilicomed)",
+            "toolTip": "Select where to pull DORA container images from.",
+            "constraints": {
+              "required": true,
+              "allowedValues": [
+                {
+                  "label": "Docker Hub (insilicomed)",
+                  "value": "dockerhub"
+                },
+                {
+                  "label": "Azure Container Registry (Your Own)",
+                  "value": "acr"
+                }
+              ]
+            }
+          },
+          {
+            "name": "acrLoginServer",
+            "type": "Microsoft.Common.TextBox",
+            "label": "ACR Login Server",
+            "defaultValue": "",
+            "toolTip": "Azure Container Registry login server, e.g., myregistry.azurecr.io (required only if using ACR)",
+            "constraints": {
+              "required": "[equals(steps('acrConfig').imageSource, 'acr')]",
+              "regex": "^[a-z0-9]+\\.azurecr\\.io$",
+              "validationMessage": "Must be a valid ACR login server (e.g., myregistry.azurecr.io)"
+            },
+            "visible": "[equals(steps('acrConfig').imageSource, 'acr')]"
+          },
+          {
+            "name": "registryUsername",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Registry Username",
+            "toolTip": "Username for container registry (ACR token or Docker Hub account)",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "registryPassword",
+            "type": "Microsoft.Common.PasswordBox",
+            "label": {
+              "password": "Registry Password",
+              "confirmPassword": "Confirm Registry Password"
+            },
+            "toolTip": "Password or token for container registry (ACR or Docker Hub)",
+            "constraints": {
+              "required": true
+            },
+            "options": {
+              "hideConfirmation": true
+            }
+          },
+          {
+            "name": "registryInfo",
+            "type": "Microsoft.Common.InfoBox",
+            "visible": true,
+            "options": {
+              "icon": "Info",
+              "text": "Docker Hub: Use images insilicomed/dora-backend:blob and insilicomed/dora-frontend:blob. ACR: Use your own images <your-acr>/dora-backend:latest and <your-acr>/dora-frontend:latest. Provide appropriate credentials."
+            }
+          }
+        ]
+      },
+
+      {
+        "name": "aiConfig",
+        "label": "AI Configuration",
+        "elements": [
+          {
+            "name": "openAiApiType",
+            "type": "Microsoft.Common.DropDown",
+            "label": "OpenAI API Type",
+            "defaultValue": "azure",
+            "toolTip": "Select your OpenAI provider type.",
+            "constraints": {
+              "required": true,
+              "allowedValues": [
+                {
+                  "label": "OpenAI",
+                  "value": "openai"
+                },
+                {
+                  "label": "Azure OpenAI",
+                  "value": "azure"
+                },
+                {
+                  "label": "Custom",
+                  "value": "custom"
+                }
+              ]
+            }
+          },
+          {
+            "name": "openAiApiKey",
+            "type": "Microsoft.Common.PasswordBox",
+            "label": {
+              "password": "OpenAI API Key",
+              "confirmPassword": "Confirm API Key"
+            },
+            "toolTip": "Your OpenAI or Azure OpenAI API key.",
+            "constraints": {
+              "required": false
+            },
+            "options": {
+              "hideConfirmation": true
+            }
+          },
+          {
+            "name": "openAiApiBaseUrl",
+            "type": "Microsoft.Common.TextBox",
+            "label": "OpenAI API Base URL",
+            "defaultValue": "",
+            "toolTip": "Optional OpenAI API base URL (required for Azure OpenAI).",
+            "constraints": {
+              "required": false,
+              "regex": "^(https://.*)?$",
+              "validationMessage": "URL must start with https://"
+            },
+            "visible": "[not(equals(steps('aiConfig').openAiApiType, 'openai'))]"
+          },
+          {
+            "name": "openAiApiVersion",
+            "type": "Microsoft.Common.TextBox",
+            "label": "OpenAI API Version",
+            "defaultValue": "2025-01-01-preview",
+            "toolTip": "API version for Azure OpenAI (e.g., 2024-10-21).",
+            "constraints": {
+              "required": false
+            },
+            "visible": "[equals(steps('aiConfig').openAiApiType, 'azure')]"
+          },
+          {
+            "name": "openAiDeploymentName",
+            "type": "Microsoft.Common.TextBox",
+            "label": "OpenAI Deployment Name",
+            "defaultValue": "gpt-5",
+            "toolTip": "Deployment name for Azure OpenAI.",
+            "constraints": {
+              "required": false
+            },
+            "visible": "[equals(steps('aiConfig').openAiApiType, 'azure')]"
+          },
+          {
+            "name": "embeddingOpenAiApiConfigs",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Embedding API Configurations",
+            "defaultValue": "[{\"model\":\"text-embedding-3-small\",\"api_key\":\"<YOUR_API_KEY>\",\"base_url\":\"<Your Azure OpenAI endpoint>\",\"version\":\"2024-12-01-preview\",\"deployment_name\":\"text-embedding-3-small\"}]",
+            "toolTip": "JSON array for embedding model configurations. For OpenAI: set api_key and base_url. For Azure OpenAI: set api_key, base_url, version, and deployment_name. Replace YOUR_API_KEY with your actual key.",
+            "constraints": {
+              "required": true,
+              "validationMessage": "Please provide valid JSON array for embedding configurations."
+            }
+          },
+          {
+            "name": "aiInfo",
+            "type": "Microsoft.Common.InfoBox",
+            "visible": true,
+            "options": {
+              "icon": "Info",
+              "text": "DORA uses BYOK (Bring Your Own Key) approach. You need to provide your own OpenAI or Azure OpenAI API keys. Embedding configuration is required for web search and bibliography features. Example configs:\n\nOpenAI: [{\"model\":\"text-embedding-3-small\",\"api_key\":\"sk-...\",\"base_url\":\"https://api.openai.com/v1\",\"version\":\"\",\"deployment_name\":\"\"}]\n\nAzure OpenAI: [{\"model\":\"text-embedding-3-small\",\"api_key\":\"...\",\"base_url\":\"https://your-resource.openai.azure.com\",\"version\":\"2024-12-01-preview\",\"deployment_name\":\"text-embedding-3-small\"}]"
+            }
+          }
+        ]
+      }
+    ],
+    "outputs": {
+      "location": "[location()]",
+      "vmName": "[basics('vmName')]",
+      "vmSize": "[steps('vmConfig').vmSize]",
+      "dnsLabelPrefix": "[steps('vmConfig').dnsLabelPrefix]",
+      "adminUsername": "[basics('adminUsername')]",
+      "adminSshPublicKey": "[basics('adminSshPublicKey').sshPublicKey]",
+      "imageSource": "[steps('acrConfig').imageSource]",
+      "acrLoginServer": "[steps('acrConfig').acrLoginServer]",
+      "registryUsername": "[steps('acrConfig').registryUsername]",
+      "registryPassword": "[steps('acrConfig').registryPassword]",
+      "openAiApiKey": "[steps('aiConfig').openAiApiKey]",
+      "openAiApiType": "[steps('aiConfig').openAiApiType]",
+      "openAiApiBaseUrl": "[steps('aiConfig').openAiApiBaseUrl]",
+      "openAiApiVersion": "[steps('aiConfig').openAiApiVersion]",
+      "openAiDeploymentName": "[steps('aiConfig').openAiDeploymentName]",
+      "embeddingOpenAiApiConfigs": "[steps('aiConfig').embeddingOpenAiApiConfigs]",
+      "dataDiskSizeGB": "[steps('vmConfig').dataDiskSizeGB]"
+    }
+  }
+}

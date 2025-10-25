@@ -1,0 +1,457 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "2.0",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.38.33.27573",
+      "templateHash": "17566501222867810648"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Azure region for all resources."
+      }
+    },
+    "vmName": {
+      "type": "string",
+      "defaultValue": "dora-vm",
+      "metadata": {
+        "description": "Name of the virtual machine to provision."
+      }
+    },
+    "vmSize": {
+      "type": "string",
+      "defaultValue": "Standard_D8s_v5",
+      "metadata": {
+        "description": "Size of the virtual machine."
+      }
+    },
+    "dnsLabelPrefix": {
+      "type": "string",
+      "defaultValue": "[parameters('vmName')]",
+      "metadata": {
+        "description": "DNS label prefix for the VM public IP. Defaults to VM name. The FQDN will be <prefix>.<region>.cloudapp.azure.com"
+      }
+    },
+    "adminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "Admin username for the Linux VM."
+      }
+    },
+    "adminSshPublicKey": {
+      "type": "string",
+      "metadata": {
+        "description": "SSH public key for the admin user."
+      }
+    },
+    "imageSource": {
+      "type": "string",
+      "defaultValue": "dockerhub",
+      "allowedValues": [
+        "acr",
+        "dockerhub"
+      ],
+      "metadata": {
+        "description": "Container image source: acr (Azure Container Registry) or dockerhub (Docker Hub insilicomed)"
+      }
+    },
+    "acrLoginServer": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Azure Container Registry login server (required if imageSource=acr), e.g. myregistry.azurecr.io"
+      }
+    },
+    "registryUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "Container registry username (ACR token username or Docker Hub username)"
+      }
+    },
+    "registryPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Container registry password (ACR token password or Docker Hub password/token)"
+      }
+    },
+    "openAiApiKey": {
+      "type": "securestring",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional OpenAI API key if AI features are enabled."
+      }
+    },
+    "openAiApiType": {
+      "type": "string",
+      "defaultValue": "openai",
+      "metadata": {
+        "description": "OpenAI API type: openai, azure, or custom."
+      }
+    },
+    "openAiApiBaseUrl": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional OpenAI API base URL."
+      }
+    },
+    "openAiApiVersion": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional OpenAI API version when using Azure OpenAI."
+      }
+    },
+    "openAiDeploymentName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional OpenAI deployment name when using Azure OpenAI."
+      }
+    },
+    "embeddingOpenAiApiConfigs": {
+      "type": "string",
+      "defaultValue": "[[]",
+      "metadata": {
+        "description": "Independent JSON array string for embedding model configurations (NOT auto-derived from the generic OpenAI params). Provide per‑model credentials if they differ. Example: [{\"model\":\"text-embedding-3-small\",\"api_key\":\"<key>\",\"base_url\":\"https://example.openai.azure.com\",\"version\":\"2024-10-01-preview\",\"deployment_name\":\"text-embedding-3-small\"}]  Use an empty array [] if you do not configure embeddings yet."
+      }
+    },
+    "dataDiskSizeGB": {
+      "type": "int",
+      "defaultValue": 128,
+      "minValue": 64,
+      "maxValue": 2048,
+      "metadata": {
+        "description": "Size in GB of the attached data disk for PostgreSQL, Redis, logs, and static files. Should match Premium SSD tiers: 64(P6), 128(P10), 256(P15), 512(P20), 1024(P30), 2048(P40)."
+      }
+    }
+  },
+  "variables": {
+    "vnetName": "[format('{0}-vnet', parameters('vmName'))]",
+    "subnetName": "[format('{0}-subnet', parameters('vmName'))]",
+    "nsgName": "[format('{0}-nsg', parameters('vmName'))]",
+    "publicIpName": "[format('{0}-pip', parameters('vmName'))]",
+    "nicName": "[format('{0}-nic', parameters('vmName'))]",
+    "diskName": "[format('{0}-data-disk', parameters('vmName'))]",
+    "storageAccountName": "[toLower(format('dor{0}', uniqueString(resourceGroup().id, parameters('vmName'))))]",
+    "tags": {
+      "project": "dora",
+      "workload": "vm-prebuilt"
+    },
+    "databaseUrl": "postgresql://dora:dora@dora_db:5432/dora",
+    "generatedSecretKey": "[uniqueString(resourceGroup().id, parameters('vmName'), 'django-secret-key-salt-2025')]",
+    "registryServer": "[if(equals(parameters('imageSource'), 'dockerhub'), 'docker.io', parameters('acrLoginServer'))]",
+    "backendImage": "[if(equals(parameters('imageSource'), 'dockerhub'), 'insilicomed/dora-backend:blob', format('{0}/dora-backend:latest', parameters('acrLoginServer')))]",
+    "frontendImage": "[if(equals(parameters('imageSource'), 'dockerhub'), 'insilicomed/dora-frontend:blob', format('{0}/dora-frontend:latest', parameters('acrLoginServer')))]",
+    "cloudInitTemplate": "#cloud-config\r\npackage_update: true\r\npackage_upgrade: true\r\npackages:\r\n  - apt-transport-https\r\n  - ca-certificates\r\n  - curl\r\n  - gnupg\r\n  - jq\r\n  - lsb-release\r\n  - software-properties-common\r\n  - docker.io\r\n\r\n# Ensure directories needed by later write_files entries exist (write_files does not create nested dirs like /opt/dora/bin by default)\r\nbootcmd:\r\n  - [bash, -c, \"mkdir -p /opt/dora/bin\"]\r\n\r\nwrite_files:\r\n  - path: /opt/dora/docker-compose.yml\r\n    owner: root:root\r\n    permissions: \"0644\"\r\n    content: |\r\n      # docker compose specification (v2). 'version' key omitted (deprecated warning otherwise)\r\n      services:\r\n        nginx:\r\n          image: nginx:1.25-alpine\r\n          container_name: dora_nginx\r\n          restart: always\r\n          depends_on:\r\n            - dora_backend\r\n            - frontend\r\n          ports:\r\n            - \"80:80\"\r\n          volumes:\r\n            - /opt/dora/nginx.conf:/etc/nginx/conf.d/default.conf:ro\r\n            - /mnt/dora-data/static:/var/www/static\r\n          networks:\r\n            - main\r\n\r\n        frontend:\r\n          image: __FRONTEND_IMAGE__\r\n          container_name: dora_frontend\r\n          restart: always\r\n          depends_on:\r\n            - dora_backend\r\n          expose:\r\n            - \"8000\"\r\n          networks:\r\n            - main\r\n\r\n        dora_backend:\r\n          image: __BACKEND_IMAGE__\r\n          container_name: dora_backend\r\n          restart: always\r\n          command: /bin/sh -c \"sleep 5 && python /dora/manage.py collectstatic --noinput && python /dora/manage.py migrate --noinput && uwsgi --ini /dora/deploy/uwsgi.ini --enable-threads\"\r\n          depends_on:\r\n            - dora_db\r\n            - dora_redis\r\n          expose:\r\n            - \"8080\"\r\n          env_file:\r\n            - /opt/dora/.env\r\n          volumes:\r\n            - /mnt/dora-data/static:/dora/static\r\n          networks:\r\n            - main\r\n\r\n        dora_worker:\r\n          image: __BACKEND_IMAGE__\r\n          container_name: dora_backend_worker\r\n          restart: always\r\n          env_file:\r\n            - /opt/dora/.env\r\n          depends_on:\r\n            - dora_db\r\n            - dora_redis\r\n          volumes:\r\n            - /mnt/dora-data/logs:/dora/logs\r\n          command: /bin/sh -c \"sleep 10 && celery -A app worker -E -l INFO -c 4 --without-heartbeat --without-gossip --without-mingle & celery -A app worker -E -Q email -l INFO -c 1 --without-heartbeat --without-gossip --without-mingle\"\r\n          networks:\r\n            - main\r\n\r\n        dora_backend_ws:\r\n          image: __BACKEND_IMAGE__\r\n          container_name: dora_backend_ws\r\n          restart: always\r\n          env_file:\r\n            - /opt/dora/.env\r\n          expose:\r\n            - \"8081\"\r\n          depends_on:\r\n            - dora_db\r\n            - dora_redis\r\n          command: /bin/sh -c \"sleep 10 && daphne --bind 0.0.0.0 --port 8081 app.asgi:application\"\r\n          networks:\r\n            - main\r\n\r\n        dora_db:\r\n          image: pgvector/pgvector:pg16\r\n          container_name: dora_db\r\n          restart: always\r\n          expose:\r\n            - \"5432\"\r\n          environment:\r\n            POSTGRES_USER: dora\r\n            POSTGRES_PASSWORD: dora\r\n            POSTGRES_DB: dora\r\n          volumes:\r\n            - /mnt/dora-data/postgres:/var/lib/postgresql/data\r\n          networks:\r\n            - main\r\n\r\n        dora_redis:\r\n          image: redis:7.2.3\r\n          container_name: dora_redis\r\n          restart: always\r\n          expose:\r\n            - \"6379\"\r\n          volumes:\r\n            - /mnt/dora-data/redis:/data\r\n          networks:\r\n            - main\r\n\r\n      networks:\r\n        main:\r\n          name: dora_network\r\n\r\n  - path: /opt/dora/nginx.conf\r\n    owner: root:root\r\n    permissions: \"0644\"\r\n    content: |\r\n      server {\r\n          listen 80;\r\n          server_name _;\r\n          charset utf-8;\r\n          server_tokens off;\r\n          client_max_body_size 0;\r\n\r\n          location ~* /static/(admin|img|drf_spectacular_sidecar|dist|users) {\r\n              root /var/www;\r\n          }\r\n\r\n          location / {\r\n              proxy_pass http://dora_frontend:8000;\r\n              proxy_http_version 1.1;\r\n              proxy_set_header Upgrade $http_upgrade;\r\n              proxy_set_header Connection \"upgrade\";\r\n          }\r\n\r\n          location ~* /(api|users|admin|openapi) {\r\n              include uwsgi_params;\r\n              uwsgi_pass dora_backend:8080;\r\n              uwsgi_read_timeout 3600;\r\n              uwsgi_send_timeout 3600;\r\n              uwsgi_param X-Real-IP $remote_addr;\r\n              uwsgi_param X-Forwarded-For $proxy_add_x_forwarded_for;\r\n              uwsgi_param X-Forwarded-Proto $http_x_forwarded_proto;\r\n          }\r\n\r\n          location /ws/ {\r\n              proxy_pass http://dora_backend_ws:8081;\r\n              proxy_http_version 1.1;\r\n              proxy_set_header Upgrade $http_upgrade;\r\n              proxy_set_header Connection \"upgrade\";\r\n          }\r\n\r\n          location /s3/ {\r\n              rewrite ^/s3/(.*) /$1 break;\r\n              proxy_pass http://dora_backend:8080;\r\n              proxy_set_header Host dora_backend:8080;\r\n              proxy_set_header Upgrade $http_upgrade;\r\n              proxy_set_header Connection \"upgrade\";\r\n          }\r\n\r\n          error_page 500 502 503 504 /50x.html;\r\n          location = /50x.html {\r\n              root /usr/share/nginx/html;\r\n              internal;\r\n          }\r\n      }\r\n\r\n  - path: /opt/dora/.env\r\n    owner: root:root\r\n    permissions: \"0640\"\r\n    content: |\r\n      DEBUG=False\r\n      SECRET_KEY=__SECRET_KEY__\r\n      DB_NAME=dora\r\n      DB_USER=dora\r\n      DB_PASSWORD=dora\r\n      DB_HOST=dora_db\r\n      DB_PORT=5432\r\n      DATABASE_URL=__DATABASE_URL__\r\n      REDIS_CONN_STR=redis://dora_redis:6379\r\n      REDIS_CACHE_DB=0\r\n      REDIS_BROKER_DB=1\r\n      REDIS_CHANNELS_DB=2\r\n      REDIS_CHUNKS_DB=3\r\n      REDIS_WEBCHUNKS_DB=4\r\n      OPENAI_API_MODEL=gpt-5\r\n      OPENAI_API_KEY=__OPENAI_API_KEY__\r\n      OPENAI_API_TIMEOUT=180\r\n      OPENAI_API_TYPE=__OPENAI_API_TYPE__\r\n      OPENAI_API_BASE_URL=__OPENAI_API_BASE_URL__\r\n      OPENAI_API_VERSION=__OPENAI_API_VERSION__\r\n      OPENAI_API_DEPLOYMENT_NAME=__OPENAI_API_DEPLOYMENT_NAME__\r\n      BACKUP_OPENAI_API_MODEL=gpt-4.1\r\n      BACKUP_OPENAI_API_KEY=\r\n      BACKUP_OPENAI_API_TYPE=openai\r\n      BACKUP_OPENAI_API_BASE_URL=\r\n      BACKUP_OPENAI_API_VERSION=\r\n      BACKUP_OPENAI_API_DEPLOYMENT_NAME=\r\n      MINI_OPENAI_API_MODEL=gpt-4o-mini\r\n      MINI_OPENAI_API_KEY=\r\n      MINI_OPENAI_API_TYPE=openai\r\n      MINI_OPENAI_API_BASE_URL=\r\n      MINI_OPENAI_API_VERSION=\r\n      MINI_OPENAI_API_DEPLOYMENT_NAME=\r\n      BACKUP_MINI_OPENAI_API_MODEL=gpt-4o-mini\r\n      BACKUP_MINI_OPENAI_API_KEY=\r\n      BACKUP_MINI_OPENAI_API_TYPE=openai\r\n      BACKUP_MINI_OPENAI_API_BASE_URL=\r\n      BACKUP_MINI_OPENAI_API_VERSION=\r\n      BACKUP_MINI_OPENAI_API_DEPLOYMENT_NAME=\r\n      EMBEDDING_OPENAI_API_CONFIGS=__EMBEDDING_OPENAI_API_CONFIGS__\r\n      GENERATION_RETRY_TIMES=1\r\n      TOOL_EXECUTION_COUNT_LIMIT=False\r\n      TOOL_MAX_EXECUTION_COUNT=20\r\n      AGENT_EXECUTOR_MAX_ITERATIONS=30\r\n      DORA_PUBLIC_URL=__PUBLIC_BASE_URL__\r\n      DORA_STATIC_URL=__PUBLIC_BASE_URL__\r\n      GENERATION_TASK_TIMEOUT=3600\r\n      CSRF_TRUSTED_ORIGINS=__PUBLIC_BASE_URL__\r\n      ALLOWED_HOSTS=*\r\n      MERMAID_SERVER_URL=https://mermaid.ink\r\n      SESSION_COOKIE_SECURE=False\r\n      USE_PHOENIX=False\r\n      SENTRY_DSN=\r\n      IS_BIBLIOGRAPHY_ENABLED=True\r\n      IS_WEBSEARCH_ENABLED=True\r\n      STORAGE_BACKEND=blob\r\n      AZURE_STORAGE_CONNECTION_STRING=__AZURE_STORAGE_CONNECTION_STRING__\r\n      AZURE_STORAGE_CONTAINER=__AZURE_STORAGE_CONTAINER__\r\n      AZURE_STORAGE_ACCOUNT_NAME=__AZURE_STORAGE_ACCOUNT_NAME__\r\n      AZURE_STORAGE_ACCOUNT_KEY=\r\n      AZURE_STORAGE_AUTO_CREATE_CONTAINER=False\r\n      AZURE_STORAGE_DOMAIN_SUFFIX=blob.core.windows.net\r\n      AWS_ACCESS_KEY_ID=\r\n      AWS_SECRET_ACCESS_KEY=\r\n      S3_ENDPOINT_URL=\r\n      AWS_STORAGE_BUCKET=\r\n      AWS_STORAGE_REGION=\r\n\r\n  - path: /opt/dora/bin/bootstrap.sh\r\n    owner: root:root\r\n    permissions: \"0755\"\r\n    content: |\r\n      #!/usr/bin/env bash\r\n      # Idempotent DORA bootstrap (v3) with docker compose auto-install + initial data load\r\n      set -euo pipefail\r\n      LOG_FILE=\"/var/log/dora-bootstrap.log\"; mkdir -p /var/log; touch \"$LOG_FILE\"; chmod 644 \"$LOG_FILE\"; exec >>\"$LOG_FILE\" 2>&1\r\n      REGISTRY_SERVER=\"__REGISTRY_SERVER__\"; REGISTRY_USERNAME=\"__REGISTRY_USERNAME__\"; REGISTRY_PASSWORD=\"__REGISTRY_PASSWORD__\"; ADMIN_USER=\"__ADMIN_USERNAME__\"\r\n      DISK_DEVICE=\"/dev/disk/azure/scsi1/lun0\"; DATA_MOUNT=\"/mnt/dora-data\"; DOCKER_DIR=\"/opt/dora\"; COMPOSE_FILE=\"/opt/dora/docker-compose.yml\"\r\n      DEFAULT_USER_EMAIL=\"dora@test.com\"; INITIAL_DATA_TIMEOUT=${INITIAL_DATA_MAX_WAIT_SECONDS:-600}\r\n      log(){ echo \"$(date --iso-8601=seconds) $*\"; }\r\n      if command -v docker >/dev/null 2>&1 && docker ps --format '{{.Names}}' | grep -q '^dora_nginx$'; then log \"Stack already running\"; exit 0; fi\r\n      ensure_docker(){ if ! command -v docker >/dev/null 2>&1; then log \"Installing docker\"; curl -fsSL https://get.docker.com | bash; fi; systemctl enable docker >/dev/null 2>&1 || true; systemctl start docker || true; }\r\n      ensure_compose(){ if docker compose version >/dev/null 2>&1; then return; fi; log \"Installing compose\"; if ! apt-get update -y || ! apt-get install -y docker-compose-plugin; then mkdir -p /usr/lib/docker/cli-plugins; curl -SL https://github.com/docker/compose/releases/download/v2.29.2/docker-compose-linux-x86_64 -o /usr/lib/docker/cli-plugins/docker-compose; chmod +x /usr/lib/docker/cli-plugins/docker-compose; fi; docker compose version || { log \"Compose install failed\"; exit 1; }; }\r\n      ensure_disk(){ if [ ! -b \"$DISK_DEVICE\" ]; then log \"No data disk\"; return 0; fi; if ! blkid \"$DISK_DEVICE\" >/dev/null 2>&1; then log \"Formatting data disk\"; mkfs.ext4 -F \"$DISK_DEVICE\"; fi; mkdir -p \"$DATA_MOUNT\"; if ! mountpoint -q \"$DATA_MOUNT\"; then mount \"$DISK_DEVICE\" \"$DATA_MOUNT\" || log \"Mount failed\"; fi; uuid=$(blkid -s UUID -o value \"$DISK_DEVICE\" || true); if [ -n \"${uuid:-}\" ] && ! grep -q \"$uuid\" /etc/fstab; then echo \"UUID=$uuid $DATA_MOUNT ext4 defaults,nofail 0 2\" >> /etc/fstab; fi; mkdir -p \"$DATA_MOUNT/postgres\" \"$DATA_MOUNT/redis\" \"$DATA_MOUNT/logs\" \"$DATA_MOUNT/static\"; chown 999:999 \"$DATA_MOUNT/postgres\" || true; chown 999:999 \"$DATA_MOUNT/redis\" || true; chmod 775 \"$DATA_MOUNT/logs\" \"$DATA_MOUNT/static\" || true; }\r\n      prepare_env(){ mkdir -p \"$DOCKER_DIR\" \"$DOCKER_DIR/bin\"; chmod 755 \"$DOCKER_DIR\" \"$DOCKER_DIR/bin\"; usermod -aG docker \"$ADMIN_USER\" || true; [ -f \"$DOCKER_DIR/.env\" ] && chown root:docker \"$DOCKER_DIR/.env\" && chmod 640 \"$DOCKER_DIR/.env\" || true; }\r\n      login_registry(){ log \"Registry login to $REGISTRY_SERVER\"; docker login \"$REGISTRY_SERVER\" -u \"$REGISTRY_USERNAME\" -p \"$REGISTRY_PASSWORD\" 1>/dev/null || { log \"Registry login failed\"; exit 1; }; }\r\n      start_stack(){ [ -f \"$COMPOSE_FILE\" ] || { log \"Compose file missing\"; exit 1; }; log \"Pull images\"; docker compose -f \"$COMPOSE_FILE\" pull || true; log \"Up stack\"; docker compose -f \"$COMPOSE_FILE\" up -d; docker ps --format 'table {{.Names}}\\t{{.Image}}\\t{{.Status}}'; }\r\n      load_initial_data(){\r\n        if [ \"${SKIP_INITIAL_DATA:-0}\" = \"1\" ]; then log \"[initdata] Skipping (SKIP_INITIAL_DATA=1)\"; return 0; fi\r\n        log \"[initdata] Waiting for backend (timeout ${INITIAL_DATA_TIMEOUT}s)\"; local start=$(date +%s)\r\n        while true; do\r\n          if docker ps --format '{{.Names}}' | grep -q '^dora_backend$' && docker exec dora_backend sh -c \"python -c 'import socket; s=socket.socket(); s.settimeout(1); r=s.connect_ex((\\\"127.0.0.1\\\",8080)); s.close(); exit(r)'\" 2>/dev/null; then break; fi\r\n          now=$(date +%s); if [ $((now-start)) -ge $INITIAL_DATA_TIMEOUT ]; then log \"[initdata] Timeout waiting backend\"; return 0; fi; sleep 5\r\n        done\r\n        log \"[initdata] Backend port ready. Waiting additional 10s for app initialization\";\r\n        sleep 10\r\n        log \"[initdata] Checking default user ${DEFAULT_USER_EMAIL}\";\r\n        if docker compose -f \"$COMPOSE_FILE\" exec -T dora_backend python manage.py shell -c \"from django.contrib.auth import get_user_model as g; import sys; sys.exit(0 if g().objects.filter(email='${DEFAULT_USER_EMAIL}').exists() else 1)\"; then\r\n          log \"[initdata] User exists. Skip load\"; return 0; fi\r\n        log \"[initdata] Loading initial_data.json\";\r\n        if docker compose -f \"$COMPOSE_FILE\" exec -T dora_backend python manage.py loaddata initial_data.json; then log \"[initdata] Load done\"; else log \"[initdata] Load failed\"; return 1; fi\r\n        if docker compose -f \"$COMPOSE_FILE\" exec -T dora_backend python manage.py shell -c \"from django.contrib.auth import get_user_model as g; import sys; sys.exit(0 if g().objects.filter(email='${DEFAULT_USER_EMAIL}').exists() else 1)\"; then\r\n          log \"[initdata] Verification success\"; else log \"[initdata] Verification failed\"; fi\r\n      }\r\n      log \"=== BOOTSTRAP BEGIN ===\"; ensure_docker; ensure_compose; ensure_disk; prepare_env; login_registry; start_stack; load_initial_data; log \"=== BOOTSTRAP END ===\";\r\n\r\nruncmd:\r\n  - [bash, -c, \"systemctl daemon-reload || true\"]\r\n  - [bash, /opt/dora/bin/bootstrap.sh]\r\n  - [\r\n      bash,\r\n      -c,\r\n      'if [ ! -f /var/log/dora-bootstrap.log ]; then echo \"[cloud-init] bootstrap log missing; check /var/log/cloud-init.log\" >&2; fi',\r\n    ]\r\n",
+    "cloudInitWithRegistry": "[replace(variables('cloudInitTemplate'), '__REGISTRY_SERVER__', variables('registryServer'))]",
+    "cloudInitWithBackendImage": "[replace(variables('cloudInitWithRegistry'), '__BACKEND_IMAGE__', variables('backendImage'))]",
+    "cloudInitWithFrontendImage": "[replace(variables('cloudInitWithBackendImage'), '__FRONTEND_IMAGE__', variables('frontendImage'))]",
+    "cloudInitWithSecret": "[replace(variables('cloudInitWithFrontendImage'), '__SECRET_KEY__', variables('generatedSecretKey'))]"
+  },
+  "resources": {
+    "networkSecurityGroup": {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2022-09-01",
+      "name": "[variables('nsgName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "AllowSSH",
+            "properties": {
+              "priority": 1000,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "22",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*"
+            }
+          },
+          {
+            "name": "AllowHTTP",
+            "properties": {
+              "priority": 1010,
+              "direction": "Inbound",
+              "access": "Allow",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "80",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*"
+            }
+          }
+        ]
+      }
+    },
+    "virtualNetwork": {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2022-09-01",
+      "name": "[variables('vnetName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "10.30.0.0/16"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('subnetName')]",
+            "properties": {
+              "addressPrefix": "10.30.1.0/24",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
+              }
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "networkSecurityGroup"
+      ]
+    },
+    "publicIpAddress": {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2022-09-01",
+      "name": "[variables('publicIpName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "sku": {
+        "name": "Standard"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static",
+        "publicIPAddressVersion": "IPv4",
+        "dnsSettings": {
+          "domainNameLabel": "[parameters('dnsLabelPrefix')]"
+        }
+      }
+    },
+    "networkInterface": {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2022-09-01",
+      "name": "[variables('nicName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnetName'))]"
+              },
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'))]"
+              }
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "publicIpAddress"
+      ]
+    },
+    "dataDisk": {
+      "type": "Microsoft.Compute/disks",
+      "apiVersion": "2022-07-02",
+      "name": "[variables('diskName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "sku": {
+        "name": "Premium_LRS"
+      },
+      "properties": {
+        "creationData": {
+          "createOption": "Empty"
+        },
+        "diskSizeGB": "[parameters('dataDiskSizeGB')]"
+      }
+    },
+    "storageAccount": {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2023-01-01",
+      "name": "[variables('storageAccountName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "accessTier": "Hot",
+        "allowBlobPublicAccess": false,
+        "minimumTlsVersion": "TLS1_2",
+        "supportsHttpsTrafficOnly": true
+      }
+    },
+    "blobService": {
+      "type": "Microsoft.Storage/storageAccounts/blobServices",
+      "apiVersion": "2023-01-01",
+      "name": "[format('{0}/{1}', variables('storageAccountName'), 'default')]",
+      "properties": {
+        "cors": {
+          "corsRules": [
+            {
+              "allowedOrigins": [
+                "[format('http://{0}', reference('publicIpAddress').dnsSettings.fqdn)]",
+                "http://localhost",
+                "http://localhost:80"
+              ],
+              "allowedMethods": [
+                "GET",
+                "HEAD",
+                "POST",
+                "PUT",
+                "DELETE",
+                "OPTIONS"
+              ],
+              "allowedHeaders": [
+                "*"
+              ],
+              "exposedHeaders": [
+                "*"
+              ],
+              "maxAgeInSeconds": 3600
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "publicIpAddress",
+        "storageAccount"
+      ]
+    },
+    "storageContainer": {
+      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+      "apiVersion": "2023-01-01",
+      "name": "[format('{0}/{1}/{2}', variables('storageAccountName'), 'default', 'media')]",
+      "properties": {
+        "publicAccess": "None"
+      },
+      "dependsOn": [
+        "blobService"
+      ]
+    },
+    "virtualMachine": {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2023-09-01",
+      "name": "[parameters('vmName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[parameters('vmName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[format('/home/{0}/.ssh/authorized_keys', parameters('adminUsername'))]",
+                  "keyData": "[parameters('adminSshPublicKey')]"
+                }
+              ]
+            }
+          },
+          "customData": "[base64(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(variables('cloudInitWithSecret'), '__AZURE_STORAGE_CONNECTION_STRING__', format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix={2}', variables('storageAccountName'), listKeys('storageAccount', '2023-01-01').keys[0].value, environment().suffixes.storage)), '__AZURE_STORAGE_ACCOUNT_NAME__', variables('storageAccountName')), '__AZURE_STORAGE_CONTAINER__', 'media'), '__OPENAI_API_KEY__', parameters('openAiApiKey')), '__OPENAI_API_TYPE__', parameters('openAiApiType')), '__OPENAI_API_BASE_URL__', parameters('openAiApiBaseUrl')), '__OPENAI_API_VERSION__', parameters('openAiApiVersion')), '__OPENAI_API_DEPLOYMENT_NAME__', parameters('openAiDeploymentName')), '__ADMIN_USERNAME__', parameters('adminUsername')), '__EMBEDDING_OPENAI_API_CONFIGS__', parameters('embeddingOpenAiApiConfigs')), '__REGISTRY_USERNAME__', parameters('registryUsername')), '__REGISTRY_PASSWORD__', parameters('registryPassword')), '__PUBLIC_BASE_URL__', format('http://{0}', reference('publicIpAddress').dnsSettings.fqdn)), '__DATABASE_URL__', variables('databaseUrl')))]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "0001-com-ubuntu-server-jammy",
+            "sku": "22_04-lts",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "Premium_LRS"
+            }
+          },
+          "dataDisks": [
+            {
+              "lun": 0,
+              "createOption": "Attach",
+              "managedDisk": {
+                "id": "[resourceId('Microsoft.Compute/disks', variables('diskName'))]"
+              }
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[format('https://{0}.blob.{1}/', variables('storageAccountName'), environment().suffixes.storage)]"
+          }
+        }
+      },
+      "dependsOn": [
+        "dataDisk",
+        "networkInterface",
+        "publicIpAddress",
+        "storageAccount"
+      ]
+    }
+  },
+  "outputs": {
+    "vmNameOut": {
+      "type": "string",
+      "value": "[parameters('vmName')]"
+    },
+    "vmResourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+    },
+    "publicIpAddress": {
+      "type": "string",
+      "value": "[reference('publicIpAddress').ipAddress]"
+    },
+    "fqdn": {
+      "type": "string",
+      "value": "[format('{0}.{1}.cloudapp.azure.com', parameters('dnsLabelPrefix'), toLower(parameters('location')))]"
+    },
+    "storageAccountNameOut": {
+      "type": "string",
+      "value": "[variables('storageAccountName')]"
+    },
+    "storageConnectionStringOut": {
+      "type": "securestring",
+      "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix={2}', variables('storageAccountName'), listKeys('storageAccount', '2023-01-01').keys[0].value, environment().suffixes.storage)]"
+    },
+    "storageContainerNameOut": {
+      "type": "string",
+      "value": "media"
+    },
+    "imageSource": {
+      "type": "string",
+      "value": "[parameters('imageSource')]"
+    },
+    "registryServer": {
+      "type": "string",
+      "value": "[variables('registryServer')]"
+    }
+  }
+}
