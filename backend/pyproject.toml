@@ -29,8 +29,8 @@ dependencies = [
     "google-auth==2.36.0",
     "google-search-results==2.4.2",
     "httptools==0.6.4",
-    "langchain-community>=0.3.31",
-    "langchain-openai==0.2.12",
+    "langchain-community==0.3.31",
+    "langchain-openai==0.3.35",
     "mcp==1.6.0",
     "nltk==3.9.1",
     "openinference-instrumentation-langchain==0.1.29",
@@ -53,6 +53,7 @@ dependencies = [
     "uwsgi==2.0.25.1",
     "watchfiles==1.0.3",
     "wrapt-timeout-decorator==1.5.1",
+    "azure-storage-blob>=12.19.0",
 ]
 
 [dependency-groups]

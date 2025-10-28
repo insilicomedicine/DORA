@@ -74,6 +74,18 @@ env = environ.Env(
     AWS_STORAGE_BUCKET=(str, None),
     AWS_STORAGE_REGION=(str, None),
     S3_ENDPOINT_URL=(str, None),
+    # Storage backend selection: 's3' or 'blob' (default: 'blob')
+    STORAGE_BACKEND=(str, "blob"),
+    # Azure Blob Storage settings
+    AZURE_STORAGE_CONNECTION_STRING=(str, None),
+    AZURE_STORAGE_CONTAINER=(str, None),
+    AZURE_STORAGE_ACCOUNT_NAME=(str, None),
+    AZURE_STORAGE_ACCOUNT_KEY=(str, None),
+    AZURE_STORAGE_AUTO_CREATE_CONTAINER=(bool, False),
+    # Optional: override the default Azure domain suffix for sovereign clouds
+    # (China, Government, Germany, etc.)
+    # Example: AZURE_STORAGE_DOMAIN_SUFFIX=blob.core.chinacloudapi.cn
+    AZURE_STORAGE_DOMAIN_SUFFIX=(str, "blob.core.windows.net"),
     HUGGINFACE_API=(str, None),
     HUGGINFACE_AUTHORIZATION_TOKEN=(str, None),
     SOCIALACCOUNT_PROVIDERS=(dict, {}),
@@ -392,6 +404,17 @@ AWS_SES_REGION_ENDPOINT = env("AWS_SES_REGION_ENDPOINT")
 AWS_STORAGE_BUCKET = env("AWS_STORAGE_BUCKET")
 AWS_STORAGE_REGION = env("AWS_STORAGE_REGION")
 S3_ENDPOINT_URL = env("S3_ENDPOINT_URL")
+
+# Storage backend selection
+STORAGE_BACKEND = env("STORAGE_BACKEND")
+
+# Azure Blob Storage settings
+AZURE_STORAGE_CONNECTION_STRING = env("AZURE_STORAGE_CONNECTION_STRING")
+AZURE_STORAGE_CONTAINER = env("AZURE_STORAGE_CONTAINER")
+AZURE_STORAGE_ACCOUNT_NAME = env("AZURE_STORAGE_ACCOUNT_NAME")
+AZURE_STORAGE_ACCOUNT_KEY = env("AZURE_STORAGE_ACCOUNT_KEY")
+AZURE_STORAGE_AUTO_CREATE_CONTAINER = env("AZURE_STORAGE_AUTO_CREATE_CONTAINER")
+AZURE_STORAGE_DOMAIN_SUFFIX = env("AZURE_STORAGE_DOMAIN_SUFFIX")
 
 DORA_PUBLIC_URL = env("DORA_PUBLIC_URL")
 DORA_STATIC_URL = env("DORA_STATIC_URL")

@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from documents.models import DiagramType, Document, MermaidDiagram
-from kernel.diagrams.s3 import MermaidS3
+from kernel.diagrams.storage import MermaidStorage
 from kernel.diagrams.utils import get_mermaid_image
 
 
@@ -21,7 +21,7 @@ class Command(BaseCommand):
                     svg_diagram=document.mermaid_svg_diagram,
                     mermaid_code=document.mermaid_code,
                 )
-                MermaidS3().put_png(diagram.id, diagram_as_png)
+                MermaidStorage().put_png(diagram.id, diagram_as_png)
                 document.mermaid_diagram = diagram
                 document.save()
                 created_count += 1

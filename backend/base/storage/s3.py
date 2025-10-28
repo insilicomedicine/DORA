@@ -19,6 +19,14 @@ class S3Storage:
         self.bucket_name = settings.AWS_STORAGE_BUCKET if bucket_name is None else bucket_name
         self.region_name = settings.AWS_STORAGE_REGION if region_name is None else region_name
 
+        # Defensive check: boto3 will raise an opaque ValueError if bucket name is None/empty.
+        # Give a clearer message to help operators configure the environment correctly.
+        if not self.bucket_name:
+            raise ValueError(
+                "S3 bucket name is not configured. Please set `settings.AWS_STORAGE_BUCKET` "
+                "or pass `bucket_name` to S3Storage()."
+            )
+
         config = Config(
             connect_timeout=self.S3_CONNECT_TIMEOUT,
             retries={"max_attempts": self.S3_CONNECT_MAX_RETRIES},
@@ -99,3 +107,12 @@ class S3Storage:
             raise ValueError(
                 f"Couldn't get a presigned URL for {client_method=} and {file_key=}. Error: {error}"
             )
+
+    def generate_presigned_url(
+        self,
+        client_method: str,
+        file_key: str,
+        expires_in: int = 3600,
+    ) -> str:
+        """Unified method name for compatibility with BlobStorage."""
+        return self.generate_presigned_bucket_url(client_method, file_key, expires_in)
