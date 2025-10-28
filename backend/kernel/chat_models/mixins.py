@@ -53,6 +53,7 @@ class BackupInvokeMixin(BaseChatModel):
 
         self.model_name = self.backup_model_name
 
+        max_retries = openai.DEFAULT_MAX_RETRIES if self.max_retries is None else self.max_retries
         if self.backup_api_type == OpenAiApiType.azure:
             client_params = {
                 "api_version": self.backup_api_version,
@@ -60,7 +61,7 @@ class BackupInvokeMixin(BaseChatModel):
                 "azure_deployment": self.backup_azure_deployment,
                 "api_key": self.backup_api_key,
                 "timeout": self.request_timeout,
-                "max_retries": self.max_retries,
+                "max_retries": max_retries,
             }
             self.client = openai.AzureOpenAI(**client_params).chat.completions
         else:
@@ -68,7 +69,7 @@ class BackupInvokeMixin(BaseChatModel):
                 "api_key": self.backup_api_key,
                 "base_url": self.backup_base_url,
                 "timeout": self.request_timeout,
-                "max_retries": self.max_retries,
+                "max_retries": max_retries,
             }
             self.client = openai.OpenAI(**client_params).chat.completions
 
