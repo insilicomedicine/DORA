@@ -17,7 +17,6 @@ from ai_review.utils import (
 )
 from app.notifications import NotificationType
 from documents.models import Document
-from kernel.tasks import handle_task_timeout_and_error
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +33,6 @@ def document_additional_metrics(document_id: str) -> Dict[str, Any]:
 
 
 @shared_task
-@handle_task_timeout_and_error
 def document_main_metrics_task(document_id: str):
     with review_calculation_status(document_id):
         document: Document = Document.objects.get(id=document_id)
