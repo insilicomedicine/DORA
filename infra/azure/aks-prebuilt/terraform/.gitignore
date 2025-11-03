@@ -1,0 +1,34 @@
+# Terraform execution plans (binary files with sensitive data)
+*.tfplan
+*.tfplan.json
+
+# State files (contain sensitive data and should be stored remotely)
+*.tfstate
+*.tfstate.backup
+*.tfstate.*.backup
+
+# Terraform directory
+.terraform/
+.terraform.lock.hcl
+
+# Override files (local customizations)
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# CLI configuration files
+.terraformrc
+terraform.rc
+
+# Crash log files
+crash.log
+crash.*.log
+
+# Variable files with sensitive data (if you create them)
+*.auto.tfvars
+*secret*.tfvars
+
+# Exclude example files
+!*.example
+!terraform.tfvars.example

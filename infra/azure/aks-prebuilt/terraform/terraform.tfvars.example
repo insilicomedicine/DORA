@@ -1,0 +1,75 @@
+# Example Terraform Variables File
+# Copy this file to terraform.tfvars and customize the values
+
+# Azure Subscription (Required)
+# Option 1: Set your subscription ID here (Recommended)
+# subscription_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+
+# Option 2: Set ARM_SUBSCRIPTION_ID environment variable
+# export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+
+# Resource Configuration
+resource_group_name = "dora-aks-rg"
+location            = "eastus"
+cluster_name        = "dora-aks"
+
+# AKS Configuration
+kubernetes_version = "1.31"
+
+# Node Resource Group (optional)
+# If you have limited permissions and cannot create new resource groups,
+# ask your admin to pre-create this resource group and set it here.
+# If left empty, Azure will auto-generate: MC_<resource_group>_<cluster_name>_<location>
+# node_resource_group_name = "dora-aks-nodes-rg"
+
+node_count         = 3
+node_vm_size       = "Standard_D4s_v5"
+
+# PostgreSQL Configuration
+postgres_sku_name       = "GP_Standard_D4s_v3"
+postgres_storage_mb     = 131072 # 128GB
+postgres_version        = "16"
+postgres_admin_username = "doraadmin"
+# postgres_admin_password = "your-secure-password-here"  # Leave commented to auto-generate
+
+# Redis Configuration (Azure Cache for Redis)
+# redis_sku_name  = "Standard"  # Basic, Standard, or Premium
+# redis_family    = "C"         # C for Basic/Standard, P for Premium
+# redis_capacity  = 1           # 0-6 for C family, 1-5 for P family
+
+# Application Configuration
+docker_registry  = "docker.io"
+backend_image    = "insilicomed/dora-backend:latest"
+frontend_image   = "insilicomed/dora-frontend:latest"
+
+# Django Configuration
+# django_secret_key = "your-django-secret-key"  # Leave commented to auto-generate
+
+# OpenAI Configuration
+# openai_api_key           = "your-openai-api-key"
+# openai_api_type          = "azure"
+# openai_api_base_url      = "https://your-instance.openai.azure.com"
+# openai_api_version       = "2025-01-01-preview"
+# openai_deployment_name   = "gpt-5"
+
+# Embedding Configuration
+# embedding_openai_api_configs = "[{\"model\":\"text-embedding-3-small\",\"api_key\":\"your-api-key\",\"base_url\":\"https://your-instance.openai.azure.com\",\"version\":\"2024-12-01-preview\",\"deployment_name\":\"text-embedding-3-small\"}]"
+
+# Azure Storage Configuration (automatically created by Terraform)
+# storage_account_tier        = "Standard"  # Standard or Premium
+# storage_account_replication = "LRS"       # LRS, GRS, RAGRS, ZRS, GZRS, RAGZRS
+# storage_container_name      = "media"     # Container name for media files
+
+# DNS Configuration
+# dns_label_prefix = "dora-demo"
+
+# Azure Policy (optional)
+enable_azure_policy = false
+
+# Tags
+tags = {
+  project   = "dora"
+  workload  = "aks-prebuilt"
+  managedby = "terraform"
+  env       = "production"
+}

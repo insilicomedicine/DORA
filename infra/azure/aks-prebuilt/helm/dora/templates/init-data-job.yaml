@@ -1,0 +1,47 @@
+{{- if .Values.initData.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "dora.fullname" . }}-init-data
+  labels:
+    {{- include "dora.labels" . | nindent 4 }}
+    app.kubernetes.io/component: init-data
+  annotations:
+    # Only run this job after initial installation (NOT on upgrades)
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        {{- include "dora.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: init-data
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      restartPolicy: Never
+      containers:
+        - name: load-initial-data
+          image: "{{ .Values.images.backend.repository }}:{{ .Values.images.backend.tag }}"
+          imagePullPolicy: {{ .Values.images.backend.pullPolicy }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Waiting for database migrations to complete..."
+              sleep 60
+              
+              echo "Loading initial data..."
+              python /dora/manage.py loaddata initial_data.json || {
+                echo "Note: Initial data may already be loaded (this is normal for upgrades)"
+                exit 0
+              }
+              
+              echo "Initial data loaded successfully!"
+          env:
+            {{- include "dora.backendEnv" . | nindent 12 }}
+{{- end }}

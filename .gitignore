@@ -204,3 +204,4 @@ bundle-analysis.html
 
 # Parameters file
 infra/azure/vm-prebuilt/parameters.json
+infra/azure/aks-prebuilt/terraform/terraform.tfvars

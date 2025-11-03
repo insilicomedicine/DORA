@@ -1,0 +1,258 @@
+# Default values for DORA Helm chart
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Global settings
+global:
+  storageClass: azurefile
+
+# Initial Data Loading
+# Automatically load initial_data.json after deployment
+initData:
+  enabled: true
+
+# Image Configuration
+images:
+  backend:
+    repository: insilicomed/dora-backend
+    tag: blob
+    pullPolicy: IfNotPresent
+  frontend:
+    repository: insilicomed/dora-frontend
+    tag: blob
+    pullPolicy: IfNotPresent
+
+# Image pull secrets (if using private registry)
+imagePullSecrets:
+  - name: regcred
+
+# Backend Configuration
+backend:
+  replicaCount: 1
+
+  resources:
+    requests:
+      memory: "2Gi"
+      cpu: "1000m"
+    limits:
+      memory: "4Gi"
+      cpu: "2000m"
+
+  service:
+    type: ClusterIP
+    port: 8080
+
+  # Environment variables
+  env:
+    DEBUG: "False"
+    ALLOWED_HOSTS: "*"
+
+    # Database (will be overridden by values from Terraform outputs)
+    DB_NAME: "dora"
+    DB_USER: "doraadmin"
+    DB_PASSWORD: ""
+    DB_HOST: ""
+    DB_PORT: "5432"
+    DATABASE_URL: ""
+
+    # Redis (will be overridden by values from Terraform outputs)
+    REDIS_CONN_STR: ""
+    REDIS_CACHE_DB: "0"
+    REDIS_BROKER_DB: "1"
+    REDIS_CHANNELS_DB: "2"
+    REDIS_CHUNKS_DB: "3"
+    REDIS_WEBCHUNKS_DB: "4"
+
+    # OpenAI Configuration
+    OPENAI_API_MODEL: "gpt-5"
+    OPENAI_API_KEY: ""
+    OPENAI_API_TIMEOUT: "180"
+    OPENAI_API_TYPE: "openai"
+    OPENAI_API_BASE_URL: ""
+    OPENAI_API_VERSION: ""
+    OPENAI_API_DEPLOYMENT_NAME: ""
+
+    # Backup OpenAI
+    BACKUP_OPENAI_API_MODEL: "gpt-4.1"
+    BACKUP_OPENAI_API_KEY: ""
+    BACKUP_OPENAI_API_TYPE: "openai"
+    BACKUP_OPENAI_API_BASE_URL: ""
+    BACKUP_OPENAI_API_VERSION: ""
+    BACKUP_OPENAI_API_DEPLOYMENT_NAME: ""
+
+    # Mini OpenAI
+    MINI_OPENAI_API_MODEL: "gpt-4o-mini"
+    MINI_OPENAI_API_KEY: ""
+    MINI_OPENAI_API_TYPE: "openai"
+    MINI_OPENAI_API_BASE_URL: ""
+    MINI_OPENAI_API_VERSION: ""
+    MINI_OPENAI_API_DEPLOYMENT_NAME: ""
+
+    # Backup Mini OpenAI
+    BACKUP_MINI_OPENAI_API_MODEL: "gpt-4o-mini"
+    BACKUP_MINI_OPENAI_API_KEY: ""
+    BACKUP_MINI_OPENAI_API_TYPE: "openai"
+    BACKUP_MINI_OPENAI_API_BASE_URL: ""
+    BACKUP_MINI_OPENAI_API_VERSION: ""
+    BACKUP_MINI_OPENAI_API_DEPLOYMENT_NAME: ""
+
+    # Embedding Configuration (JSON array string)
+    # Will be overridden by Terraform outputs in generated-values.yaml
+    EMBEDDING_OPENAI_API_CONFIGS: "[]"
+
+    # Generation Settings
+    GENERATION_RETRY_TIMES: "1"
+    TOOL_EXECUTION_COUNT_LIMIT: "False"
+    TOOL_MAX_EXECUTION_COUNT: "20"
+    AGENT_EXECUTOR_MAX_ITERATIONS: "30"
+
+    # Application Settings
+    DORA_PUBLIC_URL: "http://localhost"
+    DORA_STATIC_URL: "http://localhost"
+    GENERATION_TASK_TIMEOUT: "3600"
+    CSRF_TRUSTED_ORIGINS: "http://localhost:80"
+
+    # External Services
+    MERMAID_SERVER_URL: "https://mermaid.ink"
+    USE_PHOENIX: "False"
+    SENTRY_DSN: ""
+    IS_BIBLIOGRAPHY_ENABLED: "True"
+    IS_WEBSEARCH_ENABLED: "True"
+
+    # Storage Backend
+    STORAGE_BACKEND: "blob"
+    AZURE_STORAGE_CONNECTION_STRING: ""
+    AZURE_STORAGE_CONTAINER: "media"
+    AZURE_STORAGE_ACCOUNT_NAME: ""
+    AZURE_STORAGE_ACCOUNT_KEY: ""
+    AZURE_STORAGE_AUTO_CREATE_CONTAINER: "False"
+    AZURE_STORAGE_DOMAIN_SUFFIX: "blob.core.windows.net"
+
+    # Django
+    SECRET_KEY: ""
+    SESSION_COOKIE_SECURE: "False"
+
+# Frontend Configuration
+frontend:
+  replicaCount: 1
+
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+
+  service:
+    type: ClusterIP
+    port: 8000
+
+# Worker Configuration
+worker:
+  replicaCount: 1
+
+  resources:
+    requests:
+      memory: "2Gi"
+      cpu: "1000m"
+    limits:
+      memory: "4Gi"
+      cpu: "2000m"
+
+# WebSocket Configuration
+websocket:
+  replicaCount: 1
+
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: "500m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
+
+  service:
+    type: ClusterIP
+    port: 8081
+
+# Ingress Configuration
+# Note: Ingress is always enabled as it's required for external access
+ingress:
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+  hosts:
+    - host: "" # Will be filled by deployment script
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+# NGINX Reverse Proxy Configuration (matches Docker Compose setup)
+nginx:
+  replicaCount: 1
+  image:
+    repository: nginx
+    tag: "1.25-alpine"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 80
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+# Static Files Configuration
+# Static files are handled via an emptyDir volume shared between backend and nginx
+staticFiles:
+  enabled: true
+  # emptyDir is used as it's ephemeral and doesn't need persistent storage for static files
+  # Static files are collected during backend container startup
+
+# Persistence (for logs if needed)
+persistence:
+  enabled: false
+  storageClass: "azurefile"
+  accessMode: ReadWriteMany
+  size: 10Gi
+
+# PostgreSQL Configuration (External - managed by Azure)
+postgresql:
+  enabled: false # We use Azure PostgreSQL Flexible Server
+
+# Redis Configuration (External - managed by Azure)
+redis:
+  enabled: false # We use Azure Managed Redis
+
+# Service Account
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+# Pod Security Context
+podSecurityContext:
+  fsGroup: 1000
+
+# Security Context
+securityContext:
+  runAsNonRoot: false
+  runAsUser: 0
+
+# Node Selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity
+affinity: {}

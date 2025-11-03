@@ -1,0 +1,49 @@
+# Generated Helm values from Terraform outputs
+# Generated at: 2025-10-28 16:34:25 UTC
+
+backend:
+  env:
+    # Database Configuration
+    DB_HOST: "dora-aks-postgres.postgres.database.azure.com"
+    DB_PORT: "5432"
+    DB_NAME: "dora"
+    DB_USER: "doraadmin"
+    DB_PASSWORD: "cgO=@g+wMQS4&zx4Nm3r@VmtCe>99jjF"
+    DATABASE_URL: "postgresql://doraadmin:cgO=@g+wMQS4&zx4Nm3r@VmtCe>99jjF@dora-aks-postgres.postgres.database.azure.com:5432/dora?sslmode=require"
+    
+    # Redis Configuration
+    REDIS_CONN_STR: "redis://:FpkTDIAfkNwoAG4w6DKbwYO6qS3wjEuMJAzCaOKV61Y=@dora-aks-cache.redis.cache.windows.net:6379"
+    REDIS_CACHE_DB: "0"
+    REDIS_BROKER_DB: "1"
+    REDIS_CHANNELS_DB: "2"
+    REDIS_CHUNKS_DB: "3"
+    REDIS_WEBCHUNKS_DB: "4"
+    
+    # Django Configuration
+    SECRET_KEY: "vQbct{HpydM>[5D+=>:<@DF<Mm1+KpA#kR1a>%jVmHii(BZ#*M"
+    
+    # Azure Storage Configuration
+    AZURE_STORAGE_CONNECTION_STRING: "DefaultEndpointsProtocol=https;AccountName=doraaksstorage;AccountKey=cbo9FmscdnDnGM7uwVqeTc3oMnZcIx0pOd/OHRaEEMvUc7tScwgcMZ5bWA1VbE2ARq/VXToB0Igz+AStuQuw2g==;EndpointSuffix=core.windows.net"
+    AZURE_STORAGE_CONTAINER: "media"
+    
+    # Application URLs
+    DORA_PUBLIC_URL: "http://dora-aksdemo.germanywestcentral.cloudapp.azure.com"
+    DORA_STATIC_URL: "http://dora-aksdemo.germanywestcentral.cloudapp.azure.com"
+    CSRF_TRUSTED_ORIGINS: "http://dora-aksdemo.germanywestcentral.cloudapp.azure.com"
+    
+    # OpenAI Configuration
+    OPENAI_API_KEY: "AzEUqp4FuK4gXcmuIUKBwUqEa7R6FtksUMlvAWk2iWWqHNWU2wiSJQQJ99BHACHYHv6XJ3w3AAAAACOGJiSc"
+    OPENAI_API_TYPE: "azure"
+    OPENAI_API_BASE_URL: "https://aif-cn-it-playground.cognitiveservices.azure.com"
+    OPENAI_API_VERSION: "2025-01-01-preview"
+    OPENAI_API_DEPLOYMENT_NAME: "gpt-5"
+    
+    # Embedding Configuration
+    EMBEDDING_OPENAI_API_CONFIGS: '[{"model":"text-embedding-3-small","api_key":"055702f4b1d246e4874d3c03c1d3d78b","base_url":"https://inclinico-dev2.openai.azure.com/","version":"2024-12-01-preview","deployment_name":"text-embedding-3-small"}]'
+
+ingress:
+  hosts:
+    - host: "dora-aksdemo.germanywestcentral.cloudapp.azure.com"
+      paths:
+        - path: /
+          pathType: Prefix
