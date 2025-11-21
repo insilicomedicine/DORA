@@ -498,7 +498,17 @@ Each has:
 }
 ```
 
-#### Integration Notes
+#### 4. Deep research
+
+**Purpose:**
+Enable in-depth technical exploration, helping users analyze complex topics, review scientific literature, and generate detailed insights beyond conventional AI chat capabilities.
+
+
+**User Manual:**
+
+![deep_research_video](assets/deep_research.gif)
+
+### Integration Notes
 
 - These configuration objects are injected into the LLM orchestration backend dynamically based on the button/tool activated by the user.
 - `expected_output` and `text_context` are dynamically inserted by the backend pipeline during prompt execution.
