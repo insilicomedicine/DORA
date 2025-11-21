@@ -503,9 +503,28 @@ Each has:
 **Purpose:**
 Enable in-depth technical exploration, helping users analyze complex topics, review scientific literature, and generate detailed insights beyond conventional AI chat capabilities.
 
+**Setup Instructions:**
+
+To enable the Deep Research service, follow these steps:
+
+  1. **Create Azure AI Foundry Project**
+    - Ensure you have created an `o3-deep-research` project in Azure AI Foundry
+    - The project must be set up in supported regions (West US or Norway East)
+    - Deploy the required models: `o3-deep-research` and `gpt-4o`
+    - Connect a Grounding with Bing Search resource
+    - For detailed setup instructions, refer to: [Microsoft Azure AI Foundry Deep Research Documentation](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/tools/deep-research?view=foundry-classic)
+
+  2. **Configure Environment Variables**
+    - Reference the "Azure AI Agent Deep Research" section in `.env.example`
+    - Add the corresponding configuration settings to your `.env` file
+    - Ensure all required connection strings and API keys are properly configured
+
+  3. **Enable in Admin Portal**
+    - Navigate to the admin portal
+    - Locate the "Deep research" template type
+    - Check the "Is Online" option to activate the template
 
 **User Manual:**
-
 ![deep_research_video](assets/deep_research.gif)
 
 ### Integration Notes
