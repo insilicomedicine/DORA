@@ -653,9 +653,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#integration-notes" class="md-nav__link">
+  <a href="#4-deep-research" class="md-nav__link">
     <span class="md-ellipsis">
-      Integration Notes
+      4. Deep research
     </span>
   </a>
   
@@ -663,6 +663,15 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration Notes
+    </span>
+  </a>
   
 </li>
         
@@ -1127,9 +1136,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#integration-notes" class="md-nav__link">
+  <a href="#4-deep-research" class="md-nav__link">
     <span class="md-ellipsis">
-      Integration Notes
+      4. Deep research
     </span>
   </a>
   
@@ -1137,6 +1146,15 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration Notes
+    </span>
+  </a>
   
 </li>
         
@@ -1661,7 +1679,42 @@ To produce graphical abstracts or visual summaries to accompany scientific docum
     }
 }
 </code></pre>
-<h4 id="integration-notes">Integration Notes</h4>
+<h4 id="4-deep-research">4. Deep research</h4>
+<p><strong>Purpose:</strong>
+Enable in-depth technical exploration, helping users analyze complex topics, review scientific literature, and generate detailed insights beyond conventional AI chat capabilities.</p>
+<p><strong>Setup Instructions:</strong></p>
+<p>To enable the Deep Research service, follow these steps:</p>
+<ol>
+<li>
+<p><strong>Create Azure AI Foundry Project</strong></p>
+<ul>
+<li>Ensure you have created an <code>o3-deep-research</code> project in Azure AI Foundry</li>
+<li>The project must be set up in supported regions (West US or Norway East)</li>
+<li>Deploy the required models: <code>o3-deep-research</code> and <code>gpt-4o</code></li>
+<li>Connect a Grounding with Bing Search resource</li>
+<li>For detailed setup instructions, refer to: <a href="https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/tools/deep-research?view=foundry-classic">Microsoft Azure AI Foundry Deep Research Documentation</a></li>
+</ul>
+</li>
+<li>
+<p><strong>Configure Environment Variables</strong></p>
+<ul>
+<li>Reference the "Azure AI Agent Deep Research" section in <code>.env.example</code></li>
+<li>Add the corresponding configuration settings to your <code>.env</code> file</li>
+<li>Ensure all required connection strings and API keys are properly configured</li>
+</ul>
+</li>
+<li>
+<p><strong>Enable in Admin Portal</strong></p>
+<ul>
+<li>Navigate to the admin portal</li>
+<li>Locate the "Deep research" template type</li>
+<li>Check the "Is Online" option to activate the template</li>
+</ul>
+</li>
+</ol>
+<p><strong>User Manual:</strong>
+<img alt="deep_research_video" src="assets/deep_research.gif" /></p>
+<h3 id="integration-notes">Integration Notes</h3>
 <ul>
 <li>These configuration objects are injected into the LLM orchestration backend dynamically based on the button/tool activated by the user.</li>
 <li><code>expected_output</code> and <code>text_context</code> are dynamically inserted by the backend pipeline during prompt execution.</li>
