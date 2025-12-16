@@ -15,11 +15,13 @@ interface ReviewInsightsState {
   data: ReviewInsightsData;
   isLoading: boolean;
   status: string;
+  isReload: boolean;
 
   // Actions
   setLoading: (isLoading: boolean) => void;
   setStatus: (status: string) => void;
   setData: (data: ReviewInsightsData) => void;
+  setIsReload: (isReload: boolean) => void;
   reset: () => void;
   fetchReview: (paperId: string) => Promise<void>;
   generateReview: (paperId: string) => Promise<boolean>;
@@ -29,7 +31,8 @@ interface ReviewInsightsState {
 const initialState = {
   data: {},
   isLoading: false,
-  status: ''
+  status: '',
+  isReload: false
 };
 
 export const useReviewInsightsStore = create<ReviewInsightsState>(
@@ -46,6 +49,10 @@ export const useReviewInsightsStore = create<ReviewInsightsState>(
 
     setData: (data: ReviewInsightsData) => {
       set({ data });
+    },
+
+    setIsReload: (isReload: boolean) => {
+      set({ isReload });
     },
 
     reset: () => {

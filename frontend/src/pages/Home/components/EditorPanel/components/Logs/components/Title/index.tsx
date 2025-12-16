@@ -6,9 +6,10 @@ import SidebarCollapse from 'components/SidebarCollapse';
 interface TitleWrapperProps {
   name: string;
   generatingTime?: number;
+  variant?: 'h6' | 'caption';
 }
 
-const Title = ({ name, generatingTime }: TitleWrapperProps) => {
+const Title = ({ name, generatingTime, variant = 'h6' }: TitleWrapperProps) => {
   const { isCollapsed, toggleCollapse } = useSideMenuStore();
 
   return (
@@ -27,8 +28,13 @@ const Title = ({ name, generatingTime }: TitleWrapperProps) => {
         />
       )}
       <Stack sx={{ m: '0 auto' }}>
-        <Typography fontSize={18} lineHeight="153%" textAlign="center">
-          Generating your <strong style={{ fontWeight: 600 }}>{name}</strong>
+        <Typography
+          fontWeight={500}
+          {...(variant ? { variant } : { fontSize: 18 })}
+          lineHeight="153%"
+          textAlign="center"
+        >
+          Generating your {name}
         </Typography>
         <Typography fontSize={12} lineHeight="137%" color="#666666">
           Generating may take over {generatingTime} minutes. We will email you

@@ -226,6 +226,18 @@ const BibliographyList = () => {
       { publicationItems: [], webSearchItems: [], customBibliographies: [] }
     );
 
+  const deduplicatedWebSearchItems = removeDuplicates(
+    webSearchItems,
+    (item) => {
+      const url = item?.metadata?.url;
+      return url ? String(url).trim().split('#')[0].trim() : null;
+    },
+    (item, key) => ({
+      ...item,
+      metadata: { ...(item.metadata || {}), url: key }
+    })
+  );
+
   return (
     <>
       {customBibliographies?.map((item: Bibliography) => (
@@ -253,11 +265,12 @@ const BibliographyList = () => {
         );
       })}
 
-      {webSearchItems.map((item: Bibliography) => (
+      {deduplicatedWebSearchItems.map((item: Bibliography) => (
         <BibliographyCustomItem
           key={item?.id || ''}
+          title={item?.metadata?.title || ''}
           url={item?.metadata?.url || ''}
-          sx={{ ml: 1.5, mr: 1, pt: 1.5 }}
+          sx={{ ml: 1.5, mr: 2, pt: 1.5 }}
         />
       ))}
     </>

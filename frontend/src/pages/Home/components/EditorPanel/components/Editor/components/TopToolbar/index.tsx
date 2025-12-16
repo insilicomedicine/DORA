@@ -16,6 +16,7 @@ import ToolBar from './components/ToolBar';
 import { ClickAwayListener } from '@mui/material';
 import AllSectionsPolishedAlert from './components/AllSectionsPolishedAlert';
 import { useDocumentStore } from 'contexts/documentsStore';
+import { convertToKey } from 'utils/utils';
 
 interface TopToolbarProps {
   editor: any;
@@ -229,10 +230,15 @@ const TopToolbar = (props: TopToolbarProps) => {
         paperId={documentData?.id}
         paperTitle={documentData?.title}
       />
-      <LogsDialog
-        open={isShowLogsDialogOpen}
-        handleClose={() => setIsShowLogsDialogOpen(false)}
-      />
+      {isShowLogsDialogOpen && (
+        <LogsDialog
+          isDeepResearch={
+            convertToKey(documentData?.template_type) === 'deepresearch'
+          }
+          open={isShowLogsDialogOpen}
+          handleClose={() => setIsShowLogsDialogOpen(false)}
+        />
+      )}
       {enableAddCitation && (
         <AddCitation
           editor={editor}

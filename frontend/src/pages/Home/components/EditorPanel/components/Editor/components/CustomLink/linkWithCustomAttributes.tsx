@@ -1,4 +1,5 @@
 import Link from '@tiptap/extension-link';
+import { generateUUID } from 'utils/generateUUID';
 
 /**
  * Creates custom attributes for the Link extension
@@ -51,7 +52,7 @@ export const createLinkAttributes = () => {
       default: null,
       renderHTML: () => {
         return {
-          ['data-unique-id']: `id-${crypto.randomUUID()}`
+          ['data-unique-id']: `id-${generateUUID()}`
         };
       }
     },

@@ -3,9 +3,9 @@ import { Box, Button, Stack, Tooltip, Typography } from '@mui/material';
 import { useParams, useNavigate } from 'react-router';
 import { PlayCircleRounded } from '@mui/icons-material';
 import { generateDocument } from 'services/documents';
-import { templateIcons } from 'utils/templates';
+import Icons from 'pages/Templates/components/Icons';
 import { Template } from 'types/template';
-import { convertToKey, formatDateWithNewRule } from 'utils/utils';
+import { formatDateWithNewRule } from 'utils/utils';
 import usePlanStatus from 'hooks/usePlanStatus';
 import useSettingsStore from 'contexts/useSettingsStore';
 import { getTooltipTitle } from 'utils/documentGeneration';
@@ -20,11 +20,13 @@ import { useUserStore } from 'contexts/useUserStore';
 interface HeaderProps {
   template?: Template;
   isResearchTasksGenerating?: boolean;
+  isDeepResearch?: boolean;
 }
 
 const Header = ({
   template,
-  isResearchTasksGenerating = false
+  isResearchTasksGenerating = false,
+  isDeepResearch = false
 }: HeaderProps) => {
   const navigate = useNavigate();
   const [isGenerating, setIsGenerating] = useState(false);
@@ -102,9 +104,6 @@ const Header = ({
 
   const { type: templateType = '', name: templateName = '' } = template || {};
 
-  const { icon: templateIcon = '📚' } =
-    templateIcons[convertToKey(templateType)] || {};
-
   const isInProgressDocumentsLimited = inProgressDocuments >= 5;
 
   const isDisableGenerate = useMemo(
@@ -172,13 +171,14 @@ const Header = ({
         >
           <span
             style={{
-              width: 24,
-              height: 24,
+              width: 20,
+              height: 20,
               textAlign: 'center',
-              display: 'inline-block'
+              display: 'inline-block',
+              marginRight: 8
             }}
           >
-            {templateIcon}
+            <Icons type={templateType} />
           </span>
           <span
             style={{
@@ -200,20 +200,22 @@ const Header = ({
         <Typography variant="caption" color="text.secondary" lineHeight="137%">
           {renderUserPlanMessage()}
         </Typography>
-        <Tooltip title={tooltipTitle}>
-          <span>
-            <Button
-              variant="contained"
-              endIcon={<PlayCircleRounded sx={{ ml: -0.5 }} />}
-              sx={{ textTransform: 'none', py: '5px', lineHeight: 1.45 }}
-              onClick={handleGenerateDocument}
-              disabled={isDisableGenerate}
-              data-ga-event="generate_document"
-            >
-              Generate
-            </Button>
-          </span>
-        </Tooltip>
+        {!isDeepResearch && (
+          <Tooltip title={tooltipTitle}>
+            <span>
+              <Button
+                variant="contained"
+                endIcon={<PlayCircleRounded sx={{ ml: -0.5 }} />}
+                sx={{ textTransform: 'none', py: '5px', lineHeight: 1.45 }}
+                onClick={handleGenerateDocument}
+                disabled={isDisableGenerate}
+                data-ga-event="generate_document"
+              >
+                Generate
+              </Button>
+            </span>
+          </Tooltip>
+        )}
       </Stack>
     </Box>
   );

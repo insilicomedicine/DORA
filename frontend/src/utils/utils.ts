@@ -8,25 +8,69 @@ export function getLocalStorage(key) {
   return JSON.parse(localStorage.getItem(key)!);
 }
 
-//remove duplicates from an array of objects by a key
-export function removeDuplicates(array, key) {
-  return array.filter(
-    (obj, index, self) =>
-      self.findIndex((item) => item[key] === obj[key]) === index
-  );
-}
-
-export function removeDuplicatesByPmid(array) {
+/**
+ * Removes duplicates from an array of objects based on a key extractor.
+ *
+ * @param array - The array to remove duplicates from
+ * @param keyExtractor - A string key path (e.g., 'id') or a function that extracts a unique key from each item.
+ *                       If the function returns null, undefined, or empty string, the item is treated as unique.
+ * @param itemTransformer - Optional function to transform items before adding to result.
+ *                          Receives (item, extractedKey) and returns the transformed item.
+ * @returns A new array with duplicates removed
+ *
+ **/
+export function removeDuplicates<T = any>(
+  array: T[],
+  keyExtractor: string | ((item: T) => string | null | undefined),
+  itemTransformer?: (item: T, key: string) => T
+): T[] {
+  // Handle edge cases
+  if (!Array.isArray(array)) return [];
   if (array.length <= 1) return array;
-  const newArray = array.filter((item) => item.id);
-  return newArray.filter(
-    (obj, index, self) =>
-      self.findIndex(
-        (item) =>
-          item.metadata?.pubmed_id === obj.metadata?.pubmed_id &&
-          item.metadata?.pubmed_id
-      ) === index
-  );
+
+  const seen = new Set<string>();
+  const keyFn =
+    typeof keyExtractor === 'string'
+      ? (item: T) => {
+          const value = (item as any)?.[keyExtractor];
+          return value === null || value === undefined ? null : String(value);
+        }
+      : keyExtractor;
+
+  return array.reduce((acc: T[], item: T) => {
+    // Skip null/undefined items
+    if (item === null || item === undefined) return acc;
+
+    // Extract the key
+    const extractedKey = keyFn(item);
+    const key =
+      extractedKey === null || extractedKey === undefined
+        ? ''
+        : String(extractedKey).trim();
+
+    // If no key, treat as unique (keep it)
+    // This matches the behavior of all three original functions
+    if (!key) {
+      // Apply transformer if provided (even with empty key), otherwise use original item
+      const finalItem = itemTransformer ? itemTransformer(item, '') : item;
+      acc.push(finalItem);
+      return acc;
+    }
+
+    // Check if we've seen this key
+    if (seen.has(key)) {
+      return acc;
+    }
+
+    // Mark as seen and add to result
+    seen.add(key);
+
+    // Apply transformer if provided, otherwise use original item
+    const finalItem = itemTransformer ? itemTransformer(item, key) : item;
+    acc.push(finalItem);
+
+    return acc;
+  }, []);
 }
 
 export function formatDate(dateString) {
@@ -51,6 +95,7 @@ export const isBeforeCheckData = (createdAt: Date, checkDate: Date) => {
 };
 
 export const convertToKey = (string) => {
+  if (!string) return '';
   return string.replace(/\s/g, '').toLowerCase();
 };
 

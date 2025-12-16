@@ -1,0 +1,95 @@
+.chat-markdown {
+  color: inherit;
+  word-break: break-word;
+  white-space: unset;
+  overflow-wrap: anywhere;
+
+  & > *:first-child {
+    margin-top: 0;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0 0 0.5em 0;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+  h2 {
+    font-size: 1.35rem;
+  }
+  h3 {
+    font-size: 1.2rem;
+  }
+
+  p {
+    margin-bottom: 8px;
+  }
+
+  strong {
+    font-weight: 700;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+  }
+
+  ul,
+  ol {
+    margin: 4px 0;
+    padding-left: 2rem;
+
+    li {
+      margin-bottom: 10px;
+    }
+  }
+
+  blockquote {
+    margin: 0.75em 0;
+    padding: 0.25em 0 0.25em 0.75em;
+    border-left: 3px solid rgba(0, 0, 0, 0.2);
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  code {
+    font-family:
+      ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.9em;
+    background: rgba(0, 0, 0, 0.06);
+    padding: 0.15em 0.35em;
+    border-radius: 4px;
+  }
+
+  pre {
+    margin: 0.75em 0;
+    padding: 0.75em 0.9em;
+    background: rgba(0, 0, 0, 0.06);
+    border-radius: 6px;
+    overflow: auto;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .chat-markdown {
+    blockquote {
+      border-left-color: rgba(255, 255, 255, 0.3);
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    code {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    pre {
+      background: rgba(255, 255, 255, 0.06);
+    }
+  }
+}

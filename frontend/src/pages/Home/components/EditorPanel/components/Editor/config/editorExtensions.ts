@@ -31,7 +31,7 @@ export const getEditorExtensions = () => [
   Underline,
   Color.configure({ types: [TextStyle.name, ListItem.name] }),
   TextAlign.configure({
-    types: ['heading', 'paragraph', 'reactComponent'],
+    types: ['paragraph', 'reactComponent'],
     defaultAlignment: 'justify'
   }),
   Indent.configure({

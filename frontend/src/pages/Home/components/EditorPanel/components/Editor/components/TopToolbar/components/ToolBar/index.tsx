@@ -7,14 +7,14 @@ import {
   ChecklistRounded
 } from '@mui/icons-material';
 import Snackbar from 'utils/snackbar';
-import { convertToKey, isBeforeCheckData } from 'utils/utils';
+import { isBeforeCheckData } from 'utils/utils';
 import Feedback from '../../../Feedback';
 import usePlanStatus from 'hooks/usePlanStatus';
 import SidebarCollapse from 'components/SidebarCollapse';
 import useRightPanelStore from 'contexts/useRightPanelStore';
 import LeftPanelButtons from 'pages/Home/components/LeftPanel/components/Buttons/SingleMode';
 import { RightPanelComponentIds } from 'types/document';
-import { templateIcons } from 'utils/templates';
+import Icons from 'pages/Templates/components/Icons';
 import UserInputs from './../../../UserInputs';
 import { useEditorStore } from 'contexts/editorStore';
 import { TopToolbarButtonGroup, TopToolbarButton } from './StyledComponents';
@@ -233,25 +233,12 @@ const ToolBar = ({
   const renderHeader = () => (
     <Stack direction="row" spacing={3} sx={{ alignItems: 'center' }}>
       <LeftPanelButtons />
-      <Stack direction="row" sx={{ mr: 4, alignItems: 'center' }}>
-        <Typography
-          variant="caption"
-          sx={{
-            width: 22,
-            height: 22,
-            borderRadius: 0.75,
-            backgroundColor: '#F5F5F5',
-            marginRight: 1,
-            textAlign: 'center',
-            lineHeight: '22px'
-          }}
-        >
-          {templateIcons[convertToKey(templateType)]?.icon}
-        </Typography>
+      <Stack direction="row" sx={{ mr: 4, alignItems: 'center' }} spacing={1}>
+        <Icons type={templateType} color="#9E9E9E" />
         <Typography
           variant="caption"
           color="textSecondary"
-          sx={{ maxHeight: 80, overflow: 'hidden' }}
+          sx={{ maxHeight: 80, minWidth: 100, overflow: 'hidden' }}
           data-testid="userInputs-templateName"
         >
           {templateName}

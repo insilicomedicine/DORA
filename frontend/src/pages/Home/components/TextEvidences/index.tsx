@@ -1,6 +1,6 @@
 import { useEffect, useState, memo, useMemo } from 'react';
 import { Bibliography, ReferenceSourceType } from 'types/document';
-import { removeDuplicatesByPmid } from 'utils/utils';
+import { removeDuplicates } from 'utils/utils';
 import { useEditorStore } from 'contexts/editorStore';
 import { useDocumentStore } from 'contexts/documentsStore';
 import TextEvidenceItem from './TextEvidenceItem';
@@ -69,8 +69,21 @@ const TextEvidences = ({
 
       return itemIdString === pmidString || pubmedIdString === pmidString;
     });
-
-    return removeDuplicatesByPmid(filtered) || [];
+    return (
+      removeDuplicates(filtered, (item) => {
+        const pubmedId =
+          item?.metadata?.pubmed_id === undefined ||
+          item?.metadata?.pubmed_id === null
+            ? ''
+            : String(item.metadata.pubmed_id);
+        const id =
+          item?.id === undefined || item?.id === null ? '' : String(item.id);
+        // Prefer pubmed_id when present, otherwise fall back to id
+        const key = pubmedId || id;
+        // If neither exists, return null to treat item as unique
+        return key || null;
+      }) || []
+    );
   }, [bibliographyList, pmidString]);
 
   if (showWithLink) {

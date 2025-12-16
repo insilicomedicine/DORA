@@ -47,7 +47,7 @@ const Feedback = ({ setcionId }: FeedbackProps) => {
   const handleFeedBack = async (e, key) => {
     const { currentTarget } = e;
     const response = await feedback({
-      document_id: documentData?.id,
+      document_id: documentData?.id || '',
       ...{ ...(setcionId ? { section_id: setcionId } : {}) },
       like: key === 'like'
     });
@@ -200,6 +200,7 @@ const Feedback = ({ setcionId }: FeedbackProps) => {
             <FeedbackButton
               variant="text"
               onClick={async () => {
+                if (!documentData?.id) return;
                 await feedback({
                   document_id: documentData?.id,
                   ...{ ...(setcionId ? { section_id: setcionId } : {}) },

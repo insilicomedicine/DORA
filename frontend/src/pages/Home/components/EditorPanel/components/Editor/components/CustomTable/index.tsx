@@ -2,6 +2,7 @@ import Table from '@tiptap/extension-table';
 import { Plugin, PluginKey, TextSelection } from 'prosemirror-state';
 import { keymap } from 'prosemirror-keymap';
 import { Slice, Fragment, Node } from 'prosemirror-model';
+import { generateUUID } from 'utils/generateUUID';
 
 const CustomTable = Table.extend({
   addAttributes() {
@@ -20,7 +21,7 @@ const CustomTable = Table.extend({
         default: ``,
         renderHTML: () => {
           // Generate a unique ID for the table
-          return { id: crypto.randomUUID() };
+          return { id: generateUUID() };
         }
       }
     };

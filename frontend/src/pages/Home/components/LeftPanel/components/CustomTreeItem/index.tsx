@@ -35,6 +35,10 @@ const CustomTreeItem = ({
     setIsScrollingDocumentPageContent
   } = useScrollingDocumentPageContentStore((state) => state);
 
+  //if the section has only one section and the slug is main_text, then the title is hidden
+  const isTitleHidden =
+    sections?.length === 1 && sections[0].slug === 'main_text';
+
   const DocumentStatusIcon =
     documentStatusIcon[status] || documentStatusIcon[stage];
   const isCompleted = status === 'completed';
@@ -327,6 +331,7 @@ const CustomTreeItem = ({
         }}
       >
         {!isDraft &&
+          !isTitleHidden &&
           children?.map((child) => {
             const status =
               child.is_refined || !!child.refined_result

@@ -2,8 +2,8 @@ import { useEffect, lazy, Suspense } from 'react';
 import { initialJiraServiceDesk } from 'utils/initialJiraServiceDesk';
 import Box from '@mui/material/Box';
 import LeftPanel from './components/LeftPanel';
-import PageSkeleton from 'components/PageSkeleton';
 import { theme } from 'theme';
+import PageSkeleton from 'components/PageSkeleton';
 
 // Lazy load heavy components
 const Templates = lazy(() => import('pages/Templates'));

@@ -160,7 +160,8 @@ const Bibliography = () => {
     data: scrollData,
     loading,
     loadingMore,
-    mutate
+    mutate,
+    reload
   } = useInfiniteScroll<{
     list: UploadedFileItemType[];
     next: string | null;
@@ -274,6 +275,12 @@ const Bibliography = () => {
     }
   }, [uploadedFileUpdatesWS?.pk]);
 
+  useEffect(() => {
+    if (uploadedFileUpdatesWS?.reload) {
+      reload();
+    }
+  }, [uploadedFileUpdatesWS?.reload]);
+
   const getUploadButton = (isContained?: boolean) => {
     return (
       <div {...getRootProps()}>
@@ -381,7 +388,7 @@ const Bibliography = () => {
               setSnackbarOpen(false);
             }}
           >
-            <CloseRounded style={{ color: '#621B16', fontSize: '20px' }} />
+            <CloseRounded style={{ color: '#621B16', fontSize: 20 }} />
           </IconButton>
         }
       />

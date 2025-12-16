@@ -394,7 +394,9 @@ const applyRefined = async (
  */
 const feedback = async (params: {
   document_id: string;
-  like: boolean;
+  like?: boolean;
+  detail?: string;
+  section_id?: string;
 }): Promise<boolean> => {
   return await axios
     .post(`documents/feedback/`, params)
@@ -537,6 +539,28 @@ const generatePlan = async (
     });
 };
 
+/**
+ * Send a message to the chatbot for a document
+ * @param {string} documentId - Unique document identifier
+ * @param {string} message - The message to send to the chatbot
+ * @returns {Promise<boolean>} True if message sent successfully, false on error
+ */
+const sendMessageToChatbot = async (params: {
+  template_id?: string;
+  document_id?: string;
+  message?: string;
+}): Promise<Record<string, any>> => {
+  return await axios
+    .post(`/documents/chat/`, params)
+    .then((res) => {
+      return res.data;
+    })
+    .catch((err) => {
+      showErrorMessage(err);
+      return {};
+    });
+};
+
 export {
   getDocuments,
   generateDocuments,
@@ -560,5 +584,6 @@ export {
   generateDocumentReview,
   getDocumentReview,
   removeDiagramFromDocument,
-  generatePlan
+  generatePlan,
+  sendMessageToChatbot
 };

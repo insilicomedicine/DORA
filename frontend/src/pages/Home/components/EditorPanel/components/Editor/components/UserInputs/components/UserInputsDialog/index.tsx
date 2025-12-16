@@ -9,9 +9,12 @@ import CustomDataBlock from '../CustomDataBlock';
 import DefaultBlock from '../DefaultBlock';
 import InputsBlock from '../InputsBlock';
 import CustomBibliographyBlock from '../CustomBibliographyBlock';
+import Chatbot from 'components/Chatbot';
+import { useParams } from 'react-router';
 
 interface DialogProps {
   open: boolean;
+  isDeepResearch?: boolean;
   handleClose: () => void;
   dialogContentData: any;
 }
@@ -27,8 +30,10 @@ export enum SectionType {
 const UserInputsDialog = ({
   open,
   handleClose,
-  dialogContentData
+  dialogContentData,
+  isDeepResearch = false
 }: DialogProps) => {
+  const { id: documentId } = useParams();
   const inputSections = [
     {
       title: SectionType.template,
@@ -77,7 +82,7 @@ const UserInputsDialog = ({
       handleClose={handleClose}
       sx={{
         '& .MuiDialog-paper': {
-          minWidth: 744
+          minWidth: !isDeepResearch ? '744px' : '580px'
         }
       }}
       data-testid="userInputsDialog-wrapper"
@@ -92,7 +97,7 @@ const UserInputsDialog = ({
             margin: '0 -10px 0 auto'
           }}
         >
-          <CloseRounded sx={{ fontSize: '20px', color: '#212121' }} />
+          <CloseRounded sx={{ color: 'grey.500' }} />
         </IconButton>
       </DialogTitle>
       <DialogContent sx={{ overflowY: 'auto', overflowX: 'hidden' }}>
@@ -102,6 +107,7 @@ const UserInputsDialog = ({
               <Fragment key={index}>{renderInputSection(section)}</Fragment>
             )
         )}
+        {isDeepResearch && <Chatbot documentId={documentId} readOnly />}
       </DialogContent>
     </Dialog>
   );
