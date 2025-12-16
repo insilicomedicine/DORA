@@ -5,10 +5,18 @@ from uuid import UUID
 from django.contrib.auth.models import User
 from rest_framework.exceptions import APIException
 
+from app.notifications import (
+    NotificationStatus,
+    NotificationType,
+    get_notification_payload,
+    send_ws_notification,
+)
+from documents.deep_research.defs import ChatMessage
 from documents.models import Document, DocumentStage, DocumentStatus, Section, SectionStatus
 from kernel.agents.ai_action_agent import AIActionAgent
 from users.models import AITokenUsageType
 from users.record_token_usage import record_token_usage
+from users.utils import send_document_generated_email
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +116,7 @@ def get_documents_sections(document_ids: List[Union[str, UUID]]) -> Dict[UUID, L
     # Fetch all sections for the given documents in a single query
     all_sections = (
         Section.objects.filter(document_id__in=document_ids, is_title=False, deleted_at=None)
-        .values("id", "title", "document_id", "parent_id", "status", "refined_result")
+        .values("id", "title", "document_id", "parent_id", "status", "refined_result", "slug")
         .order_by("created_at")
     )
 
@@ -131,6 +139,7 @@ def get_documents_sections(document_ids: List[Union[str, UUID]]) -> Dict[UUID, L
             "sub_sections": [],
             "status": status,
             "is_refined": refined_result is not None,
+            "slug": section["slug"],
         }
 
         # Store in section map for quick lookup
@@ -153,3 +162,27 @@ def get_documents_sections(document_ids: List[Union[str, UUID]]) -> Dict[UUID, L
             section_map[parent_id]["sub_sections"].append(section_map[section_id])
 
     return sections_by_doc
+
+
+def send_chat_message_notification(document: Document, chat_message: ChatMessage) -> None:
+    """Send notification when a new chat message is received from the agent."""
+    notification_data = {"id": str(document.id), "type": NotificationType.CHAT_EVENTS, "data": chat_message}
+    ws_notification_args = get_notification_payload(
+        user_id=document.created_by.id,
+        data=notification_data,
+        status=NotificationStatus.SUCCESS,
+        message="New chat message received",
+    )
+    send_ws_notification(**ws_notification_args)
+
+
+def send_document_generated_notification(document: Document) -> None:
+    notification_data = {"id": str(document.id), "type": NotificationType.DOCUMENT_GENERATED}
+    ws_notification_args = get_notification_payload(
+        user_id=document.created_by.id,
+        data=notification_data,
+        status=NotificationStatus.SUCCESS,
+        message="Research document generated successfully",
+    )
+    send_ws_notification(**ws_notification_args)
+    send_document_generated_email(document)

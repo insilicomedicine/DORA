@@ -26,6 +26,7 @@ def generate_document_task(document_id: str) -> None:
     generate_document_content(document_id)
 
 
+# NOTE: Periodic task
 @app.task(name="sync_mcp_server_task")
 def sync_mcp_server_task():
     """Daily task to sync tools from all active MCP servers."""

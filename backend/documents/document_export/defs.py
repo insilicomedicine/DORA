@@ -75,6 +75,8 @@ DOI_URL_PATTERN = "https://doi.org/{doi}"
 
 HYPERLINK_PATTERN = "<font color='green'><a href='{href}'>{text}</a></font>"
 
+WEBSEARCH_REFERENCE_PATTERN = "<a href='{url}'>{title}</a> <br/> <font color='grey'>{domain}</font>"
+
 BIB_ID_CHUNK_ID_REFERENCE_PATTERN = r"(BIB_ID:[\w-]+, CHUNK_ID:[\w-]+(?:; BIB_ID:[\w-]+, CHUNK_ID:[\w-]+)*)"
 BIB_ID_CHUNK_ID_PATTERN = r"BIB_ID:([\w-]+), CHUNK_ID:([\w-]+)"
 
@@ -91,3 +93,7 @@ class RGBColors:
     BLACK = (0, 0, 0)
     BLUE = (0, 0, 255)
     DORA_GREEN = (20, 101, 62)
+    GRAY = (128, 128, 128)
+
+
+MAIN_TEXT_SLUG = "main_text"

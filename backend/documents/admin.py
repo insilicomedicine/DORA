@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django_json_widget.widgets import JSONEditorWidget
 
-from documents.models import Document, Feedback, Section
+from documents.models import Document, DocumentResearchSession, Feedback, Section
 from users.defs import INTERNAL_GROUP_NAME
 
 
@@ -170,6 +170,17 @@ class FeedbackAdmin(admin.ModelAdmin):
     type.admin_order_field = "-section_id"
 
 
+class DocumentResearchSessionAdmin(admin.ModelAdmin):
+    list_display = ["id", "document_id", "status", "created_at"]
+    list_filter = ["status"]
+    exclude = ["deleted_at"]
+
+    def document_id(self, obj: DocumentResearchSession) -> str:
+        url = reverse("admin:documents_document_change", args=[obj.document.id])
+        return format_html('<a href="{}">{}</a>', url, f"{obj.document} - ({obj.document.id})")
+
+
 admin.site.register(Document, DocumentAdmin)
 admin.site.register(Section, SectionAdmin)
 admin.site.register(Feedback, FeedbackAdmin)
+admin.site.register(DocumentResearchSession, DocumentResearchSessionAdmin)

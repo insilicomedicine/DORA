@@ -1,4 +1,5 @@
 import json
+import uuid
 from json import JSONDecodeError
 from typing import Any, Dict, List
 
@@ -7,14 +8,17 @@ from django.conf import settings
 from django.db import transaction
 from rest_framework import exceptions, serializers
 
+from documents.deep_research.defs import ChatMessage
 from documents.defs import DEFAULT_DOCUMENT_TITLE, SearchResourceType
 from documents.document_export.defs import ExportFormatType
 from documents.models import (
     DiagramType,
     Document,
+    DocumentResearchSession,
     DocumentStatus,
     Feedback,
     MermaidDiagram,
+    ResearchSessionStatus,
     Section,
     SectionStatus,
 )
@@ -575,3 +579,81 @@ class MermaidDiagramUpdateSerializer(serializers.Serializer):
         if not can_edit(user):
             raise serializers.ValidationError(LIMITED_DOCUMENT_MESSAGE)
         return super().validate(attrs)
+
+
+class ChatSerializer(serializers.Serializer):
+    template_id = serializers.UUIDField(required=False)
+    document_id = serializers.UUIDField(required=False)
+    message = serializers.CharField()
+
+    def validate(self, attrs):
+        user = self.context["request"].user
+        if not can_edit(user):
+            raise serializers.ValidationError(LIMITED_DOCUMENT_MESSAGE)
+
+        # must have either template_id or document_id
+        if not attrs.get("template_id") and not attrs.get("document_id"):
+            raise serializers.ValidationError("Either template_id or document_id is required")
+
+        # must have one of the two
+        if attrs.get("template_id") and attrs.get("document_id"):
+            raise serializers.ValidationError("Only one of template_id or document_id is allowed")
+
+        # if template_id is provided, must be a valid template
+        if attrs.get("template_id"):
+            template = Template.objects.filter(id=attrs["template_id"]).first()
+            if not template:
+                raise serializers.ValidationError("Invalid template_id")
+
+        # if document_id is provided, must be a valid document
+        if attrs.get("document_id"):
+            document = Document.objects.filter(id=attrs["document_id"]).first()
+            if not document:
+                raise serializers.ValidationError("Invalid document_id")
+
+            research_session = DocumentResearchSession.objects.filter(document=document).first()
+            if not research_session:
+                research_session = DocumentResearchSession.objects.create(document=document)
+            else:
+                if not research_session.is_ready_for_message:
+                    raise serializers.ValidationError("No ready for new user message")
+
+        return super().validate(attrs)
+
+    def create(self, validated_data):
+        user = self.context["request"].user
+        if template_id := validated_data.get("template_id"):
+            template = Template.objects.get(id=template_id)
+            document = Document.objects.create(
+                created_by=user,
+                template=template,
+                title=template.template_json["name"],
+                settings={},
+                template_json=template.template_json,
+            )
+            document.create_sections()
+            research_session = DocumentResearchSession.objects.create(document=document)
+        elif document_id := validated_data.get("document_id"):
+            document = Document.objects.get(id=document_id)
+            research_session = DocumentResearchSession.objects.get(document=document)
+        else:
+            raise serializers.ValidationError("Either template_id or document_id is required")
+
+        chat_message = ChatMessage(
+            role="user",
+            type="message",
+            id=str(uuid.uuid4()),
+            content=validated_data["message"],
+            done=True,
+            cot=None,
+            error=None,
+        )
+        research_session.chat_history.append(chat_message)
+        research_session.status = ResearchSessionStatus.PENDING
+        research_session.save()
+
+        return {
+            "research_session_id": research_session.id,
+            "document_id": document.id,
+            "chat_history": research_session.chat_history,
+        }

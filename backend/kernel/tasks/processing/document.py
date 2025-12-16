@@ -23,13 +23,14 @@ from documents.transparency.shortcuts import (
 from kernel.agents.section_agent import SectionAgent
 from kernel.defs import AgentAction, AgentResponse
 from kernel.services.telemetry import telemetry
-from kernel.tasks.notifications import send_document_generated_email, send_ws_notification_message
+from kernel.tasks.notifications import send_ws_notification_message
 from kernel.tasks.post_processing.document import create_bibliographies_for_document, post_process_document
 from kernel.tasks.processing.mermaid import generate_mermaid
 from kernel.tasks.processing.section import generate_section_content, handle_section_failure
 from kernel.utils import topological_sort_sections
 from users.models import AITokenUsageType
 from users.record_token_usage import record_token_usage
+from users.utils import send_document_generated_email
 
 logger = logging.getLogger(__name__)
 

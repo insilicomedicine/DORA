@@ -123,6 +123,7 @@ class TemplateAdmin(admin.ModelAdmin):
     list_filter = ["is_online"]
     exclude = ["created_by", "deleted_at"]
     actions = ["export_templates"]
+    list_editable = ["display_order"]
 
     def get_form(self, request, obj=None, **kwargs):
         defaults = {}

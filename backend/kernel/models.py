@@ -52,6 +52,14 @@ class Template(BaseModel):
         return self.template_json.get("type", "")
 
     @property
+    def tags(self) -> list:
+        return self.template_json.get("tags", [])
+
+    @property
+    def system_message(self) -> str:
+        return self.template_json.get("system_message", "")
+
+    @property
     def user_inputs(self) -> list:
         return self.template_json.get("user_inputs", [])
 

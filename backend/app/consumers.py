@@ -16,7 +16,10 @@ class NotificationsConsumer(AsyncJsonWebsocketConsumer):
         pass
 
     async def receive_json(self, content, **kwargs):
-        await self.send_json(content)
+        if content.get("type") == "ping":
+            await self.send_json({"type": "pong"})
+        else:
+            await self.send_json(content)
 
     async def notification(self, content):
         await self.send_json(content)
