@@ -1,6 +1,5 @@
 import { LogsData } from 'types/document';
 import { HttpService as axios } from './HttpService';
-import { showErrorMessage } from './messages';
 
 /**
  * Fetch transparency audit logs showing AI generation history for a document
@@ -23,7 +22,6 @@ const getDocumentLogs = async (
       if (err?.code === 'ERR_CANCELED') {
         return null;
       }
-      showErrorMessage(err);
       return null;
     });
 };

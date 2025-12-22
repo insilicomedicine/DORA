@@ -17,6 +17,8 @@ class NotificationType:
     BIBLIOGRAPHY_FILE_PROCESSING = "bibliography_file_processing"
     DOCUMENT_AI_REVIEW_GENERATED = "document_ai_review_generated"
     GENERATION_LOG_UPDATED = "generation_log_updated"
+    DOCUMENT_GENERATED = "document_generated"
+    CHAT_EVENTS = "chat_events"
 
 
 class WsNotificationFormat(TypedDict):

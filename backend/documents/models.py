@@ -597,3 +597,41 @@ class MermaidDiagram(BaseModel):
     diagram_type = models.CharField("Diagram Type", max_length=30, choices=DiagramType.choices)
     svg_diagram = models.TextField("svg_diagram", null=True, blank=True)
     mermaid_code = models.TextField("mermaid_code", null=True, blank=True)
+
+
+class ResearchSessionStatus(models.TextChoices):
+    IDLE = "idle", "Idle"
+    PENDING = "pending", "Pending"
+    WAITING_USER = "waiting_user", "Waiting User"
+    RESEARCHING = "researching", "Researching"
+    GENERATING = "generating", "Generating"
+    COMPLETED = "completed", "Completed"
+    FAILED = "failed", "Failed"
+
+
+class DocumentResearchSession(BaseModel):
+    document = models.OneToOneField(Document, verbose_name="Document", on_delete=models.CASCADE)
+    chat_history = models.JSONField("Chat History", default=list)
+    status = models.CharField(
+        "Status", max_length=20, choices=ResearchSessionStatus.choices, default=ResearchSessionStatus.IDLE
+    )
+    error_message = models.TextField("Error Message", null=True, blank=True)
+    processing_started_at = models.DateTimeField(
+        "Processing Started At",
+        null=True,
+        blank=True,
+        help_text="Timestamp when processing started, used to prevent duplicate processing",
+    )
+    research_brief = models.TextField("Research Brief", null=True, blank=True)
+    response_id = models.CharField("Response ID", max_length=100, null=True, blank=True)
+
+    def __str__(self) -> str:
+        return f"Research session for {self.document.title}"
+
+    @property
+    def is_ready_for_message(self) -> bool:
+        """Check if the session is ready to accept a new user message."""
+        return self.status in [
+            ResearchSessionStatus.IDLE,
+            ResearchSessionStatus.WAITING_USER,
+        ]

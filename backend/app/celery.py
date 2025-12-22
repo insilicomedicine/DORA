@@ -7,6 +7,8 @@ from celery.schedules import crontab
 from celery.signals import setup_logging
 from django.conf import settings
 
+logger = logging.getLogger(__name__)
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings")
 
 django.setup()
@@ -16,7 +18,7 @@ app = Celery("app")
 app.config_from_object("django.conf:settings", namespace="CELERY")
 
 app.autodiscover_tasks()
-logger = logging.getLogger(__name__)
+
 
 beat_schedule = {
     "sync_mcp_server_task": {

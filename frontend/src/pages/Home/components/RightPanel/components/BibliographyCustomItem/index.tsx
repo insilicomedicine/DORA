@@ -1,5 +1,5 @@
-import React, { memo } from 'react';
-import { Typography, SxProps } from '@mui/material';
+import { memo } from 'react';
+import { Typography, SxProps, Stack } from '@mui/material';
 import { Link } from 'react-router';
 import { openFilePreview } from 'services/files';
 import { Metadata } from 'types/document';
@@ -16,25 +16,31 @@ const BibliographyCustomItem = ({
   sx
 }: BibliographyCustomItemProps) => {
   return (
-    <Link
-      to={url || ''}
-      target="_blank"
-      {...(file_name &&
-        object_id && {
-          onClick: (e) => {
-            e.preventDefault();
-            openFilePreview(object_id);
-          }
-        })}
-    >
-      <Typography
-        variant="body2"
-        letterSpacing={0.1}
-        sx={{ ...sx, '&:hover': { textDecorationLine: 'underline' } }}
+    <Stack gap={0.5} sx={sx}>
+      <Link
+        to={url || ''}
+        target="_blank"
+        {...(file_name &&
+          object_id && {
+            onClick: (e) => {
+              e.preventDefault();
+              openFilePreview(object_id);
+            }
+          })}
       >
-        {title || file_name || url?.replace(/^https?:\/\//, '')}
+        <Typography
+          variant="body2"
+          letterSpacing={0.1}
+          fontWeight={title ? 500 : 400}
+          sx={{ '&:hover': { textDecorationLine: 'underline' } }}
+        >
+          {title || file_name}
+        </Typography>
+      </Link>
+      <Typography variant="body2" color="textSecondary">
+        {url?.replace(/^(?:https?:\/\/)?(?:www\.)?([^\/]+).*/, '$1')}
       </Typography>
-    </Link>
+    </Stack>
   );
 };
 

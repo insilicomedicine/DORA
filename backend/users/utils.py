@@ -115,6 +115,19 @@ def send_reset_password_email(user: User) -> None:
     )
 
 
+def send_document_generated_email(document: Document) -> None:
+    if not settings.AWS_SES_REGION_NAME or not settings.AWS_SES_REGION_ENDPOINT:
+        return
+
+    link = f"{settings.DORA_PUBLIC_URL}/documents/{document.id}"
+    generate_and_send_email(
+        user=document.created_by,
+        subject="Document generated successfully",
+        template_name="document_generated_email.html",
+        context={"static_url": settings.DORA_STATIC_URL, "link": link, "document_title": document.title},
+    )
+
+
 def get_free_trial_end_date(user: User) -> datetime:
     if user.profile.activated_at and user.profile.free_trial_ends_at:
         return user.profile.free_trial_ends_at

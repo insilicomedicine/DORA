@@ -29,6 +29,7 @@ import { useEditorStore } from 'contexts/editorStore';
 import { getSectionsWithSubSections } from 'utils/documents';
 import { getSystemConfig } from 'utils/system';
 import useSystemStore from 'contexts/useSystemStore';
+import { convertToKey } from 'utils/utils';
 
 const loading = () => {
   return (
@@ -178,9 +179,16 @@ const SideMenu = () => {
       // Navigation logic
       const viewedDocument = documentList.find((item) => item.id === itemId);
       const isDraft = viewedDocument.stage === 'draft';
-      if (isDraft) {
+
+      const isDeepResearch =
+        convertToKey(viewedDocument?.template_type) === 'deepresearch';
+      const isGenerating = ['content_generating'].includes(
+        viewedDocument?.stage
+      );
+
+      if (isDraft || (isDeepResearch && isGenerating)) {
         const redirectPath = viewedDocument.status
-          ? itemId
+          ? `${itemId}?type=${viewedDocument?.template_type}`
           : `?template=${itemId}`;
         nav(`/documents/generation/${redirectPath}`);
         setExpandedItems([]);
@@ -205,7 +213,12 @@ const SideMenu = () => {
   //When the viewedDocumentId changes, fetch the document
   useEffect(() => {
     // If there's no document ID in the URL or no documents, nothing to do
-    if (!viewedDocumentId || !documentList.length) return;
+    if (
+      !viewedDocumentId ||
+      !documentList.length ||
+      !location.pathname.includes('documents')
+    )
+      return;
 
     // Skip if only documentList changed but not the viewedDocumentId
     // This prevents unnecessary fetches when just the list changes
@@ -223,6 +236,23 @@ const SideMenu = () => {
       return;
     }
 
+    const isDocumentGenerated = viewedDocument?.status === 'completed';
+    const isDocumentGenerating =
+      viewedDocument?.stage === 'content_generating' &&
+      viewedDocument?.status === 'in_progress';
+    const isDocumentRoute = /^\/documents\/[^/]+$/.test(location.pathname);
+    const isDeepResearch =
+      convertToKey(viewedDocument?.template_type) === 'deepresearch';
+
+    if (
+      ((isDocumentGenerated && !isDocumentRoute) ||
+        (isDocumentGenerating && isDocumentRoute)) &&
+      isDeepResearch
+    ) {
+      nav('/templates');
+      return;
+    }
+
     setDocumentDetailData({ isDocumentLoading: true });
 
     const fetchData = async () => {
@@ -230,7 +260,7 @@ const SideMenu = () => {
       await handleGetDocument(viewedDocumentId);
     };
     fetchData();
-  }, [viewedDocumentId, documentList]);
+  }, [viewedDocumentId, documentList, location.pathname]);
 
   //Show snackbar notification for document polishing when the document is not actived
   useEffect(() => {
@@ -298,17 +328,33 @@ const SideMenu = () => {
       return;
     }
     if (!newDocument?.id || isDocumentsLoading) return;
+
     //Update new document list if the document status is initialized
-    setDocumentsData((prev) => ({
-      ...prev,
-      list:
-        newDocument.status === 'initialized'
-          ? [newDocument, ...prev.list.slice(1)]
-          : [newDocument, ...prev.list]
-    }));
+    setDocumentsData((prev) => {
+      const existingIndex = prev.list.findIndex(
+        (doc) => doc.id === newDocument.id
+      );
+
+      // If the document exists in the list, merge it in place
+      if (existingIndex !== -1) {
+        const updatedList = [...prev.list];
+        updatedList[existingIndex] = {
+          ...prev.list[existingIndex],
+          ...newDocument
+        };
+        return { ...prev, list: updatedList };
+      }
+
+      if (newDocument.status === 'initialized') {
+        return { ...prev, list: [newDocument, ...prev.list.slice(1)] };
+      }
+      // If not found, add the new document to the top of the list
+      return { ...prev, list: [newDocument, ...prev.list] };
+    });
+
     // Expand the new document and all its sections
     setExpandedItems([newDocument.id]);
-  }, [newDocument?.id, isDocumentsLoading]);
+  }, [newDocument?.id, isDocumentsLoading, newDocument?.status]);
 
   //When the isNewDocumentGenerating changes, fetch the document
   useEffect(() => {

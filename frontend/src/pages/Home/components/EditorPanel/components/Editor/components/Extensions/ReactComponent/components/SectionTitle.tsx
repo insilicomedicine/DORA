@@ -29,7 +29,6 @@ import {
   updateSectionData
 } from 'utils/editor';
 import { useDocumentStore } from 'contexts/documentsStore';
-// import { CompletedDocument } from 'types/document';
 import DeleteSectionButton from '../../../DeleteSection';
 import usePlanStatus from 'hooks/usePlanStatus';
 
@@ -384,7 +383,7 @@ const SectionTitle = (props) => {
           )}
         </>
       </div>
-      {isEnableDelete && (
+      {isEnableDelete && !isTitleHidden && (
         <DeleteSectionButton id={attrs.id} title={attrs.title} />
       )}
     </Stack>

@@ -58,7 +58,7 @@ export const theme: Theme = createTheme({
     },
     text: {
       primary: '#212121',
-      secondary: '#666666',
+      secondary: '#616161',
       disabled: '#9E9E9E'
     },
     grey: {

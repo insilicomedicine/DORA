@@ -99,9 +99,17 @@ describe('TabsSection Component', () => {
       />
     );
 
-    expect(screen.getByTestId(RightPanelComponentIds.bibliography)).toHaveStyle(
-      'display: block'
+    const bibliographyElement = screen.getByTestId(
+      RightPanelComponentIds.bibliography
     );
+    expect(bibliographyElement).toHaveStyle({
+      height: '100%'
+    });
+    expect(bibliographyElement).not.toHaveStyle({
+      width: '0',
+      height: '0',
+      overflow: 'hidden'
+    });
 
     rerender(
       <TabsSection
@@ -110,9 +118,24 @@ describe('TabsSection Component', () => {
       />
     );
 
-    expect(
-      screen.getByTestId(RightPanelComponentIds.reviewInsights)
-    ).toHaveStyle('display: block');
+    const bibliographyElementHidden = screen.getByTestId(
+      RightPanelComponentIds.bibliography
+    );
+    expect(bibliographyElementHidden).toHaveStyle({
+      width: '0px',
+      height: '0px',
+      overflow: 'hidden'
+    });
+
+    const reviewInsightsElement = screen.getByTestId(
+      RightPanelComponentIds.reviewInsights
+    );
+    expect(reviewInsightsElement).toHaveStyle({
+      height: '100%'
+    });
+    expect(reviewInsightsElement).not.toHaveStyle({
+      width: '0'
+    });
 
     rerender(
       <TabsSection

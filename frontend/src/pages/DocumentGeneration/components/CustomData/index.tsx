@@ -112,7 +112,7 @@ const CustomData = ({
     if (customData[slug]) {
       delete newCustomData[slug];
     } else {
-      const key = slug.includes(',') ? slug?.split(',')?.at(-1)?.trim()! : slug;
+      const key = slug.includes(',') ? slug?.split(',').pop()?.trim()! : slug;
       delete newCustomData[key];
     }
     setCustomData(newCustomData);
@@ -178,7 +178,7 @@ const CustomData = ({
         }}
       />
       {flattenedSections.map(({ slug, title }) => {
-        const _slug = slug?.split(',')?.at(-1)?.trim()!;
+        const _slug = slug?.split(',').pop()?.trim()!;
         const data = customData[slug] || customData[_slug];
         return (
           data && (

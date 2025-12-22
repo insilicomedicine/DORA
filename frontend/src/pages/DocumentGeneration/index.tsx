@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Divider from '@mui/material/Divider';
@@ -13,6 +13,7 @@ import AgentResources from './components/AgentResources';
 import PMCOrPubMedSearchSettings from './components/PMCOrPubMedSearchSettings';
 import { getTemplate } from 'services/templates';
 import { Template } from 'types/template';
+import DeepResearch from './deepResearch';
 import {
   generateDocuments,
   generatePlan,
@@ -29,11 +30,14 @@ import { useDocumentStore } from 'contexts/documentsStore';
 import { theme } from 'theme';
 import { getSystemConfig } from 'utils/system';
 import useSystemStore from 'contexts/useSystemStore';
+import { convertToKey } from 'utils/utils';
 
 const DocumentGeneration = () => {
   const navigate = useNavigate();
   const { systemInfo } = useSystemStore();
   const [searchParams] = useSearchParams();
+  const templateId = searchParams.get('template') || '';
+  const templateType = searchParams.get('type') || '';
   const { id: documentId = '' } = useParams();
   const [loading, setLoading] = useState<boolean>(true);
   const [template, setTemplate] = useState<Template>();
@@ -51,6 +55,10 @@ const DocumentGeneration = () => {
   const storedSettings = useSettingsStore((state) => state);
   const { updatePlan, updateSettings } = useSettingsStore((state) => state);
   const isPMCOrPubMedSearchEnabled = getSystemConfig(systemInfo);
+  const isDeepResearch = useMemo(
+    () => convertToKey(templateType || template?.type) === 'deepresearch',
+    [template, templateType]
+  );
 
   const setResearchTasksEditMode = (plan?: string) => {
     const editMode = !plan ? 'autoFill' : 'update';
@@ -106,7 +114,7 @@ const DocumentGeneration = () => {
       fetchDocument();
       return;
     }
-    const templateId = searchParams.get('template');
+
     if (!templateId) return;
 
     const fetchTemplate = async () => {
@@ -130,6 +138,7 @@ const DocumentGeneration = () => {
         id: newDocument?.id || response.id,
         title: response?.name || '',
         stage: 'draft',
+        template_type: response.type,
         created_at: new Date().toISOString()
       });
 
@@ -140,7 +149,7 @@ const DocumentGeneration = () => {
     return () => {
       abortControllerRef.current?.abort();
     };
-  }, [documentId, isNewDocument]);
+  }, [documentId, isNewDocument, isDeepResearch]);
 
   const handleGenerateResearchTasks = async () => {
     setIsResearchTasksGenerating(true);
@@ -222,7 +231,7 @@ const DocumentGeneration = () => {
     setEditMode(!isAllInputsFilled ? '' : editMode);
   };
 
-  if (loading) {
+  if (loading && !isDeepResearch) {
     return (
       <Stack
         sx={{
@@ -248,90 +257,123 @@ const DocumentGeneration = () => {
         borderRadius: 4,
         flex: 1,
         width: '60%',
-        transition: 'width 200ms ease-out'
+        transition: 'width 200ms ease-out',
+        ...(isDeepResearch && {
+          position: 'relative'
+        })
       }}
     >
       {template && (
         <Header
           template={template}
           isResearchTasksGenerating={isResearchTasksGenerating}
+          isDeepResearch={isDeepResearch}
         />
       )}
-      <Box display="flex" p="0 32px" gap={4} height="100%">
-        <Stack sx={{ pr: 0.5, borderRight: '1px solid #E6E6E6', width: '50%' }}>
-          <Stack
-            sx={{
-              flex: 1,
-              pr: 4,
-              pb: 20,
-              overflow: 'auto',
-              scrollbarGutter: 'stable',
-              [theme.breakpoints.up('bp1800')]: {
-                pr: 10
-              },
-              ...(isResearchTasksGenerating && {
-                '& .draftSettings': {
-                  opacity: 0.56,
-                  pointerEvents: 'none',
-                  '& *': {
-                    color: `${theme.palette.text.disabled} !important`,
-                    '&.MuiButton-outlined': {
-                      borderColor: 'text.disabled'
-                    },
-                    '&.MuiButton-contained': {
-                      backgroundColor: 'transparent',
-                      border: '1px solid',
-                      borderColor: 'grey.400'
-                    }
-                  },
-                  '& .MuiButtonBase-root.MuiChip-filled': {
-                    backgroundColor: 'grey.50',
-                    borderColor: 'grey.300'
-                  }
-                }
-              })
-            }}
-          >
-            <Tooltip
-              title={
-                isResearchTasksGenerating &&
-                `Please wait while the research tasks are being generated,
-                 or refresh the page`
+      <Box
+        display="flex"
+        p="0 32px"
+        gap={4}
+        sx={{
+          ...(isDeepResearch
+            ? {
+                maxWidth: 1280,
+                minWidth: '80%',
+                margin: '0 auto',
+                height: 'calc(100% - 47px)'
               }
-              followCursor
+            : { height: '100%' })
+        }}
+      >
+        {isDeepResearch ? (
+          <DeepResearch
+            {...(documentId && { documentId })}
+            {...(templateId && { templateId })}
+          />
+        ) : (
+          <>
+            <Stack
+              sx={{ pr: 0.5, borderRight: '1px solid #E6E6E6', width: '50%' }}
             >
-              <div>
-                {template && (
-                  <Stack>
-                    <TemplateInputs
-                      templateUserInputs={template?.user_inputs}
-                      handleUpdateDocument={handleUpdateDocument}
-                    />
+              <Stack
+                sx={{
+                  flex: 1,
+                  pr: 4,
+                  pb: 20,
+                  overflow: 'auto',
+                  scrollbarGutter: 'stable',
+                  [theme.breakpoints.up('bp1800')]: {
+                    pr: 10
+                  },
+                  ...(isResearchTasksGenerating && {
+                    '& .draftSettings': {
+                      opacity: 0.56,
+                      pointerEvents: 'none',
+                      '& *': {
+                        color: `${theme.palette.text.disabled} !important`,
+                        '&.MuiButton-outlined': {
+                          borderColor: 'text.disabled'
+                        },
+                        '&.MuiButton-contained': {
+                          backgroundColor: 'transparent',
+                          border: '1px solid',
+                          borderColor: 'grey.400'
+                        }
+                      },
+                      '& .MuiButtonBase-root.MuiChip-filled': {
+                        backgroundColor: 'grey.50',
+                        borderColor: 'grey.300'
+                      }
+                    }
+                  })
+                }}
+              >
+                <Tooltip
+                  title={
+                    isResearchTasksGenerating &&
+                    `Please wait while the research tasks are being generated,
+                 or refresh the page`
+                  }
+                  followCursor
+                >
+                  <div>
+                    {template && (
+                      <Stack>
+                        <TemplateInputs
+                          templateUserInputs={template?.user_inputs}
+                          handleUpdateDocument={handleUpdateDocument}
+                        />
+                        <Divider />
+                        <CustomData
+                          sectionsData={{
+                            ...template,
+                            sections: storedSettings.sections
+                          }}
+                          handleUpdateDocument={handleUpdateDocument}
+                        />
+                      </Stack>
+                    )}
                     <Divider />
-                    <CustomData
-                      sectionsData={{
-                        ...template,
-                        sections: storedSettings.sections
-                      }}
+                    <AgentResources
                       handleUpdateDocument={handleUpdateDocument}
                     />
-                  </Stack>
-                )}
-                <Divider />
-                <AgentResources handleUpdateDocument={handleUpdateDocument} />
-              </div>
-            </Tooltip>
-            {isPMCOrPubMedSearchEnabled && <PMCOrPubMedSearchSettings />}
-          </Stack>
-        </Stack>
-        <ResearchTasks
-          loading={loading}
-          editMode={editMode}
-          isResearchTasksGenerating={isResearchTasksGenerating}
-          handleGenerateResearchTasks={handleGenerateResearchTasks}
-          handleUpdateDocument={handleUpdateDocument}
-          displayNameOnPlanOverview={template?.display_name_on_plan_overview}
-        />
+                  </div>
+                </Tooltip>
+                {isPMCOrPubMedSearchEnabled && <PMCOrPubMedSearchSettings />}
+              </Stack>
+            </Stack>
+            <ResearchTasks
+              loading={loading}
+              editMode={editMode}
+              isResearchTasksGenerating={isResearchTasksGenerating}
+              handleGenerateResearchTasks={handleGenerateResearchTasks}
+              handleUpdateDocument={handleUpdateDocument}
+              displayNameOnPlanOverview={
+                template?.display_name_on_plan_overview
+              }
+            />
+          </>
+        )}
       </Box>
     </Stack>
   );

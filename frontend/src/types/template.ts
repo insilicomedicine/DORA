@@ -12,6 +12,7 @@ export type GenerationFlow = 'linear' | 'single_page';
 
 export type Template = {
   id: string;
+  tags?: string[];
   description: string;
   name?: string;
   type?: string;

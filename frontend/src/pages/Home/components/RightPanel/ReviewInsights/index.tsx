@@ -17,6 +17,7 @@ const ReviewInsights = () => {
     data,
     isLoading: reviewInsightsIsLoading,
     status: reviewInsightsStatus,
+    isReload,
     fetchReview,
     generateReview,
     reset
@@ -35,7 +36,7 @@ const ReviewInsights = () => {
     return () => {
       reset();
     };
-  }, [documentData?.id, fetchReview, reset]);
+  }, [documentData?.id, fetchReview, reset, isReload]);
 
   const { overall_impression, categories } = data || {};
 

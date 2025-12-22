@@ -1,6 +1,7 @@
 import io
 import logging
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
+from urllib.parse import urlparse
 
 from PIL import Image as PILImage
 
@@ -8,6 +9,7 @@ from bibliography.models import BibliographyType
 from bibliography.utils import extract_source_identifier_from_url
 from documents.document_export.defs import (
     DOI_URL_PATTERN,
+    MAIN_TEXT_SLUG,
     PMC_URL_PATTERN,
     PUBMED_URL_PATTERN,
     UNKNOWN_AUTHOR_NAME,
@@ -15,7 +17,7 @@ from documents.document_export.defs import (
 from kernel.diagrams.storage import MermaidStorage
 
 if TYPE_CHECKING:
-    from documents.models import Document
+    from documents.models import Document, Section
 
 logger = logging.getLogger(__name__)
 
@@ -101,7 +103,16 @@ def simplify_url(url: str) -> str:
     return simplified_url[:30]
 
 
-def get_formatted_references(doc_bibliographies: List[Dict[str, Any]]) -> List[str]:
+def get_domain_from_url(url: str) -> str:
+    parsed_url = urlparse(url)
+
+    domain = parsed_url.netloc
+    if domain.startswith("www."):
+        domain = domain[4:]
+    return domain
+
+
+def get_formatted_references(doc_bibliographies: List[Dict[str, Any]]) -> List[Dict[str, str]]:
     file_references = []
     pubmed_references = []
     websearch_references = []
@@ -109,16 +120,42 @@ def get_formatted_references(doc_bibliographies: List[Dict[str, Any]]) -> List[s
         metadata = bibliography["metadata"]
         if bibliography["type"] == BibliographyType.PUBMED:
             reference_str = format_reference_string(metadata)
-            pubmed_references.append(reference_str)
+            pubmed_references.append(
+                {
+                    "type": BibliographyType.PUBMED,
+                    "text": reference_str,
+                }
+            )
         elif bibliography["type"] == BibliographyType.FILE:
-            file_references.append(metadata.get("file_name", ""))
+            file_references.append(
+                {
+                    "type": BibliographyType.FILE,
+                    "text": metadata.get("file_name", ""),
+                }
+            )
         elif bibliography["type"] == BibliographyType.WEBSEARCH:
             if metadata.get("authors"):
                 reference_str = format_reference_string(metadata)
-                pubmed_references.append(reference_str)
+                pubmed_references.append(
+                    {
+                        "type": BibliographyType.PUBMED,
+                        "text": reference_str,
+                    }
+                )
             else:
-                websearch_references.append(metadata.get("url", ""))
-    return sorted(file_references) + sorted(pubmed_references) + sorted(websearch_references)
+                websearch_references.append(
+                    {
+                        "type": BibliographyType.WEBSEARCH,
+                        "title": metadata.get("title", ""),
+                        "url": metadata.get("url", ""),
+                        "domain": get_domain_from_url(metadata.get("url", "")),
+                    }
+                )
+    return (
+        sorted(file_references, key=lambda x: x["text"])
+        + sorted(pubmed_references, key=lambda x: x["text"])
+        + sorted(websearch_references, key=lambda x: x["url"])
+    )
 
 
 def get_mermaid_image_stream_and_size(
@@ -150,3 +187,7 @@ def is_markdown_heading(text: str) -> Tuple[bool, int]:
         if level > 0 and text[level] == " ":
             return True, min(level, 4)
     return False, 0
+
+
+def should_skip_section_title(sections: List["Section"], current_section: "Section") -> bool:
+    return len(sections) == 1 and current_section.slug == MAIN_TEXT_SLUG

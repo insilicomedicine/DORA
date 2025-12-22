@@ -4,21 +4,24 @@ import { FileUploadStatusType } from 'types/bibliography';
 interface FileUpdateData {
   pk: string;
   status: FileUploadStatusType;
+  reload?: boolean;
   [key: string]: any;
 }
 
+type FileUpdateDataWithReload = FileUpdateData | null;
+
 interface WebsocketState {
-  uploadedFileUpdatesWS: FileUpdateData | null;
+  uploadedFileUpdatesWS: FileUpdateDataWithReload;
 
   // Actions
-  setUploadedFileUpdatesWS: (data: FileUpdateData | null) => void;
+  setUploadedFileUpdatesWS: (data: FileUpdateDataWithReload) => void;
   clearUploadedFileUpdatesWS: () => void;
 }
 
 export const useWebsocketStore = create<WebsocketState>((set) => ({
   uploadedFileUpdatesWS: null,
 
-  setUploadedFileUpdatesWS: (data: FileUpdateData | null) => {
+  setUploadedFileUpdatesWS: (data: FileUpdateDataWithReload) => {
     set({ uploadedFileUpdatesWS: data });
   },
 

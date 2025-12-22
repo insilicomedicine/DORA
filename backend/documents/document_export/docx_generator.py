@@ -34,6 +34,7 @@ from documents.document_export.utils import (
     get_formatted_references,
     get_mermaid_image_stream_and_size,
     is_markdown_heading,
+    should_skip_section_title,
 )
 from documents.models import Document, Section
 
@@ -102,6 +103,10 @@ class DocxGenerator:
 
         reference_link_style = styles.add_style("ReferenceHyperlink", WD_STYLE_TYPE.CHARACTER)
         reference_link_style.base_style = styles["Normal"]
+
+        reference_domain_style = styles.add_style("ReferenceDomain", WD_STYLE_TYPE.CHARACTER)
+        reference_domain_style.base_style = styles["Normal"]
+        reference_domain_style.font.color.rgb = RGBColor(*RGBColors.GRAY)
 
     def _add_hyperlink(self, paragraph: Paragraph, text: str, url: str, style_name: Optional[str]) -> None:
         part = paragraph.part
@@ -233,7 +238,10 @@ class DocxGenerator:
     def _add_paragraphs_from_sections(self, sections: List[Section], heading_level: int = 1) -> None:
         heading_level = min(heading_level, 4)
         for section in sections:
-            self.word_doc.add_paragraph(section.title, style=f"Heading {heading_level}")
+            # Skip title only for top-level single section with main_text slug
+            if not (heading_level == 1 and should_skip_section_title(sections, section)):
+                self.word_doc.add_paragraph(section.title, style=f"Heading {heading_level}")
+
             if section.result is not None:
                 if section.result.get("data_format"):
                     self._process_data_format_content(section.result.get("data_format"))
@@ -412,6 +420,77 @@ class DocxGenerator:
         paragraph = self.word_doc.add_paragraph(style=paragraph_style)
         self._process_bibliography_references(paragraph_text, paragraph)
 
+    def _add_text_with_markdown_formatting(self, paragraph: Paragraph, text: str) -> None:
+        """
+        Add text to paragraph with markdown bold and italic formatting
+
+        Args:
+            paragraph: The paragraph object to add text to
+            text: The text that may contain markdown bold (**text**) and italic (*text*) syntax
+        """
+        if not text:
+            return
+
+        # Process bold first: **text**
+        # Use a placeholder to protect bold text while processing italic
+        bold_pattern = re.compile(r"\*\*([^\*]+)\*\*")
+        bold_parts = []
+        bold_placeholders = {}
+
+        for i, match in enumerate(bold_pattern.finditer(text)):
+            placeholder = f"__BOLD_{i}__"
+            bold_placeholders[placeholder] = match.group(1)
+            bold_parts.append((match.start(), match.end(), placeholder))
+
+        # Replace bold patterns with placeholders (in reverse to maintain indices)
+        for start, end, placeholder in reversed(bold_parts):
+            text = text[:start] + placeholder + text[end:]
+
+        # Process italic: *text*
+        italic_pattern = re.compile(r"\*([^\*]+)\*")
+        segments = []
+        last_end = 0
+
+        for match in italic_pattern.finditer(text):
+            # Add text before italic
+            if match.start() > last_end:
+                segments.append(("normal", text[last_end : match.start()]))
+            # Add italic text
+            segments.append(("italic", match.group(1)))
+            last_end = match.end()
+
+        # Add remaining text
+        if last_end < len(text):
+            segments.append(("normal", text[last_end:]))
+
+        # If no italic found, treat whole text as normal
+        if not segments:
+            segments = [("normal", text)]
+
+        # Now process segments and replace bold placeholders
+        for seg_type, seg_text in segments:
+            # Check for bold placeholders in this segment
+            if "__BOLD_" in seg_text:
+                # Split by bold placeholders
+                parts = re.split(r"(__BOLD_\d+__)", seg_text)
+                for part in parts:
+                    if part in bold_placeholders:
+                        # This is a bold placeholder
+                        run = paragraph.add_run(bold_placeholders[part])
+                        run.bold = True
+                        if seg_type == "italic":
+                            run.italic = True
+                    elif part:
+                        # Regular text
+                        run = paragraph.add_run(part)
+                        if seg_type == "italic":
+                            run.italic = True
+            else:
+                # No bold placeholders, just add the text
+                run = paragraph.add_run(seg_text)
+                if seg_type == "italic":
+                    run.italic = True
+
     def _process_bibliography_references(self, text: str, paragraph: Paragraph) -> None:
         """
         Process bibliography references in the text and add them to the specified paragraph
@@ -425,7 +504,7 @@ class DocxGenerator:
 
         for match in pattern.finditer(text):
             start, end = match.span()
-            paragraph.add_run(text[last_end:start])
+            self._add_text_with_markdown_formatting(paragraph, text[last_end:start])
             ref_text = match.group(0)
             matches = re.findall(BIB_ID_CHUNK_ID_PATTERN, ref_text)
             bib_ids = list(set([match[0] for match in matches]))
@@ -452,7 +531,7 @@ class DocxGenerator:
             last_end = end
 
         # Add remaining text after the last match
-        paragraph.add_run(text[last_end:])
+        self._add_text_with_markdown_formatting(paragraph, text[last_end:])
 
     def _split_content_by_markdown_tables(self, content: str) -> List[str]:
         """
@@ -670,11 +749,16 @@ class DocxGenerator:
         # reference_section = self.word_doc.add_section(WD_SECTION.NEW_PAGE)
         # self._add_header_image(reference_section, reference_section.header, is_cover_page=False)
         self.word_doc.add_paragraph("References", style="Heading 1")
-        for reference_text in references:
-            if reference_text.startswith("http://") or reference_text.startswith("https://"):
-                self._add_hyperlink(
-                    self.word_doc.add_paragraph(), reference_text, reference_text, "ReferenceHyperlink"
-                )
+        for reference in references:
+            if reference["type"] == BibliographyType.WEBSEARCH:
+                reference_text = reference["title"]
+            else:
+                reference_text = reference["text"]
+
+            if reference["type"] == BibliographyType.WEBSEARCH:
+                paragraph = self.word_doc.add_paragraph()
+                self._add_hyperlink(paragraph, reference_text, reference["url"], "ReferenceHyperlink")
+                paragraph.add_run(f"\n{reference['domain']}", style="ReferenceDomain")
             else:
                 self.word_doc.add_paragraph(reference_text, style="Normal")
 

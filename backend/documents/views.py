@@ -17,10 +17,17 @@ from documents.document_export.pdf_generator import PDFGenerator
 from documents.logic.extract_publication_ids_from_string import (
     extract_publication_ids_from_string,
 )
-from documents.models import Document, DocumentStatus, MermaidDiagram, Section
+from documents.models import (
+    Document,
+    DocumentResearchSession,
+    DocumentStatus,
+    MermaidDiagram,
+    Section,
+)
 from documents.permissions import CanAccessAllDocuments, IsDocumentOwner
 from documents.serializers import (
     AIActionsSerializer,
+    ChatSerializer,
     DocumentCreateSerializer,
     DocumentDetailSerializer,
     DocumentExportSerializer,
@@ -39,6 +46,7 @@ from documents.serializers import (
     TransparencyRetrieveSerializer,
 )
 from documents.services import generate_plan, get_websearch_chunks
+from documents.tasks.deep_research import process_research_session_task
 from documents.transparency.utils import create_document_generation_log
 from documents.utils import (
     apply_refined,
@@ -82,6 +90,7 @@ class DocumentViewSet(
         "ai_actions": AIActionsSerializer,
         "feedback": FeedbackSerializer,
         "generate_mermaid_diagram": MermaidDiagramUpdateSerializer,
+        "chat": ChatSerializer,
     }
     pagination_class = CustomCursorPagination
     permission_classes = [CanAccessAllDocuments | IsDocumentOwner]
@@ -371,6 +380,29 @@ class DocumentViewSet(
             document.update_fields({"mermaid_diagram": None})
         return Response(status=status.HTTP_200_OK)
 
+    @action(methods=["post"], detail=False)
+    def chat(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        ret = serializer.save()
+        research_session_id = ret.get("research_session_id")
+        if research_session_id:
+            process_research_session_task.delay(research_session_id)
+        return Response(ret, status=status.HTTP_201_CREATED)
+
+    @action(methods=["get"], detail=True)
+    def chat_history(self, request, pk=None):
+        document: Document = self.get_object()
+        research_session = DocumentResearchSession.objects.get(document=document)
+        return Response(research_session.chat_history)
+
+    @action(methods=["get"], detail=True)
+    def cot(self, request, pk=None):
+        document: Document = self.get_object()
+        research_session = DocumentResearchSession.objects.get(document=document)
+        cot = research_session.chat_history and research_session.chat_history[-1].get("cot")
+        return Response(cot or [])
+
     def perform_destroy(self, instance):
         instance.sections.all().delete()
         return super().perform_destroy(instance)
@@ -404,10 +436,11 @@ class SectionViewSet(
 
         section: Section = self.get_object()
 
-        apply_refined(
-            section,
-            serializer.validated_data["action"] == SectionApplyRefinementSerializer.ACTION_APPLY_REFINED,
-        )
+        if section.refined_result:
+            apply_refined(
+                section,
+                serializer.validated_data["action"] == SectionApplyRefinementSerializer.ACTION_APPLY_REFINED,
+            )
 
         return Response()
 

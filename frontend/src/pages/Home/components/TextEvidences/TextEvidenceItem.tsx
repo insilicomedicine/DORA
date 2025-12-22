@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack';
 import { Bibliography, RightPanelComponentIds } from 'types/document';
 import { getAllAbstractChunkTexts } from 'utils/editor';
 import { useEditorStore } from 'contexts/editorStore';
+import { SxProps } from '@mui/material';
 
 interface TextEvidenceItemProps {
   itemData: Bibliography;
@@ -13,6 +14,7 @@ interface TextEvidenceItemProps {
   checkedList?: Bibliography[];
   isHidden?: boolean;
   handleCheck?: (target: Bibliography) => void;
+  sx?: SxProps;
 }
 
 const TextEvidenceItem = ({
@@ -21,7 +23,8 @@ const TextEvidenceItem = ({
   enableCheckbox = false,
   checkedList = [],
   isHidden = false,
-  handleCheck = () => {}
+  handleCheck = () => {},
+  sx = {}
 }: TextEvidenceItemProps) => {
   const { referenceLinkTarget, setRightPanel } = useEditorStore();
 
@@ -70,6 +73,7 @@ const TextEvidenceItem = ({
       overflow="auto"
       display={isHidden ? 'none' : 'flex'}
       onClick={handleItemCheck}
+      sx={sx}
     >
       {enableCheckbox && (
         <Checkbox

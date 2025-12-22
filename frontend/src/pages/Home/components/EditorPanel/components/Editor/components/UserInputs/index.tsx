@@ -1,9 +1,12 @@
 import React, { memo, useState } from 'react';
-import { templateIcons } from 'utils/templates';
 import UserInputsDialog from './components/UserInputsDialog';
 import { InfoOutlined } from '@mui/icons-material';
 import { Stack, Tooltip } from '@mui/material';
-import { Bibliography, UserInput } from 'types/document';
+import { Bibliography } from 'types/document';
+import { UserInput } from 'types/template';
+import { convertToKey } from 'utils/utils';
+import Icons from 'pages/Templates/components/Icons';
+import Typography from '@mui/material/Typography';
 
 interface UserInputsProps {
   templateName: string;
@@ -26,7 +29,12 @@ const UserInputs = ({
     useState<boolean>(false);
 
   const dialogContentData = {
-    templateName: `${templateIcons[templateType.replace(/ /g, '').toLowerCase()]?.icon} ${templateName}`,
+    templateName: (
+      <Stack direction="row" spacing={1} alignItems="center">
+        <Icons type={templateType} />
+        <Typography variant="body2">{templateName}</Typography>
+      </Stack>
+    ),
     createdAt,
     userInputsData: userInputsData?.length ? userInputsData : null,
     customData: customData?.length ? customData : null,
@@ -58,17 +66,19 @@ const UserInputs = ({
               color: 'grey.600',
               width: 16,
               height: 16,
-              ml: 1.5,
               '&:hover': { color: 'primary.main' }
             }}
           />
         </Tooltip>
       </Stack>
-      <UserInputsDialog
-        dialogContentData={dialogContentData}
-        open={userInputsDialogIsOpen}
-        handleClose={handleCloseDialog}
-      />
+      {userInputsDialogIsOpen && (
+        <UserInputsDialog
+          dialogContentData={dialogContentData}
+          open={userInputsDialogIsOpen}
+          handleClose={handleCloseDialog}
+          isDeepResearch={convertToKey(templateType) === 'deepresearch'}
+        />
+      )}
     </>
   );
 };

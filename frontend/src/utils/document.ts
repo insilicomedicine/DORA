@@ -195,6 +195,7 @@ const convertToEditorDocument = (
   //Creates section title content with proper attributes
   const createSectionTitle = (item: Section, level: number): JSONContent => {
     const isPolisingFailed = isPolising && item.status === 'failed';
+
     return {
       ...item,
       id: item.id,
@@ -204,7 +205,7 @@ const convertToEditorDocument = (
       attrs: {
         id: item.id,
         title: item.title,
-        className: `sectionTitle title`,
+        className: `sectionTitle title ${item.slug === 'main_text' && documentData.sections.length === 1 ? 'hidden' : ''}`,
         level: level,
         type: `h${level}`,
         componentType: 'SectionTitle',

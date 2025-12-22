@@ -42,7 +42,6 @@ def post_user_signed_up(sender, instance, created, **kwargs):
         instance.username = email
         instance.email = email
         instance.save()
-        Profile.objects.create(user=instance)
-
+        Profile.objects.get_or_create(user=instance)
         if instance.is_active:
             set_important_dates(instance)

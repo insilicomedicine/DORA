@@ -17,6 +17,7 @@ class ConfigKeyType:
     PUB_CHUNKS_ABSTRACT_SEARCH = "pub_chunks_abstract_search"
     PUB_CHUNKS_FULLTEXT_SEARCH = "pub_chunks_fulltext_search"
     MCP_TOOL_RESULT_BIBLIOGRAPHY_TYPES = "mcp_tool_result_bibliography_types"
+    DEEP_RESEARCH_PROMPTS = "deep_research_prompts"
 
 
 class PublicationChunksEnum(str, Enum):

@@ -5,6 +5,7 @@ from django.conf import settings
 from rest_framework import serializers
 
 from base.utils import find_first_unmatched_parenthesis
+from kernel.defs import TemplateType
 from kernel.llm_agent_tools.defs import ToolNames
 from kernel.models import Suggestion, Template, TemplateAgent, Tool, ToolPromptInstructionGroup
 from kernel.utils import build_section_dependency_map, flatten_sections, has_conflict, merge_dependency_maps
@@ -64,20 +65,9 @@ def get_tool_group_placeholders() -> Tuple[List[str], Dict[str, str], Dict[str, 
 
 
 class TemplateSerializer(serializers.Serializer):
-    TEMPLATE_TYPE_CHOICES = [
-        "Original research",
-        "Business report",
-        "Expert analysis",
-        "Brief report",
-        "Literature review",
-        "Data on humans",
-        "Life science resource portfolio",
-        "Experimental workflow and education",
-    ]
-
     name = serializers.CharField()
     description = serializers.CharField()
-    type = serializers.ChoiceField(choices=TEMPLATE_TYPE_CHOICES)
+    type = serializers.ChoiceField(choices=TemplateType.TYPE_CHOICES)
     user_inputs = UserInputSerializer(many=True)
     shared_memory = serializers.DictField(required=False)
     system_message = serializers.CharField()
@@ -86,6 +76,7 @@ class TemplateSerializer(serializers.Serializer):
     estimated_document_generation_minutes = serializers.IntegerField()
     sections = SectionSerializer(many=True)
     tool_display_names = serializers.DictField()
+    tags = serializers.ListField(child=serializers.CharField(), required=False)
 
     def validate(self, attrs):
         system_message = attrs["system_message"]
@@ -292,7 +283,7 @@ class TemplateSerializer(serializers.Serializer):
 class TemplateModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Template
-        fields = ["id", "name", "description", "type", "user_inputs"]
+        fields = ["id", "name", "description", "type", "user_inputs", "tags"]
 
 
 class TemplateSectionDetailSerializer(serializers.Serializer):

@@ -125,7 +125,7 @@ const TabsSection = ({
         />
       </Box>
 
-      <Box sx={{ overflow: 'auto', height: 'calc(100% - 50px)' }}>
+      <Box sx={{ overflow: 'auto', height: 'calc(100% - 65px)' }}>
         {TABS.map(({ Component, id }) => (
           <Box
             sx={{

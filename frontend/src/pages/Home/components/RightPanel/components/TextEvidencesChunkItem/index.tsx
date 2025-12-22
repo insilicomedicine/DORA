@@ -1,11 +1,17 @@
-import { memo, useEffect, useId, useRef, useState } from 'react';
+import { memo, useEffect, useId, useMemo, useRef, useState } from 'react';
 import Citations from '../Citations';
 import { chunksAuthorFormatter } from 'utils/chunksAuthorFormatter';
-import { Box, Button, Stack, Tooltip, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import { Link } from 'react-router';
 import BibliographyCustomItem from '../BibliographyCustomItem';
 import usePlanStatus from 'hooks/usePlanStatus';
 import { Metadata } from 'types/document';
+import { useDocumentStore } from 'contexts/documentsStore';
+import { convertToKey } from 'utils/utils';
 
 export interface TextEvidencesChunkItemProps extends Partial<Metadata> {
   showWithLink?: boolean;
@@ -14,6 +20,35 @@ export interface TextEvidencesChunkItemProps extends Partial<Metadata> {
   chunks: any;
   pub_year?: number;
 }
+
+type FormatCitationArgs = {
+  authors?: Metadata['authors'];
+  pub_year?: number;
+  journal_name?: string;
+  pub_type?: string[];
+  isSearchResult: boolean;
+};
+
+const formatCitationText = ({
+  authors,
+  pub_year,
+  journal_name,
+  pub_type,
+  isSearchResult
+}: FormatCitationArgs) => {
+  const separator = isSearchResult ? ' • ' : ' | ';
+  const parts: string[] = [];
+
+  const authorPart = chunksAuthorFormatter({ authors, pub_year });
+  if (authorPart) parts.push(authorPart);
+
+  if (journal_name) parts.push(journal_name);
+
+  const type = Array.isArray(pub_type) ? pub_type[0] : undefined;
+  if (type) parts.push(type);
+
+  return parts.join(separator);
+};
 
 const TextEvidencesChunkItem = (props: TextEvidencesChunkItemProps) => {
   const {
@@ -31,10 +66,32 @@ const TextEvidencesChunkItem = (props: TextEvidencesChunkItemProps) => {
     isSearchResult = false
   } = props;
 
+  const { documentData } = useDocumentStore();
   const { isExpired } = usePlanStatus();
   const clampToggleId = useId();
   const clampContentRef = useRef<HTMLDivElement | null>(null);
   const [isOverflowed, setIsOverflowed] = useState(false);
+
+  const chunkArray = useMemo(() => Object.values(chunks ?? {}), [chunks]);
+  const chunkTexts = useMemo(() => chunkArray.join(' '), [chunkArray]);
+  const isChunksEnabled = useMemo(() => chunkTexts.trim() !== '', [chunkTexts]);
+  const templateKey = useMemo(
+    () => convertToKey(documentData?.template_type),
+    [documentData?.template_type]
+  );
+  const isDeepResearch = templateKey === 'deepresearch';
+
+  const citationText = useMemo(
+    () =>
+      formatCitationText({
+        authors,
+        pub_year,
+        journal_name,
+        pub_type,
+        isSearchResult
+      }),
+    [authors, pub_year, journal_name, pub_type, isSearchResult]
+  );
 
   useEffect(() => {
     if (!isSearchResult) return;
@@ -80,9 +137,19 @@ const TextEvidencesChunkItem = (props: TextEvidencesChunkItemProps) => {
   );
 
   const renderChunkTexts = () => {
-    const chunkTexts = Object.values(chunks).join(' ');
-    const isEnableChunk = chunkTexts.trim() !== '';
-    if (!isEnableChunk) {
+    if (!isChunksEnabled) {
+      if (isDeepResearch) {
+        return (
+          <Typography
+            variant="body2"
+            color="grey.500"
+            textAlign="center"
+            pt="20px"
+          >
+            Related excerpt isn't available for Deep Research
+          </Typography>
+        );
+      }
       return null;
     }
 
@@ -169,7 +236,7 @@ const TextEvidencesChunkItem = (props: TextEvidencesChunkItemProps) => {
             </Button>
           </Box>
         ) : (
-          Object.values(chunks).map((chunk: any, index) => (
+          chunkArray.map((chunk: any, index) => (
             <Box mb={0.5} key={index}>
               {renderChunkContent(chunk, index)}
             </Box>
@@ -179,23 +246,21 @@ const TextEvidencesChunkItem = (props: TextEvidencesChunkItemProps) => {
     );
   };
 
-  const renderCitationInfo = () => (
-    <>
-      <Citations
-        {...props}
-        disableViewAbstract={!showWithLink || isExpired}
-        isSearchResult={isSearchResult}
-        sx={{ fontSize: isSearchResult ? '12px' : undefined }}
-      />
-      <Typography variant="caption" color="textSecondary">
-        {chunksAuthorFormatter({ authors, pub_year })}
-        {isSearchResult ? ' • ' : ' | '}
-        {journal_name}
-        {isSearchResult ? ' • ' : ' | '}
-        {pub_type?.[0]}
-      </Typography>
-    </>
-  );
+  const renderCitationInfo = () => {
+    return (
+      <>
+        <Citations
+          {...props}
+          disableViewAbstract={!showWithLink || isExpired}
+          isSearchResult={isSearchResult}
+          sx={{ fontSize: isSearchResult ? '12px' : undefined }}
+        />
+        <Typography variant="caption" color="textSecondary">
+          {citationText}
+        </Typography>
+      </>
+    );
+  };
 
   const renderTitle = () => (
     <Typography
@@ -252,6 +317,7 @@ const TextEvidencesChunkItem = (props: TextEvidencesChunkItemProps) => {
   return (
     <Stack
       sx={{
+        width: '100%',
         mb: 1,
         py: 1.5,
         pl: 1.5,
@@ -262,6 +328,7 @@ const TextEvidencesChunkItem = (props: TextEvidencesChunkItemProps) => {
       {(file_name || url) && showWithLink && (
         <BibliographyCustomItem
           file_name={file_name}
+          title={title}
           url={url}
           object_id={object_id}
           sx={{ fontWeight: 500, mb: 0.5 }}
@@ -271,8 +338,7 @@ const TextEvidencesChunkItem = (props: TextEvidencesChunkItemProps) => {
         <>
           {renderTitle()}
           <Typography variant="caption" color="textSecondary">
-            {chunksAuthorFormatter({ authors, pub_year })} | {journal_name} |{' '}
-            {pub_type?.[0]}
+            {citationText}
           </Typography>
         </>
       )}

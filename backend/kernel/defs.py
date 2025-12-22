@@ -41,3 +41,27 @@ class SearchResource:
 
 
 DEFAULT_DISPLAY_NAME_ON_PLAN_OVERVIEW = "Proposed research tasks"
+
+
+class TemplateType:
+    ORIGINAL_RESEARCH = "Original research"
+    BUSINESS_REPORT = "Business report"
+    EXPERT_ANALYSIS = "Expert analysis"
+    BRIEF_REPORT = "Brief report"
+    LITERATURE_REVIEW = "Literature review"
+    DATA_ON_HUMANS = "Data on humans"
+    LIFE_SCIENCE_RESOURCE_PORTFOLIO = "Life science resource portfolio"
+    EXPERIMENTAL_WORKFLOW_AND_EDUCATION = "Experimental workflow and education"
+    DEEP_RESEARCH = "Deep research"
+
+    TYPE_CHOICES = [
+        ORIGINAL_RESEARCH,
+        BUSINESS_REPORT,
+        EXPERT_ANALYSIS,
+        BRIEF_REPORT,
+        LITERATURE_REVIEW,
+        DATA_ON_HUMANS,
+        LIFE_SCIENCE_RESOURCE_PORTFOLIO,
+        EXPERIMENTAL_WORKFLOW_AND_EDUCATION,
+        DEEP_RESEARCH,
+    ]

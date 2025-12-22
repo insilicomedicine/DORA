@@ -21,6 +21,7 @@ class Config(BaseModel):
     def clean(self):
         validation_handlers = {
             ConfigKeyType.PUBLICATION_CHUNK_MERGE_RULES: self._validate_chunk_merge_rules,
+            ConfigKeyType.DEEP_RESEARCH_PROMPTS: self._validate_deep_research_prompts,
         }
 
         if handler := validation_handlers.get(self.key):
@@ -62,11 +63,26 @@ class Config(BaseModel):
                 f"Expected one of {ShuffleStrategyEnum.get_valid_strategies()} or null"
             )
 
+    def _validate_deep_research_prompts(self):
+        deep_research_prompts = self.value
+        expected_keys = {
+            "collection_system_message": str,
+            "research_system_message": str,
+            "research_user_message": str,
+        }
+
+        for key, expected_type in expected_keys.items():
+            if key not in deep_research_prompts or not isinstance(deep_research_prompts[key], expected_type):
+                raise ValidationError(f"Invalid or missing key '{key}' in deep_research_prompts")
+
+            if not deep_research_prompts[key]:
+                raise ValidationError(f"Empty prompt for key '{key}' in deep_research_prompts")
+
     def __str__(self):
         return f"Config: {self.key}"
 
     @classmethod
-    def get(cls, key, default=None) -> Any:
+    def get(cls, key: str, default: Any = None) -> Any:
         try:
             return cls.objects.get(key=key).value
         except cls.DoesNotExist:

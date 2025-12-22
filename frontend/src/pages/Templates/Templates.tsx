@@ -9,11 +9,11 @@ import {
   Stack
 } from '@mui/material';
 import { getTemplates } from 'services/templates';
-import { templateIcons, filterTemplatesByType } from 'utils/templates';
+import { filterTemplatesByType } from 'utils/templates';
 import TemplateItem from './components/TemplateItem';
+import Icons from './components/Icons';
 import { Template } from 'types/template';
 import PageSkeleton from 'components/PageSkeleton';
-import { convertToKey } from 'utils/utils';
 
 const Templates = () => {
   const [templates, setTemplates] = useState<Template[]>([]);
@@ -82,16 +82,27 @@ const Templates = () => {
               size="small"
               sx={{
                 width: 288,
-                borderRadius: 2
+                borderRadius: 2,
+                '& .MuiSelect-select': {
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.5
+                }
               }}
             >
               {templateTypes.map((type) => (
                 <MenuItem
                   key={type}
                   value={type}
-                  sx={{ display: 'flex', alignItems: 'center', height: 48 }}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    height: 48,
+                    gap: 0.5
+                  }}
                 >
-                  {templateIcons[convertToKey(type)]?.icon} {type}
+                  <Icons type={type} />
+                  <span>{type}</span>
                 </MenuItem>
               ))}
             </Select>

@@ -24,6 +24,7 @@ from documents.document_export.defs import (
     NORMAL_LEADING,
     PUBMED_URL_PATTERN,
     TITLE_LEADING,
+    WEBSEARCH_REFERENCE_PATTERN,
     FontSizes,
 )
 from documents.document_export.defs import PDFPageSizes as sizes
@@ -34,6 +35,7 @@ from documents.document_export.utils import (
     get_formatted_references,
     get_mermaid_image_stream_and_size,
     is_markdown_heading,
+    should_skip_section_title,
 )
 from documents.models import Document, Section
 
@@ -271,13 +273,24 @@ class PDFGenerator:
                 paragraph_text = paragraph_text.replace(f"({ref_text})", f"({after_text})")
         return paragraph_text
 
+    def _convert_markdown_formatting(self, text: str) -> str:
+        """Convert markdown bold and italic syntax to HTML tags"""
+        # Convert bold: **text** -> <b>text</b>
+        text = re.sub(r"\*\*([^\*]+)\*\*", r"<b>\1</b>", text)
+
+        # Convert italic: *text* -> <i>text</i>
+        text = re.sub(r"\*([^\*]+)\*", r"<i>\1</i>", text)
+
+        return text
+
     def _generate_paragraphs_from_sections(self, sections: List[Section], heading_level: int = 1) -> None:
         """Process document sections and generate paragraph objects"""
         heading_level = min(heading_level, 6)
         for section in sections:
-            # Add section title
-            section_title = Paragraph(section.title, self.styles[f"Heading{heading_level}"])
-            self.paragraphs.append(section_title)
+            # Skip title only for top-level single section with main_text slug
+            if not (heading_level == 1 and should_skip_section_title(sections, section)):
+                section_title = Paragraph(section.title, self.styles[f"Heading{heading_level}"])
+                self.paragraphs.append(section_title)
 
             if section.result is not None:
                 if section.result.get("data_format"):
@@ -432,7 +445,6 @@ class PDFGenerator:
     def _process_regular_paragraph(self, paragraph_texts: List[str], index: int) -> int:
         """Process regular paragraph or heading and return the next index to process"""
         paragraph_text = paragraph_texts[index]
-        paragraph_text = self._convert_bibs_to_bib_links(paragraph_text)
 
         is_heading, text_heading_level = is_markdown_heading(paragraph_text)
         if is_heading:
@@ -440,6 +452,9 @@ class PDFGenerator:
             style_name = f"Heading{text_heading_level}"
         else:
             style_name = "SectionParagraph"
+
+        paragraph_text = self._convert_bibs_to_bib_links(paragraph_text)
+        paragraph_text = self._convert_markdown_formatting(paragraph_text)
 
         section_content = Paragraph(paragraph_text, self.styles[style_name])
         self.paragraphs.append(section_content)
@@ -865,7 +880,15 @@ class PDFGenerator:
         )
 
         remaining_height = remaining_height - reference_heading_height - sizes.SPACE_BETWEEN_PARAGRAPHS
-        for reference_text in references:
+        for reference in references:
+            if reference["type"] == BibliographyType.WEBSEARCH:
+                reference_text = WEBSEARCH_REFERENCE_PATTERN.format(
+                    url=reference["url"],
+                    title=reference["title"],
+                    domain=reference["domain"],
+                )
+            else:
+                reference_text = reference["text"]
             reference_paragraph = Paragraph(reference_text, self.styles["Normal"])
             _, reference_paragraph_height = reference_paragraph.wrapOn(
                 self.pdf_canvas, sizes.MAX_AVAILABLE_WIDTH, sizes.PAGE_HEIGHT

@@ -107,7 +107,7 @@ class WebSearchTool(BaseTool):
     PAGES_PER_SOURCE: int = 3
     GENERAL_SOURCE_KEY: str = "google"
     execution_count: int = 0
-    max_execution_count: int = 15
+    max_execution_count: int = settings.TOOL_MAX_EXECUTION_COUNT
     sources: List[str] = []
     token_record_callback: Optional[Callable[[TokenUsage], None]] = None
 

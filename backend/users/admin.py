@@ -64,6 +64,13 @@ class UserAdmin(SubscriptionFieldMixin, BaseUserAdmin):
     ordering = ("-date_joined",)
     actions = [unblock_users]
 
+    def get_inlines(self, request: Any, obj: User | None = None) -> list[type[admin.StackedInline]]:
+        """Only show ProfileInline when editing existing users, not when creating new ones."""
+        if obj is None:
+            # obj is None when creating a new user
+            return []
+        return self.inlines
+
     @admin.display(description="Activated at")
     def activated_at(self, user: User) -> str:
         return user.profile.activated_at
