@@ -115,7 +115,7 @@ The easiest way to start the DORA services is through Docker Compose. Please mak
     http://localhost/admin
     ```
 
-For more detailed instructions about how to generate a document, or configure the templates, please refer to the [User Manual]().
+For more detailed instructions about how to generate a document, or configure the templates, please refer to the [User Manual](https://insilicomedicine.github.io/DORA/).
 
 ## Building Images Locally for Development
 
