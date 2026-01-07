@@ -215,3 +215,4 @@ After building the images locally, make sure to update the `image:` references i
 >\* Web search is supported in limited regions. You can configure your own Seper API key in .env file.
 >
 >\*\* Requires a deployment of the [Precious3GPT](https://huggingface.co/insilicomedicine/precious3-gpt) model.
+
