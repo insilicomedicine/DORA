@@ -160,7 +160,7 @@ const TemplateInputs = ({
         isRequired
         popoverInfo={{
           content:
-            'Provide detailed information about your topic to generate precise research tasks for your document. Use complete names for clarity and avoid using unclear abbreviations'
+            'Provide detailed information about your topic to generate precise research tasks for your document. Use complete names for clarity and avoid using unclear abbreviations.'
         }}
       />
       <Box

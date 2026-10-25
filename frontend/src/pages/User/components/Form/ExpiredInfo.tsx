@@ -13,9 +13,9 @@ const ExpiredInfo = () => {
 
   const handleRequestNewLink = async () => {
     if (!email) return;
-    const reponse = await register({ email });
-    if (reponse.error) {
-      reponse.isAccountExists && setShowError(true);
+    const response = await register({ email });
+    if (response.error) {
+      response.isAccountExists && setShowError(true);
       return;
     }
     setSuccess(true);

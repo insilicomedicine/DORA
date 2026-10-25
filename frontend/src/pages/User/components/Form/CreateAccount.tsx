@@ -35,9 +35,9 @@ const CreateAccount = ({
   const handleCreateAccount = async (e: FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
-    const reponse = await register({ email: inputValues.email });
+    const response = await register({ email: inputValues.email });
     setIsProcessing(false);
-    if (reponse.error) {
+    if (response.error) {
       return;
     }
     setStep(4);

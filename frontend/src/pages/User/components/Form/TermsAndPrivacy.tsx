@@ -14,8 +14,8 @@ const TermsAndPrivacy = ({}) => {
   const handleAcceptTermsAndPrivacy = async (e) => {
     e.preventDefault();
     setIsProcessing(true);
-    const reponse = await acceptTermsAndPrivacy();
-    if (!reponse) return;
+    const response = await acceptTermsAndPrivacy();
+    if (!response) return;
     window.location.href = '/templates';
   };
 

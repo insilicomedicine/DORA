@@ -174,7 +174,7 @@ const CustomData = ({
         description="Enrich template section by your draft or textual results"
         popoverInfo={{
           content:
-            'Add draft content, notes, results, or ideas for discussion. DORA will integrate this information into the final document, aligning it with relevant sections. Ensure you update the research plan after adding custom data'
+            'Add draft content, notes, results, or ideas for discussion. DORA will integrate this information into the final document, aligning it with relevant sections. Ensure you update the research plan after adding custom data.'
         }}
       />
       {flattenedSections.map(({ slug, title }) => {

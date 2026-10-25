@@ -58,16 +58,16 @@ const TopToolbar = (props: TopToolbarProps) => {
 
   const handlePolish = async () => {
     if (!documentData?.id) return;
-    const reponse = await polish(documentData?.id);
-    if (!reponse) return;
-    const newDocumnet = await getDocument(documentData?.id);
-    if (!newDocumnet) return;
+    const response = await polish(documentData?.id);
+    if (!response) return;
+    const newDocument = await getDocument(documentData?.id);
+    if (!newDocument) return;
 
     setDocumentDetailData({
-      documentData: convertToEditorDocument(newDocumnet, bibliographyList).doc
+      documentData: convertToEditorDocument(newDocument, bibliographyList).doc
     });
     //Update the document state in the document list
-    setUpdatedDocument(newDocumnet);
+    setUpdatedDocument(newDocument);
   };
 
   const [anchorElExportMenu, setAnchorElExportMenu] =
